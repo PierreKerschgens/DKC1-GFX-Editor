@@ -1,0 +1,695 @@
+[00:00] In 2018, I made a video where I asked
+[00:02] the question, "What if Donkey Kong
+[00:03] Country used DK's original Chagarro
+[00:05] Miiamoto design? It did decently well,
+[00:08] but shortly after the video released,
+[00:09] Nintendo ported Donkey Kong Country
+[00:11] Tropical Freeze to the Switch, and fans
+[00:12] noticed that Nintendo massively
+[00:14] redesigned Donkey Kong's nostrils." And
+[00:16] you can definitely see how much more
+[00:17] prominent his nostrils are from this
+[00:18] perspective as opposed to the Wii U
+[00:20] version. Of course, this was a huge
+[00:22] deal. And with the combination of Donkey
+[00:23] Kong Country and his radical new
+[00:25] redesign trending, I guess the algorithm
+[00:27] favored me or something and the video
+[00:28] got a million views. 7 years later, the
+[00:31] Switch 2 was announced and Donkey Kong
+[00:32] was redesigned again. You know, a little
+[00:35] more dramatically this time. And now the
+[00:38] video has 2 million views, which is like
+[00:41] 2 million more than I ever expected it
+[00:42] to get. So, thank you all so much for
+[00:44] watching. And so I've wanted to do this
+[00:46] for a while, but as a little celebration
+[00:48] for the two million views, and because
+[00:49] I'm really hyped on Donkey Kong right
+[00:51] now, I just thought that I would show
+[00:53] you all how I made it step by step. So
+[00:55] hopefully someone out there can use this
+[00:56] for something cool. It also gave me an
+[00:58] excuse to remaster the sprites with the
+[01:00] benefit of hindsight and finally fill
+[01:01] out the entire sprite sheet, which I've
+[01:03] uploaded to the sprites resource for
+[01:05] anyone to use. Link in the description.
+[01:07] Now, I did include a tutorial in the
+[01:09] description to my other video, but I
+[01:11] know that some people, like myself, are
+[01:13] visual learners, and the comment section
+[01:15] has shown me that no one reads the
+[01:17] description, otherwise I wouldn't have a
+[01:19] million people asking me for a link to
+[01:20] the ROM hack. I'm sorry, it's just a
+[01:23] mockup. I wish this was a ROM hack.
+[01:25] Though, somehow that was second to the
+[01:27] most prominent comment I received.
+[01:29] Cranky Kong Country. So, is this
+[01:31] technically Cranky Kong Country? I guess
+[01:34] that would make this Cranky Kong Country
+[01:36] and his stupid son Donkey Kong Jr. Fun
+[01:38] fact, this is actually Cranky Kong in
+[01:40] his youth, not DK's supposed original
+[01:43] design, as it's Junior who's actually
+[01:45] the DK we know today. Now, believe it or
+[01:47] not, that actually ties in with the
+[01:49] first part of this tutorial. Step zero,
+[01:52] the idea. Here's the thing. Cranky Kong
+[01:55] is very funny. The whole idea that
+[01:57] Donkey Kong III is the grandson of the
+[01:59] original arcade Donkey Kong who grew up
+[02:01] into an old man that complains about
+[02:03] video games today not being as good as
+[02:04] the ones in his day. Like, it is like my
+[02:08] favorite joke in any Nintendo game. And
+[02:10] it is a really funny piece of lore to
+[02:12] explain why the Donkey Kong IP suddenly
+[02:14] had a dramatic new redesign and
+[02:15] presumably can even be used to explain
+[02:17] why the main character of the franchise
+[02:19] isn't a villain anymore. You know,
+[02:21] Donkey Kong never kidnapped anyone. It
+[02:23] was his grandpa. It also hilariously
+[02:25] plays into that '9s trend of rebelling
+[02:27] against the old people who want to
+[02:29] listen to their gramophones. But move
+[02:31] over, grandpa. I want to dance to my
+[02:33] stereo. Parents just don't understand.
+[02:36] But anyway, my whatif wasn't about the
+[02:39] in universe cannon. My video was
+[02:42] inspired by a metathought on how strict
+[02:44] Nintendo is with its IPs and how
+[02:46] incredible it was that at some point in
+[02:48] time Nintendo let some other company in
+[02:50] some other country give one of its
+[02:51] flagship characters a completely new
+[02:54] look that lasted for decades. And at the
+[02:56] time, I just never thought we'd see
+[02:58] anything like that again, especially
+[02:59] since the internet tends to overreact to
+[03:01] even minor changes. And especially since
+[03:03] we were at the tail end of the New Super
+[03:05] Mario Brothers era. It is me, Mario. The
+[03:09] idea for the video was, "What if
+[03:11] Nintendo was more controlling over its
+[03:13] IP and demanded a more faithful
+[03:14] translation of their designs into 3D,
+[03:17] but yes, it is also Cranky Kong Country
+[03:20] technically, and that is actually very
+[03:22] funny. Anyway, this is step zero because
+[03:24] I figure everyone watching this already
+[03:26] kind of has an idea of what they want to
+[03:27] do. Maybe you want to add new Funky Mode
+[03:29] to Donkey Kong Country 1. Maybe you want
+[03:31] to add Big Cat to Sonic 3D Blast. Maybe
+[03:33] you have your own original idea. Or
+[03:35] maybe you're just here to have a good
+[03:36] time and see how things get made. So,
+[03:38] let's get right to the point. How did I
+[03:40] make it? Step one, research and gather
+[03:43] reference. This may not feel like it's a
+[03:45] real first step, but it's actually very
+[03:47] important. I spent a lot of time looking
+[03:49] at behind-the-scenes videos and studying
+[03:51] the renders to figure out how to achieve
+[03:52] that gross '90s CG look. Also, at this
+[03:55] stage, I had to make decisions like, do
+[03:57] I keep the tie that was present in the
+[03:58] Game Boy games, but not the original
+[04:00] arcade? Yes, because it was in the
+[04:02] original facts that Miiamoto sent to
+[04:04] Rare for what they wanted DK to look
+[04:05] like. I also decided that since Diddy
+[04:07] was originally going to be DK Jr. until
+[04:09] Nintendo said that the design was too
+[04:11] different, I figured I'd just make him
+[04:12] DK Jr. Again, the idea for the video was
+[04:14] that Nintendo would be more controlling
+[04:16] and instead of saying the design's too
+[04:18] different, change the name, they'd say,
+[04:19] "The design's too different. Change the
+[04:21] design." Oh, and for those of you who
+[04:22] are wondering what Cranky would look
+[04:24] like in this hypothetical game, probably
+[04:26] something like this. And K Rule would
+[04:28] probably be Wario. Anyway, I don't know
+[04:30] what you plan to make with this
+[04:32] tutorial, but my point is to study,
+[04:34] observe, and learn as much as you can
+[04:36] from things similar to what you want to
+[04:37] make. It's so important. I'm actually
+[04:39] going to keep calling back to this step
+[04:40] throughout the entire tutorial,
+[04:42] especially in the next one. Step two,
+[04:45] modeling. Okay, first of all, I'm using
+[04:47] Maya, but everything that I'm doing can
+[04:48] be done in any other program. Also, this
+[04:51] is not going to be an in-depth modeling
+[04:53] tutorial, but let's cover some of the
+[04:54] basics of what I did. When we look at
+[04:56] our reference images, we can see that in
+[04:58] Donkey Kong Country 1, the style that
+[05:00] I'm emulating, the models didn't have
+[05:02] smooth skinning. They were all solid
+[05:03] shapes wedged into each other. Hence,
+[05:05] DK's weird butt here answering once and
+[05:07] for all that butt is legs. This quirk is
+[05:10] actually incredibly common in 3D
+[05:11] graphics of the era. From Mario RPG to
+[05:14] Sonic 3D Blast, and even in DK's TV
+[05:16] show, I'm hearing voices in my hand.
+[05:19] What should I do? So, my upper arm and
+[05:22] lower arm are separate pieces with a
+[05:23] sphere at the elbow to connect them.
+[05:25] Same with the knee. Also, the models
+[05:27] didn't have fur, at least in the first
+[05:29] one. Instead, they had procedural
+[05:31] fractal textures that act as height
+[05:33] maps, and that's super easy to do in any
+[05:35] 3D software. Also, as a tip, this was my
+[05:38] initial fractal, which looks good in big
+[05:40] renders, but when it's turned into a
+[05:42] sprite, you can barely see it. I
+[05:44] recommend making everything just a
+[05:46] little bit bigger and bolder than you
+[05:48] think it needs to be, even if it looks
+[05:50] wrong at this scale. I also added a sort
+[05:53] of Fresno Frenel with a red tint to the
+[05:55] face to give more warmth to the skin. It
+[05:58] honestly doesn't look good on the model
+[05:59] at this scale, but it makes a huge
+[06:01] difference in the final renders. To make
+[06:03] this in Maya, plug a ramp into color,
+[06:05] delete the UV node, create a sampler
+[06:07] node, press this menu thingy a few
+[06:09] times, and then plug the facing ratio
+[06:11] into the V channel. Now I can adjust the
+[06:13] ramp's colors. And this is something I
+[06:14] had to go back and fix after I already
+[06:16] made them into sprites, but I noticed
+[06:18] that the skin colored hands were getting
+[06:20] lost against the skin colored chest. So,
+[06:22] I gave the hands a new material and gave
+[06:24] the ramp a much darker shade of red.
+[06:26] Again, when you're making the sprites,
+[06:27] you're going to want to exaggerate
+[06:28] things. Now, if you wanted to be truly
+[06:31] authentic to the time period, then
+[06:33] technically everything should be modeled
+[06:35] with nerbs, but I only recommend doing
+[06:37] that if you're insane. Now that the
+[06:39] character is modeled, rig it up however
+[06:41] you like. This should be relatively easy
+[06:43] given that most objects can just be
+[06:45] parent constrained or have all their
+[06:46] weights flooded 100% to a single joint.
+[06:48] Though for this I did cheat a bit. I
+[06:50] made his tie able to bend. His hair can
+[06:52] bend. And for some reason I guess I made
+[06:55] his fingers bend. I got to disagree with
+[06:57] my past self on this. I think it would
+[06:59] have been better to make them separate
+[07:00] models. But they're so small you can't
+[07:02] really even see the difference in the
+[07:03] sprites. So who cares? But also real
+[07:05] quick, look how creepy they look in our
+[07:07] reference images. They're just so bony
+[07:09] and gross. I also added a few blend
+[07:11] shapes to the face to give him some
+[07:12] personality. And once it's all rigged,
+[07:14] we can move on to step three, animating.
+[07:18] But actually, there's a few things you
+[07:19] got to do first. I'm not 100% sure how
+[07:22] Blender works, but if you're in Maya, I
+[07:24] highly recommend setting up a base file
+[07:25] that you reference into your animation
+[07:27] files, and I recommend you set it up
+[07:29] like this. 3A camera setup. First, I
+[07:33] would recommend posing your character
+[07:34] into whatever you would consider to be
+[07:36] the default idle pose. Put in a camera
+[07:38] with a highish focal lens to flatten the
+[07:41] image. It depends on what you're making.
+[07:43] If it's isometric, it's probably going
+[07:44] to be as flat as you can get it, but
+[07:46] it's up to you, but I'm guessing you
+[07:48] probably don't want it to be wide angle.
+[07:50] I changed it from the default 35 to 60
+[07:52] since I wanted it a little bit flatter,
+[07:54] but still with a little bit of
+[07:55] forcehortening. I also angled it 45°.
+[07:59] Since it's a sidescroller, you might
+[08:00] think that you want a 90° angle putting
+[08:02] the characters in a perfect profile
+[08:04] view. And that might work for some
+[08:06] styles, but looking at the original
+[08:07] Donkey Kong Country from Diddy to the
+[08:09] Kremlings, we can see that they cheated
+[08:10] the characters to the camera to make
+[08:12] them more expressive. 45 might be a
+[08:14] little intense, and for some poses, I
+[08:16] actually did have to swing the camera
+[08:17] 90° to be more in profile, but again, it
+[08:20] all depends on what you're going for.
+[08:22] Now, set the render resolution to 1K
+[08:24] square. We're going to shrink it down
+[08:26] later, but for now, we just want to have
+[08:27] that square shape in the camera. And now
+[08:29] with the camera selected, go to the
+[08:30] attribute editor and under display
+[08:32] options, turn on display resolution.
+[08:35] Personally, I like to set the gate mask
+[08:36] color to black and the opacity to one,
+[08:38] but that part's optional. Point is, now
+[08:40] you can see the square. Also, make sure
+[08:42] to resize the window so nothing's
+[08:43] getting cropped. 3B resolution. Now that
+[08:47] your camera is set up, you're going to
+[08:49] want to figure out what size your
+[08:50] sprites are. On the Super Nintendo,
+[08:52] sprites are stored in 8x8 pixel tiles,
+[08:54] and those can be combined together to
+[08:56] create the final larger sprite. I
+[08:58] personally recommend watching Game
+[08:59] Hut/Coding Secrets video, Crushing Sonic
+[09:01] to an Impossible Size, to see some of
+[09:03] the challenges they dealt with back in
+[09:04] the day. Anyway, my point in saying all
+[09:07] that is that I don't believe there's a
+[09:09] set size that a sprite needs to be, but
+[09:11] Donkey Kong sprite in resting position
+[09:14] is around 40x 40 pixels, though it
+[09:17] varies wildly depending on the pose,
+[09:19] sometimes going up to around 70 pixels.
+[09:22] In order to make sure that my sprites
+[09:23] would retain this general size, I
+[09:25] modeled a grid with 64x 64 squares, and
+[09:28] I lined it up with the camera. That way,
+[09:30] I would know where every pixel would be
+[09:32] after I shrunk the image. Then, I made a
+[09:34] 40x40 square, and I lined up everything
+[09:36] so that DK was approximately the size of
+[09:39] this square, and all the extra pixels
+[09:40] around him are wiggle room for
+[09:42] animation. For some reason, when I did
+[09:44] this 7 years ago, I think I must have
+[09:46] miscalculated something, but every
+[09:48] sprite was enormous and needed to be
+[09:50] shrunk down an additional 90% after the
+[09:53] fact. And even then, it was still a
+[09:54] little bit too big. And then when I was
+[09:56] making this tutorial, my first test
+[09:58] sprites came out way too small because I
+[10:00] was trying to fit a standing Donkey Kong
+[10:02] into the same box as a hunched over
+[10:04] Donkey Kong. So, my new tip for you is
+[10:07] to grab a sprite from your reference,
+[10:09] turn it into a material with the
+[10:10] filtering set to none, and put it on a
+[10:12] plane, and then adjust the camera
+[10:14] distance until your character standing
+[10:16] next to the sprite feels natural. 3C,
+[10:19] lighting. I would also suggest that you
+[10:21] set up your lighting here in this scene
+[10:23] for consistency. And don't worry about
+[10:25] making the lighting look good with
+[10:27] bounce lights or anything. Like, this
+[10:28] was the '9s. I just used two directional
+[10:31] lights, one as a key that cast shadows
+[10:33] and one as a fill. And even then, I
+[10:35] tried not to kill the key shadows too
+[10:37] much because if you look at the original
+[10:38] sprites, the shadows do go all the way
+[10:41] to black. It also looks like the
+[10:42] lighting from the original Donkey Kong
+[10:44] Country is coming from above the camera
+[10:45] based on how the shadows act. 3D fix in
+[10:49] your model. And now that you have the
+[10:51] camera and grid in place, the resolution
+[10:53] figured out, and the character posed,
+[10:55] how they would appear in the game, I
+[10:57] would actually recommend tweaking your
+[10:58] model slightly. For example, I made the
+[11:00] pupils take up a little over a pixel in
+[11:03] width. That way, they're less likely to
+[11:04] disappear when we shrink it to low
+[11:06] resolution. And while animating, I also
+[11:08] took care to snap the eyes to the grid
+[11:10] whenever possible, at least on key
+[11:12] poses. I also tried to ensure that in
+[11:14] key poses the pupils had a pixel of
+[11:16] white separating each other to avoid the
+[11:18] cyclops effect I got on some sprite 7
+[11:20] years ago. And even though in HD it
+[11:22] makes sense for the eyes to have a
+[11:23] little highlight, when it was shrunk, I
+[11:25] realized the highlight was really
+[11:27] messing things up. So, I gave it a pure
+[11:29] black surface shader. And same with the
+[11:31] whites around the eyes. I didn't want
+[11:32] the shadows on the eyes to lessen the
+[11:34] contrast, so I gave them a pure white
+[11:36] surface shader. I also removed a tuft of
+[11:38] hair to ensure that there was a pixel of
+[11:40] space between the head and the top tuft.
+[11:42] And I stuffed some fur colored cylinders
+[11:44] up his nose so that the nostrils would
+[11:45] be a little bit darker, but I didn't
+[11:47] make them black because I didn't want
+[11:49] them competing with the eyes in terms of
+[11:50] contrast. I didn't do this with the
+[11:52] sprite 7 years ago, and you can barely
+[11:54] see his nostrils. And we all know how
+[11:56] important Donkey Kong's nostrils are. It
+[11:58] looks like he got a nose job. And on DK
+[12:00] Jr., Do you see these strands of hair?
+[12:03] No, you don't. So, I increased the
+[12:05] thickness. I also realized that his
+[12:07] leotard looks fine in tea pose, but it's
+[12:09] really low cut once he bends over. So, I
+[12:11] raised the neckline and I added the
+[12:13] iconic J. Though, actually, I made it a
+[12:15] T. That way, it can be mirrored. I
+[12:17] considered doing the V from Mario Kart,
+[12:20] but I just like the T better. This whole
+[12:22] process is a back and forth of modifying
+[12:24] the model, testing it as a sprite,
+[12:26] modifying it some more, which is why
+[12:28] it's important to have your animation
+[12:29] files referencing the same base file.
+[12:32] That way, you can make any modifications
+[12:33] you want to this base file at any time,
+[12:35] and it'll update all the animation files
+[12:37] where you can then test how it looks in
+[12:39] the different poses. So, create a new
+[12:41] file, reference in the base file, and
+[12:43] then set the render resolution to 1K.
+[12:45] And then save this file as template.
+[12:48] Then save off a copy of that and call it
+[12:50] walk or idle or whatever. And then you
+[12:53] can finally move on to 3E animation. And
+[12:57] here's a tip for animating. I downloaded
+[12:59] the sprite sheet of Donkey Kong and
+[13:00] Diddy Kong and made all the animations
+[13:02] match one to one with the amount of
+[13:03] frames that the original animation had.
+[13:06] But for those of you who commented that
+[13:08] my animation was too smooth to look
+[13:09] authentic, you are partially correct. My
+[13:13] walk cycles and most other things have
+[13:15] the correct amount of frames. But for
+[13:17] example, his chest pounding idle
+[13:18] animation. I counted 51 frames in the
+[13:21] sprite sheet. And then I animated
+[13:23] something with 51 frames, not realizing
+[13:26] that some of these frames were the same
+[13:27] frames played in reverse and some are
+[13:29] looped. Oops. So, I have fixed this in
+[13:32] the new sprite sheet. If you're making
+[13:34] your own thing, I recommend looking into
+[13:36] different sources to see how many frames
+[13:38] a typical animation has. And it's up to
+[13:40] you, but I would heir on the side of
+[13:42] less frames and play some of the
+[13:44] animations in reverse for the authentic
+[13:46] memory saving experience. And other than
+[13:48] that, just don't forget your basic
+[13:49] principles of animation. You know,
+[13:51] squash and stretch, timing and spacing,
+[13:53] anticipation, arcs, etc. One thing I
+[13:56] realized while redoing my sprites is,
+[13:58] you know how Mario is wearing those
+[13:59] overalls to separate his arm from his
+[14:01] body in those tiny 16x6 pixel sprites?
+[14:04] Well, that's probably why Donkey Kong
+[14:06] Jr. wears a leotard. So, what the heck
+[14:08] was I doing with this original default
+[14:10] pose? The shoulder strap needs to be
+[14:12] visible. That's the whole point of his
+[14:14] design. I was completely neglecting the
+[14:16] appeal principle of animation. And like
+[14:19] I said earlier, make sure that key poses
+[14:21] have important parts like the eyes
+[14:22] aligned to the grid as best as you can.
+[14:24] Here's some bonus cute details I put
+[14:26] into the sprites, though. Instead of
+[14:27] slamming the ground, DK stomps the
+[14:29] ground as a reference to him doing that
+[14:31] in the arcade and the Game Boy game. DK
+[14:33] beating his chest is posed exactly how
+[14:35] it is in the arcade. Instead of doing an
+[14:37] overhand barrel throw, I have him do it
+[14:39] an underhand barrel throw, which matches
+[14:41] the pose of the original arcade. The
+[14:43] pose of him riding the metal barrel is
+[14:44] taken directly from Miiamoto's concept
+[14:46] art. When he discovers that his banana
+[14:48] horde is missing, I posed him like the
+[14:50] Game Boy games upset pose. DK Jr. jumps
+[14:53] in the same pose that he does in the
+[14:54] arcade. DK Junior's victory hops are
+[14:56] taken from the Game Boy game. Both of
+[14:58] their dying animations are also taken
+[15:00] from the games. And the DK on the game
+[15:02] select screen is a reference to the how
+[15:04] high can you get screen from the arcade.
+[15:07] Step four, rendering. First, you're
+[15:10] going to want a clean and crisp render.
+[15:12] I recommend rendering at least four
+[15:14] times bigger than you need, but the
+[15:16] bigger the better, as long as it's a
+[15:18] power of two since that'll help make it
+[15:19] cleaner when we shrink it down. I want
+[15:21] the final size to be 64x 64. So, the 1K
+[15:24] square option works perfectly for me.
+[15:26] Since 124x24 is 16 times bigger than 64x
+[15:30] 64. The reason that we need to render it
+[15:32] big is because if we were to render it
+[15:34] at 64x 64, Maya's filters would make it
+[15:37] way too blurry to use. I know I've seen
+[15:40] people in Blender can render at this
+[15:41] resolution and it looks fine with the
+[15:43] right settings, but I couldn't find the
+[15:44] equivalent settings in Maya, but either
+[15:46] way, we have to export it out to
+[15:48] Photoshop anyway and shrinking the
+[15:49] images there is trivial. Also, for the
+[15:52] render, don't worry about using Arnold
+[15:53] or anything fancy. Maya software is
+[15:56] fine. And actually, I got my best
+[15:57] results making play blasts output as PNG
+[16:00] sequences. Again, these are supposed to
+[16:02] be mind-boggling '90s computer graphics.
+[16:04] Oh, and don't forget to hide the custom
+[16:06] grid that you made and the Maya grid and
+[16:09] the HUD when you're making a play blast.
+[16:11] Step five, Photoshop. Now that
+[16:13] everything's rendered, it's finally time
+[16:15] to make it look like a Super Nintendo
+[16:16] sprite. First, I'm going to show you
+[16:18] what needs to happen to an individual
+[16:20] image. That way you can customize it for
+[16:21] your needs. And then afterwards, I'll
+[16:23] show you how you can automate this
+[16:24] process for every single sprite at once.
+[16:26] Also, please note that I'm using
+[16:28] Photoshop CS6, so yours may look
+[16:30] different. And if you don't want to pay
+[16:31] a monthly subscription to Adobe, but you
+[16:33] missed out on buying CS6 back in 2017,
+[16:36] there are cheap or free alternatives
+[16:38] that can do the same thing. But
+[16:39] unfortunately, I don't believe that this
+[16:41] works in Clip Studio Paint. The first
+[16:43] thing you want to do is load up one
+[16:45] frame of your animation and shrink it to
+[16:47] the size that you want. In my case, 64x
+[16:49] 64. When I made the video seven years
+[16:52] ago, I used nearest neighbor for the
+[16:54] crunchy pixel effect. But based on some
+[16:56] recent experiments, I think that
+[16:57] bilinear filtering may be the way to go.
+[17:00] At first, using bilinear scared me
+[17:01] because it made things blurry and I
+[17:03] wanted it to look like pixel art at
+[17:04] every step in the process, but the
+[17:06] blurriness gets fixed in the later step.
+[17:08] So, don't worry. The next thing you'll
+[17:10] want to do is go to image mode and then
+[17:12] set it to indexed color. Under the
+[17:14] palette, choose local perceptual or
+[17:16] local selective. I don't know the
+[17:18] difference and it honestly doesn't
+[17:19] matter. Set the colors to 16 and then
+[17:22] turn on transparency. Super Nintendo
+[17:24] sprites are only able to have 16 colors
+[17:27] and that includes one of the colors
+[17:28] being 100% transparent. If you want
+[17:31] 8-bit graphics like DKC GBC, just set
+[17:34] the color to four colors with the
+[17:35] transparency as one of them. And
+[17:37] honestly, you'll probably want to adjust
+[17:38] the levels and stuff to get better
+[17:40] contrast, but you know, that's beyond
+[17:42] the scope of this tutorial. Now, set the
+[17:44] palette to custom and fine-tune your
+[17:46] palette from there. There are resources
+[17:47] that can tell you what colors different
+[17:49] consoles can display. And lucky for me,
+[17:51] I could just copy Donkey Kong's palette
+[17:52] directly. Another option to play around
+[17:54] with is to set your dithering to either
+[17:56] none for sharp edges on your gradients,
+[17:59] diffusion for some dithering, pattern
+[18:01] for your dithering to follow a pattern,
+[18:03] and noise for more chaotic dither. This
+[18:05] all depends on the style that you're
+[18:07] going for. Here's a table of what all
+[18:08] the different dithering methods look
+[18:10] like paired with how we shrunk the
+[18:12] sprites. For me, I personally found that
+[18:14] no dithering was best because of the
+[18:16] fine detail on this character. But if
+[18:18] you had like a large flat surface, I
+[18:20] think dithering could add some
+[18:21] interesting texture to it. Once you have
+[18:23] your look down, make sure to click okay,
+[18:25] but then close without saving because we
+[18:27] are not going to be doing this by hand
+[18:28] for every single sprite. Step six,
+[18:31] automation. Okay. Open up a new blank
+[18:35] document that's whatever size your
+[18:36] renders are. In my case, 1024x 1024. And
+[18:39] make sure that it's RGB colors. In the
+[18:42] actions window, you're going to want to
+[18:43] click the folder icon to make a new set
+[18:45] of actions and call it, I don't know,
+[18:48] specify. Note, if you don't have an
+[18:50] actions window, open it under Windows
+[18:52] actions. Now, click the little page icon
+[18:55] to create a new action and name it
+[18:57] something like, I don't know, SNES. It
+[19:00] will now record any actions that you do.
+[19:02] So, go to image image size and shrink it
+[19:05] down to the resolution you need. in my
+[19:07] case 64 x 64 using either by linear or
+[19:10] nearest neighbor depending on what you
+[19:11] want. And now you can see that it
+[19:13] recorded image size width 64 by cubic
+[19:17] etc. Then you go to image mode index
+[19:20] color and because you had clicked okay
+[19:22] earlier the pallet should be set to
+[19:24] previous which is what we want. And then
+[19:26] you can adjust the dithering if needed.
+[19:28] Click okay and you'll see that it
+[19:29] recorded convert mode with the panel set
+[19:31] to previous. And last thing, go to image
+[19:35] mode and set it back to RGB. One thing I
+[19:38] learned the hard way is that a lot of
+[19:39] programs like After Effects don't like
+[19:41] indexed color files. So, for most
+[19:44] purposes, you're going to need to
+[19:45] convert them back to RGB. Now, click the
+[19:48] stop button in the actions window to
+[19:50] stop recording. And you now have a
+[19:51] series of steps that Photoshop can
+[19:53] follow. So, let's use them. Close out of
+[19:55] this blank document without saving and
+[19:57] go to file, automate, batch. It'll ask
+[20:00] you what set and what actions you want
+[20:02] to perform and on which files. Choose
+[20:05] the folder with your renders and then
+[20:07] choose your destination folder. Set your
+[20:09] naming conventions. I'm just saving them
+[20:11] in the same folder with the same name so
+[20:12] it'll overwrite itself. But you may want
+[20:14] to save them in a different folder to
+[20:16] keep the original renders. It's up to
+[20:17] you. Click okay and let it do its thing.
+[20:20] While we wait, did you know Donkey Kong
+[20:23] can spend 5 days and 5 nights in the
+[20:25] first level?
+[20:27] And there you go. You now have
+[20:29] pre-rendered 3D 16-bit graphics. You can
+[20:31] go in and adjust them by hand if you
+[20:33] notice any weirdness. It'll probably
+[20:34] mostly be around finer details like the
+[20:36] eyes, but all in all, it's a relatively
+[20:38] simple process. And hey, even if you're
+[20:40] not a CG artist, keep in mind, you don't
+[20:42] actually need to make these images with
+[20:43] Maya or Blender. Clay Fighter did stop
+[20:46] animation with actual clay. And Mortal
+[20:48] Kombat famously compressed photos of
+[20:50] live-action people into their game. You
+[20:51] can probably do it, too, with a camera,
+[20:53] a green screen, and some trial and
+[20:54] error. Point is, be creative, have fun,
+[20:57] make something. And if you guys do make
+[20:59] something cool with this, let us all
+[21:00] know in the comments. I probably won't
+[21:02] see all of them, but it's better than
+[21:04] reading where's the ROM hack over and
+[21:06] over. Speaking of which,
+[21:10] okay, this was supposed to be the part
+[21:11] of the video where I reveal that I
+[21:13] actually did make a ROM hack for you
+[21:15] guys, but as much as I'd love to do
+[21:16] that, and as much as I tried, I just
+[21:19] couldn't. There's a pretty amazing
+[21:21] graphics editor out there by Rainbow
+[21:23] Sprinkles that I tried. But
+[21:24] unfortunately, like I mentioned earlier,
+[21:26] the graphics are chopped into tiles. So,
+[21:28] edits to the character need to fit
+[21:29] within those boxes. Now, what's really
+[21:31] cool with this editor is that you can
+[21:33] move the boxes around. So,
+[21:35] theoretically, at least, you could move
+[21:37] the boxes around for every single sprite
+[21:41] by typing in the hexadimal position for
+[21:44] every single box on every single frame.
+[21:49] and then pray that you have enough boxes
+[21:52] to cover the new sprite that you made.
+[21:54] See, what I would really need is for a
+[21:56] program that can import the image,
+[21:58] automatically chop it into tiles, and
+[22:00] then place them appropriately, adding
+[22:02] and removing new tiles whenever needed.
+[22:04] And it would honestly probably have to
+[22:05] extend the ROMs that there's room. So, I
+[22:08] apologize to everyone, but as a
+[22:10] consolation, I've uploaded all the
+[22:12] sprites to the sprites resource for you
+[22:13] to use however you want. And I do mean
+[22:16] all the sprites this time. I uploaded
+[22:18] the DK sprites years ago, but because I
+[22:20] only made whatever sprites were
+[22:21] necessary for that video, it was missing
+[22:24] actions like swimming and climbing, and
+[22:26] I didn't even upload DK Jr. for whatever
+[22:28] reason. But I went and I remastered all
+[22:30] the sprites and then animated new ones,
+[22:32] so they should match the game one to
+[22:34] one. Hopefully, someone out there
+[22:35] smarter than me can make that ROM hack.
+[22:37] And we'll end things here with a bit of
+[22:39] self-indulgence. Here's the remake of my
+[22:41] old video with the updated sprites.
+[22:43] Thanks for watching.
+[22:51] [Music]
+[23:12] Heat. Heat.
+[23:18] [Music]
+[23:25] [Music]
+[23:46] Yeah.
+[23:53] [Music]
+[23:59] Ow.
+[24:02] [Music]
+[24:10] first in wireframe actually, then you
+[24:11] grow shade them or you can fun shade
+[24:13] them and then you actually texture map
+[24:15] them and you can even try linearly bit
+[24:16] map interpolate. That sounds a little
+[24:18] dangerous.

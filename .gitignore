@@ -1,0 +1,18 @@
+# macOS
+.DS_Store
+
+# .NET build output
+bin/
+obj/
+
+# SNES ROMs — copyrighted commercial game data; never commit
+*.sfc
+*.smc
+
+# Large sprite-sheet assets (import source material, not source code)
+port/sprites/
+
+# Tool-generated PNG outputs (palette/tile/sprite dumps written to cwd)
+palette.png
+tiles.png
+sprite.png
