@@ -1,7 +1,7 @@
 # M2 Spec: Image → Sprite Importer (tiler + encoder)
 
-**Status:** Draft — 2026-07-24. **Reopens scope** beyond the locked M0–M1 (see
-`prd-sprite-importer.md` §0); to be confirmed before build.
+**Status:** M2a done (2026-07-24); M2b not started. **Reopens scope** beyond the
+locked M0–M1 (see `prd-sprite-importer.md` §0); to be confirmed before M2b.
 **Depends on:** M0 (decoder), M1 (`SpriteModel` + `SpriteEncoder.Serialize`, byte-exact).
 **Verification:** pixel-exact re-decode (byte-exact is impossible here — see M1 spec §B).
 
@@ -74,6 +74,25 @@ Two schemes the game uses: **(A) single group 1**, dense multi-row (`0x1654`); *
 group1+group2 split** to reach a row without padding (`0x1B4`). The encoder uses only
 Scheme A (see Part C).
 
+## Part A.3 — M2a implementation note: the row-pair packing collision
+
+Building the tiler surfaced a real bug in the general formula sketched in Part A.2/C:
+`b2 = (R<<4)|(2*(m%8))` is only safe when the last VRAM row-pair used by 2×2 entries
+is **completely full** (`m % 8 == 0`). If it's partially full, the 1×1 continuation's
+column-then-row wrap walks straight into flat char-stream slots already claimed by
+that row-pair's BL/BR halves — verified by simulation before coding (a partial
+row-pair of 3 entries collides at the 11th subsequent 1×1 cell). **Fix shipped:** the
+tiler only ever converts 2×2 blocks in whole groups of 8 (`usable = (qualifying.Count
+/ 8) * 8`), so `b2` always starts a 1×1 run on a completely fresh row (`b2 = 4*m`).
+Any qualifying blocks beyond the last multiple of 8 stay as plain 1×1 cells — a loss
+of at most 7 blocks' OAM savings, and always collision-free.
+
+A second bug this surfaced: the flat char stream for a full row-pair is **interleaved
+across entries**, not grouped per entry — row R holds every entry's TL,TR in entry
+order, then row R+1 holds every entry's BL,BR in entry order (`[TL0,TR0,TL1,TR1,...,
+TL7,TR7,BL0,BR0,...,BL7,BR7]`), not `[TL0,TR0,BL0,BR0,TL1,TR1,BL1,BR1,...]`. Caught
+immediately by the pixel-exact gate (Part D) on the first multi-entry 2×2 test case.
+
 ## Part B — Scope & split
 
 M2 turns one prepared pose into a valid sprite for an existing slot. Split to isolate
@@ -82,6 +101,28 @@ the irreversible ROM mutation:
 - **M2a — image → `SpriteModel` (no ROM write).** Palette-map + tiler + model build;
   verify by `SpriteDecoder.Decode(Serialize(model))` == input pixels. Pure, safe,
   fully testable headless. **This is the bulk of the new design.**
+  ✅ **Done 2026-07-24.** Built `Core/SpriteTiler.cs` (index-grid → `SpriteModel`,
+  canonical single-DMA-group scheme, safe row-pair-only 2×2 refinement per Part A.3)
+  and `Core/TilerHarness.cs` (decodes the tiler's output through the *real*
+  `SpriteDecoder.Decode` via a synthetic in-memory ROM + identity palette, so the
+  gate validates against production decode code, not a reimplementation). `--verify-m2a`
+  runs 7 synthetic poses covering baseline all-1×1, full 2×2 refinement, the
+  leftover/fallback path (qualifying blocks not a multiple of 8), non-8-aligned
+  canvas dimensions, and both the 88-char and 37-OAM budget caps: **7/7 pass.** M1's
+  gates (`--verify-m1`) still pass unchanged (53,158/53,158 chars, 2,714/2,714
+  sprites) — M2a made no changes to M1 code.
+
+  **Real-sprite corpus added** (`Core/M2aRomHarness.cs`, per review feedback that the
+  synthetic-only corpus was thinner than the spec's V2 ideal): every sprite the game
+  itself uses is decoded to an index canvas (identity palette), its bbox re-tiled
+  through `SpriteTiler`, re-serialized, re-decoded, and pixel-compared against the
+  original decode — the actual "decode↔tile↔re-decode over the whole game" gate Part
+  D calls for, not just hand-built cases. **2,714/2,714 pass, 0 failed, 0 empty-skipped.**
+  3 sprites exceed the 88-char cap and 105 exceed the soft 37-OAM budget (both
+  correctly flagged, not failures — expected, since the tiler's bbox-aligned cell
+  grid doesn't always land on the same 8×8 boundaries the game's own encoding used,
+  so a char that was whole in the original can split across two cells when re-tiled
+  from an arbitrary bbox origin; costs extra chars but still round-trips pixel-exact).
 - **M2b — write + repoint.** Serialize the model into the target slot (in place) and
   update the 3-byte `gfxArray` pointer; guarded by the in-place size rule. Verified by
   re-decode from the written ROM, then emulator.

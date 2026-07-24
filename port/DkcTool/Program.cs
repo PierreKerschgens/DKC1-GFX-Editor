@@ -10,6 +10,7 @@ using DkcTool.Core;
 //
 //   dotnet run -- <rom.smc|.sfc> [paletteName] [gfxHexAddr tileCount] [imageIndexHex]
 //   dotnet run -- <rom.smc|.sfc> --gate1|--gate2|--verify-m1
+//   dotnet run -- <rom.smc|.sfc> --verify-m2a
 //
 // Always writes palette.png for the chosen palette (default "Donkey Kong 1P").
 // If a raw GFX address + tile count are given, also writes tiles.png: a sheet of
@@ -19,11 +20,15 @@ using DkcTool.Core;
 //
 // --gate1/--gate2/--verify-m1 run the M1 round-trip gates (specs/m1-encoder-spec.md
 // Part D) against every valid sprite in the GFX pointer table instead of rendering.
+//
+// --verify-m2a runs the M2a tiler gate (specs/m2-importer-spec.md Part D, V2) against
+// a battery of synthetic index-grid poses; a ROM path is still required as args[0]
+// but is not otherwise used by this mode.
 
 if (args.Length < 1)
 {
     Console.Error.WriteLine("usage: dotnet run -- <rom.smc|.sfc> [paletteName] [gfxHexAddr tileCount] [imageIndexHex]");
-    Console.Error.WriteLine("   or: dotnet run -- <rom.smc|.sfc> --gate1|--gate2|--verify-m1");
+    Console.Error.WriteLine("   or: dotnet run -- <rom.smc|.sfc> --gate1|--gate2|--verify-m1|--verify-m2a");
     return 1;
 }
 
@@ -34,6 +39,11 @@ Console.WriteLine($"Looks DKC1?  : {rom.LooksLikeDkc1}");
 if (args.Length >= 2 && (args[1] == "--gate1" || args[1] == "--gate2" || args[1] == "--verify-m1"))
 {
     return RunVerification(rom, args[1]);
+}
+
+if (args.Length >= 2 && args[1] == "--verify-m2a")
+{
+    return RunVerifyM2a(rom);
 }
 
 if (args.Length >= 2 && args[1] == "--stats")
@@ -224,6 +234,105 @@ static int RunStats(Rom rom)
     Console.WriteLine($"Sprite data size        : max 0x{maxSize:X} ({maxSize}) bytes");
     Console.WriteLine($"Pixel bbox              : max W {maxW} (idx 0x{maxWIdx:X}), max H {maxH} (idx 0x{maxHIdx:X})");
     return 0;
+}
+
+// Battery of synthetic index-grid poses exercising the tiler's branches: baseline
+// all-1x1, full 2x2 refinement, the leftover/fallback path when qualifying blocks
+// aren't a multiple of 8, non-8-aligned canvas dimensions, and both budget caps.
+static int RunVerifyM2a(Rom rom)
+{
+    var cases = new List<(string name, int[,] pixels, int ox, int oy)>();
+
+    {
+        var px = new int[8, 8];
+        for (int r = 0; r < 8; r++)
+            for (int c = 0; c < 8; c++)
+                px[r, c] = (r + c) % 16;
+        px[0, 0] = 0; // keep at least one transparent pixel
+        cases.Add(("one-cell-pattern", px, 0, 0));
+    }
+
+    {
+        const int cells = 3;
+        var px = new int[cells * 8, cells * 8];
+        for (int cr = 0; cr < cells; cr++)
+        {
+            for (int cc = 0; cc < cells; cc++)
+            {
+                if ((cr + cc) % 2 != 0) continue;
+                for (int r = 0; r < 8; r++)
+                    for (int c = 0; c < 8; c++)
+                        px[cr * 8 + r, cc * 8 + c] = 1 + ((r * 8 + c) % 15);
+            }
+        }
+        cases.Add(("sparse-checkerboard", px, 0, 0));
+    }
+
+    cases.Add(("baseline-16-cells", FillOpaque(4, 4), 0, 0));       // K=16 < OAM budget: no 2x2 conversion
+    cases.Add(("full-refine-64-cells", FillOpaque(8, 8), 5, 9));    // K=64 > OAM budget: all 16 blocks convert
+
+    {
+        // K > 37 but a scattered pattern with few/no fully-occupied aligned 2x2
+        // blocks: exercises the "usable rounds down to 0" fallback (soft OAM warn).
+        const int cells = 10;
+        var px = new int[cells * 8, cells * 8];
+        for (int cr = 0; cr < cells; cr++)
+        {
+            for (int cc = 0; cc < cells; cc++)
+            {
+                if ((cr * 7 + cc * 3) % 4 == 0) continue;
+                for (int r = 0; r < 8; r++)
+                    for (int c = 0; c < 8; c++)
+                        px[cr * 8 + r, cc * 8 + c] = 1 + ((cr + cc + r + c) % 15);
+            }
+        }
+        cases.Add(("scattered-leftover", px, 0, 0));
+    }
+
+    {
+        const int h = 20, w = 13;
+        var px = new int[h, w];
+        for (int r = 0; r < h; r++)
+            for (int c = 0; c < w; c++)
+                px[r, c] = (r / 3 + c / 2) % 2 == 0 ? 1 + ((r + c) % 15) : 0;
+        cases.Add(("non-multiple-of-8", px, 0, 0));
+    }
+
+    cases.Add(("over-char-budget-144-cells", FillOpaque(12, 12), 0, 0)); // K=144 > 88 hard cap
+
+    int pass = 0, fail = 0;
+    foreach (var (name, px, ox, oy) in cases)
+    {
+        var r = TilerHarness.RunCase(name, px, ox, oy);
+        string status = r.Passed ? "PASS" : "FAIL";
+        string budgetNote = (r.ExceedsCharBudget ? " [EXCEEDS 88-char cap]" : "") +
+                             (r.ExceedsOamBudget ? " [over 37-OAM soft budget]" : "");
+        Console.WriteLine($"[{status}] {name}: chars={r.CharCount}, oam={r.OamEntries}{budgetNote}");
+        if (r.Passed) { pass++; }
+        else { fail++; Console.WriteLine("  " + r.FailureDetail); }
+    }
+
+    Console.WriteLine($"M2a synthetic: {pass}/{pass + fail} cases passed.");
+
+    var romResult = M2aRomHarness.Run(rom);
+    Console.WriteLine(
+        $"M2a real-ROM corpus: {romResult.PassIndices}/{romResult.TotalIndices} passed, " +
+        $"{romResult.FailIndices} failed, {romResult.EmptySkipped} empty-skipped " +
+        $"({romResult.ExceedsCharBudgetCount} over char cap, {romResult.ExceedsOamBudgetCount} over OAM budget).");
+    foreach (var f in romResult.Failures.Take(20)) Console.WriteLine("  FAIL " + f);
+
+    bool ok = fail == 0 && romResult.FailIndices == 0;
+    Console.WriteLine(ok ? "M2a verification: PASS" : "M2a verification: FAIL");
+    return ok ? 0 : 1;
+}
+
+static int[,] FillOpaque(int cellRows, int cellCols)
+{
+    var px = new int[cellRows * 8, cellCols * 8];
+    for (int r = 0; r < px.GetLength(0); r++)
+        for (int c = 0; c < px.GetLength(1); c++)
+            px[r, c] = 1 + ((r + c) % 15);
+    return px;
 }
 
 static int RunVerification(Rom rom, string mode)
