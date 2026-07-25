@@ -69,10 +69,13 @@ slot-derived one exactly. Reconcile those two coordinate systems and the default
 instead of top-aligning them all, which makes the fixture resemble a real sheet. It narrowed the
 diff from 1801 px to 1062 px and is a better fixture regardless.)
 
-**Still outstanding, and a prerequisite before any 533-pose run:** M2b's drift check fires
-`[DRIFT > 4px]` on *100 % of* imported poses, which trained me to read it as noise for an entire
-session while it was describing this exact visible fault. It needs a severity split — feet-line
-movement is a defect, extent change is a hitbox note.
+**Drift severity split — done** (A.18). The old `[DRIFT > 4px]` fired on 100 % of poses and was
+therefore ignored for a whole session while describing this very bug. Now `[FEET MOVED ±Npx]` vs
+`[extent changed — hitbox note]`; flagged set drops from 20/20 to 15 (unaligned) / 9 (aligned).
+
+**But treat it as a hint, not a verdict.** Per-pose drift compares a pose to *its own* replaced
+frame; bobbing is a property of the *run*. `--baseline <lo>..<hi>` against the stock ROM is the
+authoritative check and the one to trust.
 
 ---
 

@@ -901,7 +901,7 @@ static void PrintImportPlan(ImportResult r)
     var d = r.Drift;
     Console.WriteLine($"Geometry drift       : old bbox ({d.OldMinX},{d.OldMinY})-({d.OldMaxX},{d.OldMaxY}), " +
                        $"new bbox ({d.NewMinX},{d.NewMinY})-({d.NewMaxX},{d.NewMaxY})" +
-                       (d.ExceedsThreshold ? "  [DRIFT > 4px]" : ""));
+                       d.SeverityLabel);
     Console.WriteLine($"Current hitbox       : x={r.Hitbox.SignedX} y={r.Hitbox.SignedY} w={r.Hitbox.Width} h={r.Hitbox.Height} " +
                        $"(pointer 0x{r.Hitbox.PointerAddress:X} -> 0x{r.Hitbox.RecordAddress:X})");
 }
@@ -1009,7 +1009,7 @@ static int RunBatchCli(Rom rom, string[] args)
         var r = o.Result!;
         Console.WriteLine($"  strip {o.Planned.Strip}:{o.Planned.Position} -> 0x{r.ImageIndex:X}: " +
                           $"{r.CharCount}ch/{r.OamEntries}oam, 0x{r.Serialized.Length:X}B @ 0x{r.AllocatedOffset:X}" +
-                          (r.Drift.ExceedsThreshold ? "  [DRIFT > 4px]" : ""));
+                          r.Drift.SeverityLabel);
     }
 
     if (overlayPath != null)

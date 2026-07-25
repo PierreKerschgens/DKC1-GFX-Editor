@@ -634,6 +634,30 @@ right, but nothing acted on it until someone played the game. **A warning that f
 cases teaches operators to ignore it**; the drift check needs a severity split — feet-line movement
 is a defect, extent change is a hitbox note — before a 533-pose import.
 
+### A.18 Drift severity split, and what it still cannot tell you
+
+M2b's drift report fired `[DRIFT > 4px]` on **100 % of** imported poses. A warning that always fires
+is one operators learn to skip, and this one was skipped for a whole session while it was describing
+the visible bob of A.17. Split into two:
+
+- **`[FEET MOVED ±Npx]`** — the bottom edge moved relative to the frame being replaced. This is the
+  half that can be a rendering fault.
+- **`[extent changed — hitbox note]`** — different volume, feet unchanged. Advisory: the separate,
+  untouched hitbox table no longer matches the art.
+
+On the DK walk this cuts the flagged set from 20/20 to 15 (unaligned) and 9 (aligned) — the label
+now varies with the thing it is meant to describe, which the old one never did.
+
+**It is still a proxy, and the spec should not pretend otherwise.** Per-pose drift compares each
+pose against *its own* replaced frame. Bobbing is a property of the **run**: how much the feet line
+moves across the cycle. Those are different quantities, which is why 9 poses still flag as
+feet-moved on a build that plays perfectly smoothly — alignment deliberately repositions frames
+relative to the run's baseline, so individual deltas are expected.
+
+**The authoritative check is `--baseline <lo>..<hi>`**, comparing foot-line and centre-X spread
+against the same range in the stock ROM. The drift label is a per-pose hint; the spread is the
+measurement.
+
 **Palette as the identity test, not a caveat.** A survey rendered in one palette locates boundaries
 by silhouette but cannot prove *identity* — so the palette-flip check above does that job instead,
 and it is strictly better evidence than a silhouette.

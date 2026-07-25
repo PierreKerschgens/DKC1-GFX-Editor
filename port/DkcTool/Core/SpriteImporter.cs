@@ -75,6 +75,33 @@ namespace DkcTool.Core
         public int DeltaMaxX => NewMaxX - OldMaxX;
         public int DeltaMaxY => NewMaxY - OldMaxY;
 
+        /// <summary>
+        /// The bottom edge moved — the character's **feet line** shifted relative to the frame it
+        /// replaces. This is the half of drift that is a *defect*: across a cycle it makes the
+        /// character bob (spec A.17), which is visible in play and invisible in a still.
+        ///
+        /// Separated from <see cref="ExtentChanged"/> because the undifferentiated warning fired on
+        /// 100 % of imported poses, and a warning that always fires is one operators learn to skip.
+        /// It was printing on every pose of the DK walk while that walk visibly bobbed, and was read
+        /// as hitbox noise for an entire session.
+        /// </summary>
+        public bool FeetLineMoved => Math.Abs(DeltaMaxY) > 4;
+
+        /// <summary>
+        /// The pose occupies a different volume than the frame it replaces, with its feet still
+        /// where they were. Advisory: it means the (separate, untouched) hitbox table no longer
+        /// matches the art. Not a rendering fault.
+        /// </summary>
+        public bool ExtentChanged =>
+            !FeetLineMoved &&
+            (Math.Abs(DeltaMinX) > 4 || Math.Abs(DeltaMinY) > 4 || Math.Abs(DeltaMaxX) > 4);
+
+        /// <summary>Short label for reports: the defect and the note read differently.</summary>
+        public string SeverityLabel =>
+            FeetLineMoved ? $"  [FEET MOVED {DeltaMaxY:+#;-#;0}px]"
+            : ExtentChanged ? "  [extent changed — hitbox note]"
+            : "";
+
         /// <summary>Any axis delta over 4px (Part G's threshold).</summary>
         public bool ExceedsThreshold =>
             Math.Abs(DeltaMinX) > 4 || Math.Abs(DeltaMinY) > 4 ||
