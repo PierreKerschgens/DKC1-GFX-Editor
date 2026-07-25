@@ -203,7 +203,7 @@ two renders:
 | range | contents |
 |---|---|
 | `0x8C..0x854` | DK, continuous |
-| `0x858..0x8A8` | **not DK** — a foreign island, most likely Manky Kong (A.13). Must be excluded from a DK manifest |
+| `0x858..0x8A8` | **not DK** — a foreign island of ~7-char sprites, identity unresolved (A.13). Must be excluded from a DK manifest |
 | `0x8B0..0x950` | DK, continuous |
 | `0x954..` | Diddy Kong — the character boundary, **confirmed by palette flip** (below) |
 
@@ -396,16 +396,24 @@ anywhere near DK:
 | `0x858..0x87C` | `0x1AF580…` | `0x12AC..0x12CC` (identical creature) | orange ape, on all fours |
 | `0x880..0x8A8` | `0x2C09A6…` | `0x1094..0x109C` | same creature, arm raised — throwing |
 
-Rendered in `Manky` both groups are coherent — orange-rust fur, pale face and hands — where
-`Donkey Kong 1P` gives muddy brown with red speckle. The sprite immediately after the first group in
-ROM order is **a barrel** (`0x16F0`). An orange ape with a walk set, a throwing set and a barrel
-stored beside it is **Manky Kong**, DKC1's barrel-throwing orangutan.
+`Manky` was proposed here on the strength of an orange-rust render plus the barrel at `0x16F0`.
+**The project owner rejected that too** — Manky's palette looks wrong to the same eye that correctly
+rejected DK's, and that eye has been right every time in this spec. **The identity is unresolved.**
 
-**Stated as the best candidate, not as proven.** Nothing in the 440 scripts reaches any of these
-indices — `--anims-in 0x1200..0x1400` returns 0 animations for the whole neighbouring region — so
-there is no script-level confirmation, and the palette evidence here is far softer than the
-unmistakable DK/Diddy flip at `0x954`. What *is* established beyond doubt is the negative: these
-sprites are not DK.
+**What is actually established, and it is enough for the manifest:**
+
+- **Not DK.** DK's palette renders these incorrectly (the observation that reopened this), and the
+  sprites are stored nowhere near DK's data.
+- **~7 chars.** `0x858` occupies exactly `0x1AF580..0x1AF670` = 240 bytes = an 8-byte header plus
+  7×32 — the header's char count and the ROM gap agree, so the decode is not truncating. DK's crawl
+  frame is 21 chars. Whatever this is, it is a *small* sprite, about 24×24 px.
+- **Animation-unreachable.** `--anims-in 0x1200..0x1400` returns 0 animations for the whole
+  neighbouring region, so no script-level identification is available.
+
+**A rendering artefact that misled the reading, twice.** These were shown at `--zoom 8`, which turns
+a 24 px sprite into chunky blocks and makes it read as "a low-res DK". The apparent low resolution
+is the upscale, not the data. Judge small sprites beside a known-size reference, not alone at high
+zoom.
 
 **Consequence, and it matters for the manifest.** A.8's "all DK, no foreign island" is **false**.
 About 21 indices inside `0x8C..0x950` belong to another entity, and importing DK artwork over them
@@ -616,7 +624,8 @@ original sha256 rather than the intermediate one.
   Diddy begins at `0x954`, confirmed by palette flip and read off the render by the project
   owner.** Located from M0's `0x8C` seed with `--whose` + `--contact-range`. The one flagged block,
   `0x858..0x8A8`, is resolved in A.13 — and resolved *against* the original guess: it is **not**
-  DK but a foreign island of ~21 indices, most likely Manky Kong. A DK manifest must exclude it.
+  DK but a foreign island of ~21 indices whose identity is still unresolved. A DK manifest must
+  exclude it either way — they are ~7-char sprites and cannot take full-size poses.
 - **Assigning sheet strips to index runs.** A.8 gives the index *block*; it does not say which
   strip maps to which run within it, and A.9 shows frame count cannot decide it. The remaining step
   is a per-strip caption-read plus action match against `--contact-range` renders — mechanical, but
