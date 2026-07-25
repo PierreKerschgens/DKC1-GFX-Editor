@@ -62,6 +62,26 @@ if (args.Length >= 2 && args[1] == "--stats-m2b")
     return M2bFeasibility.Run(rom);
 }
 
+if (args.Length >= 2 && args[1] == "--emu-vandal")
+{
+    return RunEmuVandal(rom, args);
+}
+
+if (args.Length >= 2 && args[1] == "--emu-diff")
+{
+    return RunEmuDiff(args[0], args);
+}
+
+if (args.Length >= 2 && args[1] == "--emu-explore")
+{
+    return RunEmuExplore(args[0], args);
+}
+
+if (args.Length >= 2 && args[1] == "--emu-boot")
+{
+    return RunEmuBoot(args[0], args);
+}
+
 if (args.Length >= 2 && args[1] == "--verify-m2b")
 {
     return RunVerifyM2b(rom);
@@ -528,3 +548,152 @@ static void PrintImportPlan(ImportResult r)
                        $"(pointer 0x{r.Hitbox.PointerAddress:X} -> 0x{r.Hitbox.RecordAddress:X})");
 }
 
+
+// V3 spike: boot a ROM in a libretro core, run N frames, dump the framebuffer.
+//   dotnet run -- <rom> --emu-boot [--core <path>] [--frames N] [--out shot.png]
+static int RunEmuBoot(string romPath, string[] args)
+{
+    string core = ArgValue(args, "--core") ?? "port/emu/cores/snes9x_libretro.dylib";
+    int frames = int.Parse(ArgValue(args, "--frames") ?? "600");
+    string outPath = ArgValue(args, "--out") ?? "emu-frame.png";
+
+    byte[] romBytes = File.ReadAllBytes(romPath);
+    Console.WriteLine($"Core         : {core}");
+    Console.WriteLine($"ROM          : {romPath} ({romBytes.Length} bytes)");
+
+    using var emu = new DkcTool.Core.Emulator.LibretroCore(core);
+    emu.LoadGame(romBytes, romPath);
+
+    var (w, h, fps) = emu.GetAvInfo();
+    Console.WriteLine($"AV info      : {w}x{h} @ {fps:F2} Hz, pixel format {emu.CorePixelFormat}");
+
+    var sw = System.Diagnostics.Stopwatch.StartNew();
+    emu.RunFrames(frames);
+    sw.Stop();
+
+    Console.WriteLine($"Ran          : {frames} frames in {sw.ElapsedMilliseconds} ms " +
+                      $"({frames * 1000.0 / Math.Max(1, sw.ElapsedMilliseconds):F0} fps, " +
+                      $"{frames / 60.0:F1}s of game time)");
+    Console.WriteLine($"Framebuffer  : {emu.FrameWidth}x{emu.FrameHeight}, {emu.FramesRun} refresh callbacks");
+
+    DkcTool.Core.Emulator.FrameCapture.Save(emu, outPath);
+    Console.WriteLine($"Wrote        : {outPath}");
+    return 0;
+}
+
+static string? ArgValue(string[] args, string name)
+{
+    int i = Array.IndexOf(args, name);
+    return i >= 0 && i + 1 < args.Length ? args[i + 1] : null;
+}
+
+// V3 spike: map the boot sequence -- run frames, press Start periodically, dump a
+// filmstrip so a deterministic capture point can be picked for the gate.
+//   dotnet run -- <rom> --emu-explore --outdir <dir> [--frames N] [--every N]
+static int RunEmuExplore(string romPath, string[] args)
+{
+    string core = ArgValue(args, "--core") ?? "port/emu/cores/snes9x_libretro.dylib";
+    int total = int.Parse(ArgValue(args, "--frames") ?? "5400");
+    int every = int.Parse(ArgValue(args, "--every") ?? "300");
+    string outDir = ArgValue(args, "--outdir") ?? "filmstrip";
+    Directory.CreateDirectory(outDir);
+
+    using var emu = new DkcTool.Core.Emulator.LibretroCore(core);
+    emu.LoadGame(File.ReadAllBytes(romPath), romPath);
+
+    for (int f = 0; f < total; f += every)
+    {
+        // A Start tap every interval: enough to walk intro -> title -> file select.
+        emu.RunFrames(every - 8);
+        emu.HoldFor(4, DkcTool.Core.Emulator.Joypad.Start);
+        emu.RunFrames(4);
+
+        string path = Path.Combine(outDir, $"f{f + every:D5}.png");
+        DkcTool.Core.Emulator.FrameCapture.Save(emu, path);
+        Console.WriteLine($"  frame {f + every,5} -> {path}");
+    }
+    return 0;
+}
+
+// V3 spike: boot two ROMs through the same deterministic script and diff the frame.
+//   dotnet run -- <romA> --emu-diff <romB> [--frames N] [--outdir <dir>]
+static int RunEmuDiff(string romA, string[] args)
+{
+    string core = ArgValue(args, "--core") ?? "port/emu/cores/snes9x_libretro.dylib";
+    string romB = ArgValue(args, "--emu-diff") ?? throw new ArgumentException("--emu-diff needs a second ROM");
+    int frames = int.Parse(ArgValue(args, "--frames") ?? DkcTool.Core.Emulator.BootScript.InGameFrame.ToString());
+    string outDir = ArgValue(args, "--outdir") ?? ".";
+    Directory.CreateDirectory(outDir);
+
+    Console.WriteLine($"Core         : {core}");
+    Console.WriteLine($"Capture frame: {frames}");
+
+    using var a = DkcTool.Core.Emulator.BootScript.CaptureAt(core, File.ReadAllBytes(romA), frames);
+    using var b = DkcTool.Core.Emulator.BootScript.CaptureAt(core, File.ReadAllBytes(romB), frames);
+
+    string pathA = Path.Combine(outDir, "emu-a.png"), pathB = Path.Combine(outDir, "emu-b.png");
+    SaveBitmap(a, pathA); SaveBitmap(b, pathB);
+
+    var diff = DkcTool.Core.Emulator.FrameCapture.Compare(a, b);
+    Console.WriteLine($"A            : {romA} -> {pathA}");
+    Console.WriteLine($"B            : {romB} -> {pathB}");
+    Console.WriteLine($"Frame diff   : {diff}");
+    return 0;
+}
+
+static void SaveBitmap(SKBitmap bmp, string path)
+{
+    using var img = SKImage.FromBitmap(bmp);
+    using var data = img.Encode(SKEncodedImageFormat.Png, 100);
+    using var fs = File.Create(path);
+    data.SaveTo(fs);
+}
+
+// V3 spike, positive control: import a deliberately recoloured pose into a range of
+// image indices, so *something* on screen must visibly change. Without this, an
+// "identical" frame diff is unfalsifiable -- it could just mean the index isn't drawn.
+//   dotnet run -- <rom> --emu-vandal --out <rom.sfc> [--count N] [--colour 5]
+static int RunEmuVandal(Rom rom, string[] args)
+{
+    int count = int.Parse(ArgValue(args, "--count") ?? "60");
+    int colour = int.Parse(ArgValue(args, "--colour") ?? "5");
+    string outPath = ArgValue(args, "--out") ?? throw new ArgumentException("--out required");
+
+    var clone = rom.Clone();
+    var ledger = new ImportLedger { SourceRomSha256 = "vandal" };
+    var freeRuns = FreeSpace.Scan(rom);
+    int done = 0, refused = 0;
+
+    foreach (int index in GfxTable.EnumerateImageIndices(rom))
+    {
+        if (done >= count) break;
+        int address = GfxTable.ResolveSpriteAddress(rom, index);
+        var canvas = TilerHarness.DecodeIndexCanvas(rom, address);
+
+        int H = canvas.GetLength(0), W = canvas.GetLength(1);
+        int minX = W, minY = H, maxX = -1, maxY = -1;
+        for (int r = 0; r < H; r++) for (int c = 0; c < W; c++)
+            if (canvas[r, c] != 0) { if (c < minX) minX = c; if (c > maxX) maxX = c; if (r < minY) minY = r; if (r > maxY) maxY = r; }
+        if (maxX < 0) continue;
+
+        // Same silhouette, every colour flattened to one index: fits the same budgets and
+        // geometry, but is unmistakable on screen.
+        var pose = new int[maxY - minY + 1, maxX - minX + 1];
+        for (int r = 0; r < pose.GetLength(0); r++)
+            for (int c = 0; c < pose.GetLength(1); c++)
+                pose[r, c] = canvas[minY + r, minX + c] == 0 ? 0 : colour;
+
+        try
+        {
+            SpriteImporter.Import(clone, index, pose,
+                new ImportOptions { Source = $"vandal-0x{index:X}", FreeRuns = freeRuns }, ledger);
+            done++;
+        }
+        catch (ImportException) { refused++; }
+    }
+
+    clone.Save(outPath);
+    Console.WriteLine($"Vandalised   : {done} indices flattened to palette index {colour}, {refused} refused");
+    Console.WriteLine($"Wrote        : {outPath}");
+    return 0;
+}

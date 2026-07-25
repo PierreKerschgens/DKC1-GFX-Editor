@@ -16,3 +16,6 @@ port/sprites/
 palette.png
 tiles.png
 sprite.png
+
+# Downloaded libretro cores (binaries, fetched by port/emu/fetch-cores.sh)
+port/emu/cores/
