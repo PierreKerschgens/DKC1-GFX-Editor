@@ -541,10 +541,30 @@ run against **one** reference, carrying the sheet's own relative vertical offset
 That requires strip context, which `SpriteImporter.Import` (one pose, no siblings) does not have —
 it belongs in `BatchImporter`, which already iterates a strip's poses together.
 
-Sketch, unimplemented: for each strip, take `baseline = max(pose.MaxY)` over the strip; give each
-pose `dy = baseline - pose.MaxY`; choose one target origin for the whole run (e.g. the first slot's,
-or the median of the run's slots); place pose *i* at `originY + dy_i`. That preserves the sheet's
-authored bob exactly and introduces no per-frame variation of its own.
+**Implemented** as `BatchImporter`'s `alignStrip` (`--batch --align-strip`), via a new
+`ImportOptions.OriginY` override: for each strip, `baseline = max(RectY + RectH - 1)`; each pose's
+height above that baseline is reproduced below a single ground reference — the first target slot's
+`PlacementMaxY` — so the run keeps sitting where the animation it replaces sat.
+
+Measured on the DK walk, the placement now tracks the sheet instead of the slots:
+
+| index | pose h | sheet bottom | aligned bottom | old (top-anchored) |
+|---|---|---|---|---|
+| `0xE0` | 49 | 300 | 125 | 136 |
+| `0xE4` | 48 | 301 | 126 | — |
+| `0xF4` | 52 | 303 | 128 | 143 |
+| `0x118` | 50 | 302 | 127 | 139 |
+| `0x12C` | 49 | 300 | 125 | — |
+
+**3 px of spread, mirroring the sheet's 300..303 exactly** — the artist's bob and nothing else,
+against 7 px of slot-derived noise before. Default off; V4 7/7 unchanged. `port/dk-move-aligned.sfc`
+is the walk built this way, **awaiting an in-game check** — the placement numbers are right, and
+A.16 is the standing reminder that correct numbers are not the same as correct behaviour.
+
+**One residual risk, untested.** The run's *absolute* height is now tied to the first pose's slot
+bottom. If that particular frame's lowest pixel is a knuckle rather than a foot, the whole cycle
+will sit a few pixels off — consistently, which is far better than bobbing, but still wrong. If that
+shows in play, the reference wants to be a per-run constant chosen by eye rather than derived.
 
 **Why this was invisible to every check built so far.** M2b's Part G drift report *did* flag it —
 every pose printed `[DRIFT > 4px]` — and it was read as advisory noise about hitboxes. It was

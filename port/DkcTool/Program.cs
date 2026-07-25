@@ -980,7 +980,8 @@ static int RunBatchCli(Rom rom, string[] args)
 
     var report = BatchImporter.Run(working, plan, sheetBitmap, palette, ledger, freeRuns, dryRun,
         sourceTag: Path.GetFileName(manifestPath),
-        anchorBottom: Array.IndexOf(args, "--anchor-bottom") >= 0);
+        anchorBottom: Array.IndexOf(args, "--anchor-bottom") >= 0,
+        alignStrip: Array.IndexOf(args, "--align-strip") >= 0);
 
     Console.WriteLine();
     Console.WriteLine($"Imported             : {report.Imported.Count()}/{plan.Count}, " +

@@ -31,13 +31,19 @@ dotnet run --project port/DkcTool -- "port/Donkey Kong Country (USA) (Rev 2).sfc
 **DK bobs vertically through an imported walk cycle.** Reported from play; invisible in every still
 image. Full analysis in `m4-batch-spec.md` A.17.
 
-- **Not** fixed by `--anchor-bottom`. That was my attempt and it was tested in-game and failed.
-- **Correct diagnosis:** the anchor is applied at the wrong *level*. The sheet's poses are already
-  aligned to each other (strip 6 bottoms span 300..303). The importer crops each pose to its own
-  bbox and re-anchors it to *its own* target slot's bbox, which varies independently — and a slot's
+- **Not** fixed by `--anchor-bottom`. That was my first attempt; tested in-game and it failed.
+- **Correct diagnosis:** the anchor was applied at the wrong *level*. The sheet's poses are already
+  aligned to each other (strip 6 bottoms span 300..303). The importer cropped each pose to its own
+  bbox and re-anchored it to *its own* target slot's bbox, which varies independently — and a slot's
   bbox bottom is not a ground line anyway, since a knuckle-walk's lowest point is sometimes a hand.
-- **The fix is strip-level**, in `BatchImporter` (which sees a strip's poses together), not in
-  `SpriteImporter.Import` (which sees one pose). Sketch in A.17.
+- **Fix implemented:** `--batch --align-strip` (strip-level placement in `BatchImporter`). Aligned
+  placement now spans 3 px, mirroring the sheet's own baseline, against 7 px before.
+- **Status: awaiting an in-game check.** `port/dk-move-aligned.sfc`. The numbers are right; A.16 is
+  the standing reminder that right numbers are not right behaviour. Two prior fixes to this exact
+  bug looked correct on paper and failed in play.
+- **Known residual risk:** absolute run height is tied to the *first* pose's slot bottom. If that
+  frame's lowest pixel is a knuckle, the whole cycle sits a few px off — consistently, not bobbing.
+  If so, the reference should be chosen by eye per run rather than derived.
 
 **Related, and a prerequisite before any 533-pose run:** M2b's drift check fires `[DRIFT > 4px]` on
 *100 % of* imported poses, which trained me to read it as noise for an entire session while it was

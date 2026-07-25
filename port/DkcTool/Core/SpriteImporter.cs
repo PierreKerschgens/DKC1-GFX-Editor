@@ -33,6 +33,18 @@ namespace DkcTool.Core
         /// exactly this reason -- its poses span 47..52 px (spec A.17).
         /// </summary>
         public bool AnchorBottom;
+
+        /// <summary>
+        /// Explicit canvas Y origin for this pose, overriding both the slot-derived default and
+        /// <see cref="AnchorBottom"/>.
+        ///
+        /// Exists because correct vertical placement is a property of a *run*, not of a pose
+        /// (spec A.17). A single pose has no way to know where its siblings sit, so any per-pose
+        /// rule -- top edge, bottom edge -- inherits the replaced animation's own per-frame
+        /// variation and makes the character bob. <see cref="BatchImporter"/> computes these from
+        /// the sheet's own baseline and passes them in.
+        /// </summary>
+        public int? OriginY;
     }
 
     /// <summary>
@@ -105,6 +117,8 @@ namespace DkcTool.Core
             // bottom instead keeps the feet planted, which is what a ground-contact animation needs.
             if (options.AnchorBottom)
                 originY = slot.PlacementMaxY - (pose.GetLength(0) - 1);
+            if (options.OriginY.HasValue)
+                originY = options.OriginY.Value;
 
             // 2. Tile the pose onto that origin.
             var tiled = SpriteTiler.Build(pose, originX, originY);

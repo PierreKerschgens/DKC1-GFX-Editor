@@ -70,9 +70,36 @@ namespace DkcTool.Core
         /// </summary>
         public static BatchReport Run(Rom rom, List<PlannedPose> plan, SKBitmap sheetBitmap, SKColor[] palette,
             ImportLedger ledger, List<FreeSpace.Run> freeRuns, bool dryRun, string sourceTag,
-            bool anchorBottom = false)
+            bool anchorBottom = false, bool alignStrip = false)
         {
             var report = new BatchReport();
+
+            // Strip-level vertical placement (spec A.17). The sheet already aligns a run's poses to
+            // each other -- their bottoms differ only by the bob the artist drew. Anchoring each
+            // pose to its own target slot throws that away and substitutes the *replaced*
+            // animation's per-frame variation, which is what made an imported walk cycle bob.
+            //
+            // Instead: measure each pose's height above its strip's own baseline on the sheet, and
+            // reproduce exactly that offset below a single ground reference for the whole run. The
+            // reference is the first target slot's placement bottom, so the run keeps sitting where
+            // the animation it replaces sat.
+            var originY = new Dictionary<(int Strip, int Position), int>();
+            if (alignStrip)
+            {
+                foreach (var strip in plan.GroupBy(p => p.Strip))
+                {
+                    int baseline = strip.Max(p => p.RectY + p.RectH - 1);
+                    var first = strip.OrderBy(p => p.Position).First();
+                    int reference = SpriteSlot.Read(rom, first.ImageIndex).PlacementMaxY;
+
+                    foreach (var p in strip)
+                    {
+                        int aboveBaseline = baseline - (p.RectY + p.RectH - 1);
+                        originY[(p.Strip, p.Position)] = reference - aboveBaseline - (p.RectH - 1);
+                    }
+                }
+            }
+
             foreach (var p in plan)
             {
                 var outcome = new BatchOutcome { Planned = p };
@@ -85,6 +112,7 @@ namespace DkcTool.Core
                         Source = $"{sourceTag} strip{p.Strip}:{p.Position}",
                         FreeRuns = freeRuns,
                         AnchorBottom = anchorBottom,
+                        OriginY = originY.TryGetValue((p.Strip, p.Position), out int oy) ? oy : (int?)null,
                     };
                     outcome.Result = SpriteImporter.Import(rom, p.ImageIndex, pose.Pixels, options, ledger);
                     outcome.Success = true;
