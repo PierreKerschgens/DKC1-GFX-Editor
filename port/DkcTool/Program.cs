@@ -62,6 +62,16 @@ if (args.Length >= 2 && args[1] == "--stats-m2b")
     return M2bFeasibility.Run(rom);
 }
 
+if (args.Length >= 2 && args[1] == "--stats-freespace")
+{
+    return FreeSpaceResearch.Run(rom);
+}
+
+if (args.Length >= 2 && args[1] == "--poison")
+{
+    return RunPoison(rom, args);
+}
+
 if (args.Length >= 2 && args[1] == "--emu-state")
 {
     return RunEmuState(args[0], args);
@@ -771,6 +781,116 @@ static int RunVerifyV3(Rom rom, string[] args)
     foreach (var f in r.Failures) Console.WriteLine("  FAIL " + f);
     Console.WriteLine(r.Passed ? "V3 verification: PASS" : "V3 verification: FAIL");
     return r.Passed ? 0 : 1;
+}
+
+// M2c poison probe: overwrite candidate free space with noise and check the game does not
+// notice. Tests the *whole* pool, unlike the V3 gate, which only exercises the runs 60
+// relocations happened to land in.
+//   dotnet run -- <rom> --poison [--class a|straddle|nonembedded|b|all] [--core P]
+//                               [--name STATE] [--bisect] [--settle N] [--no-walk]
+static int RunPoison(Rom rom, string[] args)
+{
+    string core = ArgValue(args, "--core") ?? DkcTool.Core.Emulator.V3Verification.DefaultCore;
+    string stateName = ArgValue(args, "--name") ?? DkcTool.Core.Emulator.V3Verification.DefaultStateName;
+    int settle = int.Parse(ArgValue(args, "--settle")
+        ?? DkcTool.Core.Emulator.StateCapture.SettleFrames.ToString());
+    bool walk = Array.IndexOf(args, "--no-walk") < 0;
+    bool bisect = Array.IndexOf(args, "--bisect") >= 0;
+    string which = (ArgValue(args, "--class") ?? "all").ToLowerInvariant();
+
+    var inventory = FreeSpaceResearch.Inventory(rom);
+
+    // The four classes the M2c research pass distinguishes. Each is a separate hypothesis:
+    // lumping them into one probe would tell us only that *something* is read.
+    var classes = new List<(string Label, List<FreeSpace.Run> Runs)>();
+    List<FreeSpace.Run> Runs(IEnumerable<FreeSpaceResearch.Candidate> cs) =>
+        cs.SelectMany(c => FreeSpaceResearch.SplitAtBanks(c.Run)).OrderBy(r => r.Start).ToList();
+
+    var padding = inventory.Where(c => c.EndOfBankPadding).ToList();
+    var straddle = inventory.Where(c => !c.EndOfBankPadding && c.StraddledBoundary > 0)
+        .Select(c => new FreeSpace.Run { Start = c.Start, Length = c.PaddingLength, Value = c.Run.Value })
+        .ToList();
+    var nonEmbedded = inventory
+        .Where(c => !c.EndOfBankPadding && c.StraddledBoundary <= 0 && c.Embedded < 0.9).ToList();
+    var embedded = inventory
+        .Where(c => !c.EndOfBankPadding && c.StraddledBoundary <= 0 && c.Embedded >= 0.9).ToList();
+
+    // Positive control. Every class below can only ever report "the frame did not change", and
+    // that sentence is worthless until something is shown to be *able* to change it: a probe that
+    // silently fails to write, or a capture point that renders nothing, reports exactly the same
+    // clean sweep. Poisoning known sprite data must break the picture -- if it does not, no other
+    // result from this run means anything. (Same reasoning as V3's two-sided gate; the repo has
+    // already been burned once by a one-sided "PASS".)
+    if (which is "control" or "all")
+    {
+        var spriteRuns = FreeSpace.KnownSpriteRanges(rom)
+            .Select(s => new FreeSpace.Run { Start = s.Offset, Length = s.Size, Value = 0 })
+            .OrderBy(r => r.Start).ToList();
+        classes.Add(("CONTROL: known sprite data (MUST show a difference)", spriteRuns));
+    }
+
+    if (which is "a" or "all") classes.Add(("A end-of-bank padding (allocated)", Runs(padding)));
+    if (which is "straddle" or "all") classes.Add(("A' boundary-straddling padding (allocated since M2c)", straddle));
+    if (which is "nonembedded" or "b" or "all")
+        classes.Add(("B mid-bank, not tilemap-embedded (candidate, not allocated)", Runs(nonEmbedded)));
+    // Kept in the sweep precisely because it passes: it is live level data on the structural
+    // evidence (m2c spec B.1), so a clean result here is the calibration showing how little a
+    // single capture point proves. Do not read it as a promotion.
+    if (which is "embedded" or "b" or "all")
+        classes.Add(("B mid-bank, tilemap-embedded (live data; passes anyway -- see m2c spec B.4)", Runs(embedded)));
+
+    Console.WriteLine($"Core         : {core}");
+    Console.WriteLine($"Capture point: state {stateName}, settle {settle}, walk {walk}");
+    using var baseline = DkcTool.Core.Emulator.PoisonProbe.CaptureBaseline(core, rom, stateName, settle, walk);
+    Console.WriteLine($"Baseline     : {baseline.Width}x{baseline.Height}, matches golden");
+    Console.WriteLine();
+
+    int failures = 0;
+    bool controlProved = false;
+    foreach (var (label, runs) in classes)
+    {
+        bool isControl = label.StartsWith("CONTROL");
+        var outcome = DkcTool.Core.Emulator.PoisonProbe.Probe(core, rom, baseline, stateName, runs,
+                                                              label, settle, walk);
+        Console.WriteLine($"{label}");
+        Console.WriteLine($"  {outcome.RunCount} run(s), {outcome.Bytes} bytes ({outcome.Bytes / 1024} KB)");
+
+        if (isControl)
+        {
+            controlProved = !outcome.Identical;
+            Console.WriteLine(controlProved
+                ? $"  OK -- poison reaches the screen ({outcome.Diff})"
+                : "  BROKEN -- poisoning live sprite data changed nothing. The probe is not " +
+                  "testing what it claims; every 'unread' below is meaningless.");
+            if (!controlProved) failures++;
+            Console.WriteLine();
+            continue;
+        }
+
+        Console.WriteLine(outcome.Identical
+            ? "  UNREAD at this capture point (frame identical)"
+            : $"  READ -- {outcome.Diff}");
+        if (!outcome.Identical)
+        {
+            failures++;
+            if (bisect)
+            {
+                Console.WriteLine("  bisecting:");
+                var guilty = DkcTool.Core.Emulator.PoisonProbe.Bisect(core, rom, baseline, stateName,
+                    runs, settle, walk, Console.WriteLine);
+                Console.WriteLine($"  {guilty.Count} guilty run(s), " +
+                                  $"{guilty.Sum(r => (long)r.Length)} bytes");
+            }
+        }
+        Console.WriteLine();
+    }
+
+    if (which is "control" or "all" && !controlProved)
+        Console.WriteLine("RESULT VOID: the positive control did not fire.");
+    else
+        Console.WriteLine("Reminder: 'unread' means unread on the paths this capture point exercises, " +
+                          "not free. One state is one scene.");
+    return failures == 0 ? 0 : 1;
 }
 
 // Captures the V3 reference frame for a core (specs/v3-emulator-spec.md Part B, gate 0).

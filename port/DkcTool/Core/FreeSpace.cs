@@ -80,12 +80,43 @@ namespace DkcTool.Core
             return RawRuns(rom).Where(r => !OverlapsSprite(r.Start, r.Length)).ToList();
         }
 
-        /// <summary>Scans the whole ROM for candidate free space: constant filler runs
+        /// <summary>
+        /// Scans the whole ROM for candidate free space: constant filler runs
         /// >= <see cref="MinRunLength"/>, excluding anything overlapping known sprite data,
-        /// keeping only end-of-bank padding (run end aligned to <see cref="PaddingAlignment"/>).
-        /// Ascending by start. This is the list allocation draws from.</summary>
+        /// keeping only end-of-bank padding. Ascending by start; this is the list allocation
+        /// draws from.
+        ///
+        /// "End-of-bank padding" means the run *reaches* a <see cref="PaddingAlignment"/>
+        /// boundary, not that it stops exactly on one. The original test was
+        /// <c>End % PaddingAlignment == 0</c>, which silently discarded padding whose following
+        /// blob happens to begin with a filler byte: the measured run then ends at boundary+1
+        /// and failed the test outright. Three of the ROM's four largest padding runs are in
+        /// that state (0x31EAE5, 0x24EC4F, 0x2FF309 -- overshoot 1, 1 and 2 bytes), and the
+        /// whole class is 8 runs / 15 KB, a fifth of the pool thrown away on an off-by-one.
+        ///
+        /// Truncating at the boundary keeps the structural guarantee intact: the bytes handed
+        /// out are still assembler slack at the tail of a blob, and the overshoot bytes -- which
+        /// belong to the *next* blob -- are never allocated.
+        /// </summary>
         public static List<Run> Scan(Rom rom) =>
-            CleanRuns(rom).Where(r => r.End % PaddingAlignment == 0).OrderBy(r => r.Start).ToList();
+            CleanRuns(rom)
+                .Select(TruncateToBoundary)
+                .Where(r => r != null && r.Length >= MinRunLength)
+                .Select(r => r!)
+                .OrderBy(r => r.Start)
+                .ToList();
+
+        /// <summary>The end-of-bank-padding part of a run: everything up to the first
+        /// <see cref="PaddingAlignment"/> boundary it reaches, or null if it reaches none
+        /// (a purely mid-bank run, which stays excluded -- see specs/m2c-free-space-spec.md).</summary>
+        private static Run? TruncateToBoundary(Run run)
+        {
+            if (run.End % PaddingAlignment == 0) return run;
+
+            int boundary = (run.Start / PaddingAlignment + 1) * PaddingAlignment;
+            if (boundary >= run.End) return null;
+            return new Run { Start = run.Start, Length = boundary - run.Start, Value = run.Value };
+        }
 
         /// <summary>
         /// First-fit allocation of <paramref name="length"/> bytes over <paramref name="runs"/>
