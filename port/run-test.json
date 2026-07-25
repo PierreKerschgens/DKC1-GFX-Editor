@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "sheet": "/Users/pierre/devel/DKC1-GFX-Editor/port/sprites/Custom _ Edited - Donkey Kong Customs - Donkey Kong - Donkey Kong (Classic, DKC-Style).png",
+  "palette": "Donkey Kong 1P",
+  "strips": [
+    {
+      "strip": 7,
+      "name": "sheet 'Run' (20 poses) -> 0x330..0x37C, anims 2/14/20. Was provisionally 'Roll'; --baseline and the contact sheet read it as an on-all-fours gallop instead. Boot decides.",
+      "indices": ["0x330","0x334","0x338","0x33C","0x340","0x344","0x348","0x34C","0x350","0x354",
+                  "0x358","0x35C","0x360","0x364","0x368","0x36C","0x370","0x374","0x378","0x37C"]
+    }
+  ]
+}
