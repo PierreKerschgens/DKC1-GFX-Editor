@@ -45,6 +45,16 @@ namespace DkcTool.Core
         /// the sheet's own baseline and passes them in.
         /// </summary>
         public int? OriginY;
+
+        /// <summary>
+        /// Explicit canvas X origin, overriding the slot-derived default.
+        ///
+        /// The default anchors the pose's *left edge* to the replaced slot's, so a wider pose grows
+        /// rightwards and drags the body's centre with it. Measured on the DK walk: centre-X drift
+        /// of 7 px against stock's 4 px, which reads as the cycle not being as smooth as a stock
+        /// animation even once the vertical bob is fixed (spec A.17).
+        /// </summary>
+        public int? OriginX;
     }
 
     /// <summary>
@@ -119,6 +129,8 @@ namespace DkcTool.Core
                 originY = slot.PlacementMaxY - (pose.GetLength(0) - 1);
             if (options.OriginY.HasValue)
                 originY = options.OriginY.Value;
+            if (options.OriginX.HasValue)
+                originX = options.OriginX.Value;
 
             // 2. Tile the pose onto that origin.
             var tiled = SpriteTiler.Build(pose, originX, originY);

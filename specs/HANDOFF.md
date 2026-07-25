@@ -33,21 +33,28 @@ still. Full analysis in `m4-batch-spec.md` A.17. **Fixed by `--batch --align-str
 
 Measured with `--baseline 0xE0..0x12C` (foot-line spread):
 
-| ROM | spread |
-|---|---|
-| stock DKC walk | 2 px |
-| top-anchored (original behaviour) | 10 px |
-| `--anchor-bottom` (failed attempt) | 8 px |
-| `--align-strip` | **3 px** |
+| ROM | foot line | centre X |
+|---|---|---|
+| stock DKC walk | 2 px | 4 px |
+| top-anchored (original behaviour) | 10 px | — |
+| `--anchor-bottom` (failed attempt) | 8 px | — |
+| `--align-strip`, vertical only | 3 px | 7 px |
+| **`--align-strip`, both axes** | **3 px** | **4 px** |
 
-The sheet's poses carry a 3 px baseline spread of their own, so 3 px is the faithful result — the
-remaining motion is the artist's, not the tool's.
+**Two defects hid behind one symptom.** Fixing the vertical bob left a horizontal one: X was still
+anchored to the slot's left edge, so wider poses dragged the body sideways at nearly twice stock's
+travel. Matching the replaced frame's *centre* fixes it. The residual 3-vs-2 vertical is the sheet's
+own drawn bob — the artist's motion, not the tool's.
 
 Root cause, for the record: the anchor was applied at the wrong *level*. Each pose was cropped to
 its own bbox and re-anchored to *its own* target slot's bbox, substituting the replaced animation's
 per-frame variation for the sheet's. A slot's bbox bottom is not a ground line either — in a
 knuckle-walk the lowest pixel is sometimes a hand. `--align-strip` places a whole run against one
-reference and carries the sheet's relative offsets through.
+reference and carries the sheet's relative offsets through; X matches each replaced frame's centre.
+
+**Run `--baseline <lo>..<hi>` on every imported run before calling it done** — compare its foot-line
+and centre-X spread against the same range in the stock ROM. Both placement defects were invisible
+in stills and found only by that comparison.
 
 `--align-strip` is **off by default** (gates unchanged). It should probably become the default for
 any ground-contact animation; that decision is open.
@@ -127,7 +134,7 @@ Writing: `--import`, `--batch` (both take `--dry-run`; `--batch` also `--align-s
 
 Test ROMs in `port/` (gitignored): `dk-walk-test.sfc` (walk art in idle slots),
 `dk-move-test.sfc` (walk art in walk slots), `dk-move-anchored.sfc` (`--anchor-bottom`, failed),
-**`dk-move-aligned.sfc` (`--align-strip`, the fix — confirmed in play and by measurement)**.
+**`dk-move-aligned2.sfc` (`--align-strip`, both axes — the current fix)**; `dk-move-aligned.sfc` is the vertical-only version.
 
 ---
 

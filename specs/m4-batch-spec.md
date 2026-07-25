@@ -572,7 +572,29 @@ does. The residual motion the operator noticed is **the artist's, not the tool's
 than stock. Matching stock exactly would mean editing the artwork, not the importer.
 
 The measurement also explains why the second attempt read as "the same if not worse": 10 → 8 px is
-within noticing distance of no change at all. Default off; V4 7/7 unchanged.
+within noticing distance of no change at all.
+
+**Then a second axis, found the same way.** With the bob fixed the cycle was reported as still "not
+as smooth as Diddy's" — Diddy being stock, and therefore the right yardstick. Extending `--baseline`
+to report **centre-X** drift located it immediately:
+
+| | foot line | centre X |
+|---|---|---|
+| stock DK walk | 2 px | 4 px |
+| `--align-strip`, vertical only | 3 px | **7 px** |
+| `--align-strip`, both axes | 3 px | **4 px** |
+
+X had been left on the original rule — anchor the pose's *left edge* to the slot's — so a wider pose
+grew rightwards and dragged the body sideways, nearly doubling stock's horizontal travel. The sheet
+offers nothing usable here (a strip's X positions are page layout, not animation offsets), so X is
+handled per pose instead: match the replaced frame's **centre**, which reproduces whatever
+horizontal travel that frame actually had. Both axes now sit at stock's numbers, the residual 3-vs-2
+vertical being the sheet's own drawn bob.
+
+**The general lesson.** Two separate placement defects hid behind one symptom, and neither was
+visible in a still image; both were found only by measuring the imported cycle against the stock one
+on the same axis. `--baseline` is that instrument, and it should be run on every imported run before
+the run is called done. Default off; V4 7/7 unchanged.
 
 **One residual risk, untested.** The run's *absolute* height is now tied to the first pose's slot
 bottom. If that particular frame's lowest pixel is a knuckle rather than a foot, the whole cycle

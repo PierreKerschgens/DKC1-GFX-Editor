@@ -508,7 +508,7 @@ namespace DkcTool.Core
         public static int RunBaseline(Rom rom, int low, int high, SKColor[] palette)
         {
             var valid = GfxTable.EnumerateImageIndices(rom).ToHashSet();
-            var rows = new List<(int Index, int Top, int Bottom, int Height)>();
+            var rows = new List<(int Index, int Top, int Bottom, int Height, int Left, int Right)>();
 
             for (int i = low; i <= high; i += 4)
             {
@@ -518,12 +518,13 @@ namespace DkcTool.Core
                 using var sprite = SpriteDecoder.Decode(rom, address, palette);
                 var b = OpaqueBounds(sprite);
                 if (b.Width <= 0 || b.Height <= 0) continue;
-                rows.Add((i, b.Top, b.Bottom - 1, b.Height));
+                rows.Add((i, b.Top, b.Bottom - 1, b.Height, b.Left, b.Right - 1));
             }
 
             Console.WriteLine($"=== opaque bbox over 0x{low:X}..0x{high:X} ({rows.Count} sprite(s)) ===");
             foreach (var r in rows)
-                Console.WriteLine($"  idx 0x{r.Index:X4}  top {r.Top,3}  bottom {r.Bottom,3}  height {r.Height,3}");
+                Console.WriteLine($"  idx 0x{r.Index:X4}  top {r.Top,3}  bottom {r.Bottom,3}  height {r.Height,3}" +
+                                  $"  left {r.Left,3}  right {r.Right,3}  centreX {(r.Left + r.Right) / 2,3}");
 
             if (rows.Count > 0)
             {
@@ -533,6 +534,15 @@ namespace DkcTool.Core
                 Console.WriteLine($"  top edge    : {rows.Min(r => r.Top)}..{rows.Max(r => r.Top)}  spread {topSpread} px");
                 Console.WriteLine($"  BOTTOM edge : {rows.Min(r => r.Bottom)}..{rows.Max(r => r.Bottom)}  spread {botSpread} px" +
                                   "   <- the foot line; this is the bob");
+
+                // Horizontal drift is the other half of "not smooth", and the easier half to miss:
+                // a walking character is moving sideways anyway, so per-frame jitter hides inside
+                // the motion instead of reading as an obvious wobble.
+                var centres = rows.Select(r => (r.Left + r.Right) / 2).ToList();
+                Console.WriteLine($"  left edge   : {rows.Min(r => r.Left)}..{rows.Max(r => r.Left)}  " +
+                                  $"spread {rows.Max(r => r.Left) - rows.Min(r => r.Left)} px");
+                Console.WriteLine($"  CENTRE X    : {centres.Min()}..{centres.Max()}  " +
+                                  $"spread {centres.Max() - centres.Min()} px   <- horizontal jitter");
             }
             return 0;
         }

@@ -83,7 +83,14 @@ namespace DkcTool.Core
             // reproduce exactly that offset below a single ground reference for the whole run. The
             // reference is the first target slot's placement bottom, so the run keeps sitting where
             // the animation it replaces sat.
+            //
+            // Horizontally the sheet gives nothing usable -- a strip's X positions are page layout,
+            // not animation offsets -- so X is handled per pose instead, by matching the replaced
+            // frame's *centre* rather than its left edge. Left-edge anchoring makes a wider pose
+            // grow rightwards and drags the body sideways; centring reproduces whatever horizontal
+            // travel the original frame had. Measured: 7 px of centre drift before, 4 px in stock.
             var originY = new Dictionary<(int Strip, int Position), int>();
+            var originX = new Dictionary<(int Strip, int Position), int>();
             if (alignStrip)
             {
                 foreach (var strip in plan.GroupBy(p => p.Strip))
@@ -96,6 +103,10 @@ namespace DkcTool.Core
                     {
                         int aboveBaseline = baseline - (p.RectY + p.RectH - 1);
                         originY[(p.Strip, p.Position)] = reference - aboveBaseline - (p.RectH - 1);
+
+                        var slot = SpriteSlot.Read(rom, p.ImageIndex);
+                        int slotCentreX = (slot.PlacementMinX + slot.PlacementMaxX) / 2;
+                        originX[(p.Strip, p.Position)] = slotCentreX - (p.RectW - 1) / 2;
                     }
                 }
             }
@@ -113,6 +124,7 @@ namespace DkcTool.Core
                         FreeRuns = freeRuns,
                         AnchorBottom = anchorBottom,
                         OriginY = originY.TryGetValue((p.Strip, p.Position), out int oy) ? oy : (int?)null,
+                        OriginX = originX.TryGetValue((p.Strip, p.Position), out int ox) ? ox : (int?)null,
                     };
                     outcome.Result = SpriteImporter.Import(rom, p.ImageIndex, pose.Pixels, options, ledger);
                     outcome.Success = true;
