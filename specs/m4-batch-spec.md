@@ -501,6 +501,39 @@ ROM does that, and it cost one boot to overturn a conclusion six passes of stati
 treated as settled. **Every pairing in this spec that has not been observed in motion should be read
 as provisional**, including the four still marked as holding.
 
+### A.17 Walk confirmed in-game, and a real importer defect it exposed
+
+**Walk is `0xE0..0x12C`** — confirmed by booting `port/dk-move-test.sfc`: the new artwork appears
+while moving slowly. The run is still stock, so it is almost certainly `0x130..0x17C` (20 frames
+against the sheet's 20-pose *Run*). A.16's knuckle-walk correction holds.
+
+**The defect: DK bobs vertically through the imported cycle.** Reported from play, not visible in any
+still. The cause is `SpriteImporter` step 1, which anchors every imported pose at the replaced slot's
+placement-bbox **top-left**. The sheet's Walk poses range **47..52 px** tall, so pinning the top
+lets the feet fall by the height difference:
+
+| index | original top / bottom | top-anchored new bottom | bottom-anchored |
+|---|---|---|---|
+| `0xE0` | 88 / 128 | 136 | 128 |
+| `0xF4` | 92 / 133 | 143 | 133 |
+| `0x118` | 90 / 133 | 139 | 133 |
+
+A 7 px swing across three frames of a ground-contact animation. Top-anchoring reproduces the
+original's **head** position and lets the feet drift; bottom-anchoring reproduces the original's own
+**foot** positions exactly, inheriting whatever intentional bob the stock animation had.
+
+`ImportOptions.AnchorBottom` (`--anchor-bottom` on `--import` and `--batch`) does the latter. It
+defaults **off**, so M2b's behaviour and every gate built on it are unchanged — V4 7/7 and V2b still
+pass untouched. `port/dk-move-anchored.sfc` is the same import with it on, for comparison in motion.
+
+**Why this was invisible to every check built so far.** M2b's Part G drift report *did* flag it —
+every pose printed `[DRIFT > 4px]` — and it was read as advisory noise about hitboxes. It was
+describing a visible rendering fault the whole time. The spec's own Part E predicted this ("500
+re-posed frames make the drift report load-bearing rather than advisory") and the prediction was
+right, but nothing acted on it until someone played the game. **A warning that fires on 100 % of
+cases teaches operators to ignore it**; the drift check needs a severity split — feet-line movement
+is a defect, extent change is a hitbox note — before a 533-pose import.
+
 **Palette as the identity test, not a caveat.** A survey rendered in one palette locates boundaries
 by silhouette but cannot prove *identity* — so the palette-flip check above does that job instead,
 and it is strictly better evidence than a silhouette.

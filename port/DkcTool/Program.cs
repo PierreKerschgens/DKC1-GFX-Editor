@@ -852,7 +852,7 @@ static int RunImportCli(Rom rom, string romPath, string[] args)
         // Expansion.FreeRunsFor (specs/m3-expansion-spec.md C.4): an expanded ROM allocates from
         // the extended half only, never mixed with the stock in-ROM padding pool.
         result = SpriteImporter.Import(working, imageIndex, pose.Pixels,
-            new ImportOptions { DryRun = dryRun, Source = Path.GetFileName(posePath), FreeRuns = Expansion.FreeRunsFor(rom) }, ledger);
+            new ImportOptions { DryRun = dryRun, Source = Path.GetFileName(posePath), FreeRuns = Expansion.FreeRunsFor(rom), AnchorBottom = Array.IndexOf(args, "--anchor-bottom") >= 0 }, ledger);
     }
     catch (ImportException ex)
     {
@@ -979,7 +979,8 @@ static int RunBatchCli(Rom rom, string[] args)
         return 1;
 
     var report = BatchImporter.Run(working, plan, sheetBitmap, palette, ledger, freeRuns, dryRun,
-        sourceTag: Path.GetFileName(manifestPath));
+        sourceTag: Path.GetFileName(manifestPath),
+        anchorBottom: Array.IndexOf(args, "--anchor-bottom") >= 0);
 
     Console.WriteLine();
     Console.WriteLine($"Imported             : {report.Imported.Count()}/{plan.Count}, " +

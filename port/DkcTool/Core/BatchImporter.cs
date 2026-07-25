@@ -69,7 +69,8 @@ namespace DkcTool.Core
         /// operator's time, so every outcome is recorded and the loop continues.
         /// </summary>
         public static BatchReport Run(Rom rom, List<PlannedPose> plan, SKBitmap sheetBitmap, SKColor[] palette,
-            ImportLedger ledger, List<FreeSpace.Run> freeRuns, bool dryRun, string sourceTag)
+            ImportLedger ledger, List<FreeSpace.Run> freeRuns, bool dryRun, string sourceTag,
+            bool anchorBottom = false)
         {
             var report = new BatchReport();
             foreach (var p in plan)
@@ -83,6 +84,7 @@ namespace DkcTool.Core
                         DryRun = dryRun,
                         Source = $"{sourceTag} strip{p.Strip}:{p.Position}",
                         FreeRuns = freeRuns,
+                        AnchorBottom = anchorBottom,
                     };
                     outcome.Result = SpriteImporter.Import(rom, p.ImageIndex, pose.Pixels, options, ledger);
                     outcome.Success = true;

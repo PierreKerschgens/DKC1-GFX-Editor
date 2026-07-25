@@ -23,6 +23,16 @@ namespace DkcTool.Core
         /// Null is safe only for a single import into a freshly-loaded ROM.
         /// </summary>
         public System.Collections.Generic.List<FreeSpace.Run>? FreeRuns;
+
+        /// <summary>
+        /// Align the imported pose's *bottom* with the replaced slot's, instead of its top.
+        ///
+        /// Default (false) preserves M2b's original behaviour and every gate built on it. For a
+        /// ground-contact animation it is usually wrong: poses in one cycle differ in height, and
+        /// pinning the top makes the feet rise and fall. The DK walk bobbed visibly in-game for
+        /// exactly this reason -- its poses span 47..52 px (spec A.17).
+        /// </summary>
+        public bool AnchorBottom;
     }
 
     /// <summary>
@@ -88,6 +98,13 @@ namespace DkcTool.Core
             // 1. Target slot -> origin (Q4: replaced slot's placement bbox top-left).
             var slot = SpriteSlot.Read(rom, imageIndex);
             int originX = slot.PlacementMinX, originY = slot.PlacementMinY;
+
+            // Top-left anchoring pins the head and lets the feet move: across a cycle whose poses
+            // differ in height it makes the character bob vertically. Observed in-game on the DK
+            // walk, whose sheet poses range 47..52 px -- a 5 px swing (spec A.17). Anchoring the
+            // bottom instead keeps the feet planted, which is what a ground-contact animation needs.
+            if (options.AnchorBottom)
+                originY = slot.PlacementMaxY - (pose.GetLength(0) - 1);
 
             // 2. Tile the pose onto that origin.
             var tiled = SpriteTiler.Build(pose, originX, originY);
