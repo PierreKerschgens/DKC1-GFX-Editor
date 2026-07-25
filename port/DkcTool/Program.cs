@@ -86,6 +86,11 @@ if (args.Length >= 2 && args[1] == "--stats-m4")
         ArgValue(args, "--overlay"));
 }
 
+if (args.Length >= 2 && args[1] == "--stats-anim")
+{
+    return AnimationTable.Run(rom);
+}
+
 if (args.Length >= 2 && args[1] == "--stats-m3")
 {
     return Expansion.Run(rom);

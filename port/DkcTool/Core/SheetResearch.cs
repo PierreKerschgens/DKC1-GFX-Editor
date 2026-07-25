@@ -360,6 +360,32 @@ namespace DkcTool.Core
                                   $"(p50 {Pct(bands.Select(b => b.Count), .5)} poses/band, " +
                                   $"max {bands.Max(b => b.Count)})");
 
+                // A band is a *row*, and the sheets put several captioned animations side by side
+                // on one row ("Hit  Death"; "Barrel jump  Barrel walk"). So a band is not an
+                // animation. Splitting each band again at horizontal gaps well above the normal
+                // inter-pose spacing recovers the actual strips.
+                var groups = new List<int>();
+                foreach (var band in bands)
+                {
+                    var row = s.Poses.Where(p => p.MinY <= band.Bottom && p.MaxY >= band.Top)
+                                     .OrderBy(p => p.MinX).ToList();
+                    if (row.Count == 0) continue;
+                    var gaps = new List<int>();
+                    for (int i = 1; i < row.Count; i++) gaps.Add(Math.Max(0, row[i].MinX - row[i - 1].MaxX));
+                    int typical = gaps.Count == 0 ? 0 : Pct(gaps, .5);
+                    int split = Math.Max(typical * 3, typical + 8);
+
+                    int size = 1;
+                    for (int i = 1; i < row.Count; i++)
+                    {
+                        if (row[i].MinX - row[i - 1].MaxX > split) { groups.Add(size); size = 1; }
+                        else size++;
+                    }
+                    groups.Add(size);
+                }
+                Console.WriteLine($"    strips within bands  : {groups.Count} " +
+                                  $"(p50 {Pct(groups, .5)}, p90 {Pct(groups, .9)}, max {groups.Max()} poses)");
+
                 grandBytes += bytes;
                 grandDedup += dedupBytes;
                 grandPoses += fitting.Count;

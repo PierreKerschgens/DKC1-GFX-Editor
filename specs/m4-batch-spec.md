@@ -1,9 +1,17 @@
 # M4 — Batch import (research spec)
 
-**Status:** research complete, **not implemented**. The research pass is in the tree
-(`--stats-m4`, with `--overlay`); the slicer, manifest and batch path are not.
+**Status:** research complete, **not implemented**. The research passes are in the tree
+(`--stats-m4` with `--overlay`, and `--stats-anim`); the slicer, manifest and batch path are not.
+Amended after M3 shipped — see the amendment note below.
 **Predecessors:** `m2b-writer-spec.md` (single import), `m2c-free-space-spec.md` (92 KB pool /
-99 poses), `m3-expansion-spec.md` (ExHiROM, verified but unbuilt).
+99 poses), `m3-expansion-spec.md` (ExHiROM, **implemented, 6/6 cores green**).
+
+> **Amendment pass.** This spec was written before M3 was built, and reviewing it against the
+> finished M3 surfaced four things: C.3 said "scan free space once", which predates
+> `Expansion.FreeRunsFor` and would have allocated from the 92 KB pool on an expanded ROM;
+> whether `--batch` expands was never stated; the slicer→importer interface implied 533 temp PNGs;
+> and the index side of the manifest had no source at all. A.7 (new) measures the last one, and
+> in doing so falsified A.4's original "band = animation" unit.
 **Amends:** the PRD's §6 input assumptions and FR8, both of which describe material that does
 not match what is actually in `port/sprites/`.
 
@@ -67,16 +75,24 @@ the automatic backstop — a mis-merge cannot be silently imported.
 
 ### A.4 The manifest's natural unit is the strip, not the pose
 
-Poses whose vertical extents overlap form captioned animation strips:
+Poses whose vertical extents overlap form row bands. But a **band is a row, not an animation** —
+the sheets put several captioned animations side by side on one line ("Hit  Death"; "Barrel jump
+Barrel walk"). Splitting each band again at horizontal gaps well above the normal inter-pose
+spacing recovers the actual strips:
 
-| | bands | poses per band |
-|---|---|---|
-| DK Jr | **30** | p50 18, max 34 |
-| DK | **35** | p50 15, max 30 |
+| | row bands | strips | poses per strip |
+|---|---|---|---|
+| DK Jr | 30 | **42** | p50 13, p90 21, max 24 |
+| DK | 35 | **46** | p50 13, p90 20, max 25 |
 
-So a human names ~30 strips instead of ~533 poses. The captions themselves are rendered pixels,
+So a human names ~45 strips instead of ~533 poses. The captions themselves are rendered pixels,
 not metadata, so the *names* cannot be read out of the file — but the *structure* can, and that is
 what makes an authored manifest tractable rather than a 533-line chore.
+
+> The band figure came first and was wrong to build on. A.7 is what exposed it: the longest band
+> held 34 poses and **no animation in the ROM has 34 frames**, which is not a thing that can be
+> true if bands are animations. The two-axis split brings the maximum to 24–25, where the ROM has
+> matches.
 
 ### A.5 Deduplication is a dead end (negative result)
 
@@ -104,6 +120,51 @@ is no large subset to drop — importing DK *as a character* means importing on 
 poses.
 
 Against M3's extended space (3.8 MB usable) it is 21 % — comfortable.
+
+### A.7 The index side is derivable — the *assignment* is not
+
+The manifest needs image indices, and A.4 establishes the sheet cannot supply them. The animation
+scripts can. `Core/AnimationTable.cs` is a headless port of `Animation.ParseAnimation` reduced to
+"which GFX indices does each animation draw" — no bitmaps, so it needs neither palette nor decoder.
+
+**Table extent, derived rather than assumed.** Scripts begin immediately after the pointer table at
+`0xbe8572`, so the lowest pointer marks its end. Reading entries until the first implausible one
+gives **440**, and `0x8572 + 440×2 = 0x88E2` is exactly the minimum pointer over those 440. Two
+independent readings agreeing is the check; a wrong count leaves them disagreeing.
+
+```
+Animations       : 440 (440 parsed, 0 failed)
+Frame entries    : 5,297
+Distinct indices : 1,853 referenced, 1,827 in the GFX table (2,714 exist)
+GFX coverage     : 67.3 % of the table is reachable from an animation
+Frames/animation : p50 8, p90 21, max 315 (2 empty)
+```
+
+440/440 parsing with zero failures is itself the correctness check on the port: a wrong operand
+table derails within a few instructions and hits an out-of-range command.
+
+**What this buys.** A manifest entry can name an *animation id* and let the indices derive from it,
+instead of listing 13 hex indices per strip by hand. ~45 strips × one id each.
+
+**What it does not buy.** Matching a strip to an animation by frame count alone is ambiguous:
+
+```
+an  8-pose strip matches 52 animations
+a  12-pose strip matches 17
+a  18-pose strip matches  7
+a  24-pose strip matches  2
+unique frame counts: 21 of 51
+```
+
+So the assignment still needs a human. Two things make that tractable rather than a 440-way
+search: frame count narrows most strips to single digits, and **292 of 338 multi-frame animations
+draw from a tight index range** — so once one DK animation is identified, its neighbours in the
+table are overwhelmingly likely to be DK's too. Identifying the character's block once, by
+inspection, is the actual manual step.
+
+**Still open:** nothing here labels an animation as DK's. That is one decode-and-look pass over a
+few hundred candidates, not a research problem — but it is not done, and M4 cannot produce a
+working import until it is.
 
 ---
 
@@ -149,17 +210,27 @@ poses silently retargets every import. Pin it with a golden slice list (V4a).
   "sheet": "dk-classic.png",
   "palette": "Donkey Kong 1P",
   "strips": [
-    { "band": 3, "name": "walk", "indices": ["0x8C", "0x90", "0x94"] }
+    { "strip": 3, "name": "walk", "animation": "0x1A" },
+    { "strip": 7, "name": "roll", "indices": ["0x8C", "0x90", "0x94"] }
   ],
   "overrides": [
-    { "band": 12, "pose": 5, "rect": [1044, 812, 48, 52] }
+    { "strip": 12, "pose": 5, "rect": [1044, 812, 48, 52] }
   ]
 }
 ```
 
-- Poses within a band are ordered left-to-right and zip 1:1 with `indices`.
+- Strips are numbered by the slicer (A.4: row band, then horizontal split), poses within one are
+  ordered left-to-right.
+- `animation` names an entry in the 440-script table (A.7); its indices are derived in draw order
+  and zip 1:1 with the strip's poses. `indices` is the explicit escape hatch when no single
+  animation matches. **Exactly one of the two is required** — a strip carrying both is a refusal,
+  not a precedence rule to remember.
 - **Length mismatch is a refusal, never a guess** — the PRD's own risk table says a wrong
-  pose↔frame mapping means the wrong sprite is replaced.
+  pose↔frame mapping means the wrong sprite is replaced. With `animation` this is a real check,
+  not a formality: it is the thing that catches a mis-assigned animation id.
+- Repeats within an animation are expected (A.5 measured the sheet has none, but the *scripts*
+  reuse indices). A repeated index means two strip poses target one slot: refuse unless both
+  poses are pixel-identical, since otherwise the second silently overwrites the first.
 - `overrides` supply explicit rects for the ~4 % the segmenter mis-merges (A.3).
 - `name` is documentation only; nothing keys off it.
 
@@ -168,13 +239,30 @@ poses silently retargets every import. Pin it with a golden slice list (V4a).
 Resolves M2b's open item verbatim: *"M4's batch mode should import N poses in **one** invocation
 against one pristine scan"*.
 
-1. Load ROM, scan free space **once**, create one `ImportLedger`.
+1. Load ROM. **Free runs come from `Expansion.FreeRunsFor(rom)`, not `FreeSpace.Scan`** — an
+   expanded ROM must draw from the extended half (m3 C.4). Scanning the stock pool on an expanded
+   ROM would hit `NoFreeSpace` at pose 99 of 533 while 3.8 MB sat unused. Scanned **once**;
+   one `ImportLedger`.
 2. Slice the sheet once.
-3. For each manifest entry: `PoseLoader` → `SpriteImporter.Import` with the shared `FreeRuns` and
+3. For each manifest entry: pose grid → `SpriteImporter.Import` with the shared `FreeRuns` and
    ledger.
 4. Collect per-pose outcome; **never abort the batch on one refusal** — a 533-pose run that dies
    on pose 4 wastes the operator's time. Report and continue.
 5. Write ROM + ledger sidecar together.
+
+**Expansion is a precondition, not a step.** `--batch` does not expand; it refuses when the
+manifest's total exceeds the available pool, naming `--expand` in the refusal. Two reasons:
+expansion is the one irreversible-feeling operation in the toolchain (it has `--revert`, but it
+rewrites the file), and folding it into a 533-pose run would put an `ExpansionRecord` and 533
+allocations in one sidecar written at the end — so a crash mid-batch leaves an expanded ROM with
+no record of it. Expand first, verify, then batch against the result.
+
+**Slicer → importer is in-memory.** `PoseLoader.Load` takes a path and re-decodes a PNG; a batch
+would be writing and re-reading 533 temp files of regions it already holds. Both need a shared
+core: extract the palette-mapping and crop from `PoseLoader.Load` into a method over an in-memory
+region, keep `Load` as the single-file wrapper (so M2b's `--import` path is untouched), and have
+the slicer call the shared one. The refusal behaviour — `UnmappedColor` naming the offending
+colours — must be identical on both paths, since that is the error operators will actually hit.
 
 Chained imports across sessions stay unsolved and stay refused (`sourceRomSha256`).
 
@@ -190,10 +278,14 @@ Chained imports across sessions stay unsolved and stay refused (`sourceRomSha256
 ### C.5 CLI
 
 ```
-dotnet run -- <rom> --slice <sheet.png> [--overlay out.png]        # numbering, no ROM writes
+dotnet run -- <rom> --slice <sheet.png> [--overlay out.png]        # strip/pose numbering, no writes
+dotnet run -- <rom> --stats-anim                                   # animation id -> indices (A.7)
 dotnet run -- <rom> --batch <manifest.json> --out <rom.sfc> [--dry-run]
 dotnet run -- <rom> --verify-m4
 ```
+
+`--batch` on a stock 4 MB ROM refuses a manifest it cannot fit and names `--expand`; it never
+expands implicitly (C.3).
 
 `--dry-run` must be the documented first step, as in M2b.
 
@@ -207,7 +299,8 @@ dotnet run -- <rom> --verify-m4
 | V4b | Every sliced pose round-trips M1 (encode → decode → identical), as M2a does for synthetic poses |
 | V4c | Batch of N against one pristine scan: ledger has N non-overlapping allocations, and the V2b containment diff shows exactly the expected changed set |
 | V4d | V3 emulator gate on the batch output, both cores |
-| V4e | Refusals fire: strip/index length mismatch, unmapped colour, over-budget pose |
+| V4e | Refusals fire: strip/index length mismatch, unmapped colour, over-budget pose, both `animation` and `indices` on one strip, duplicate index with differing poses |
+| V4f | Animation table parses 440/440 with 0 failures (A.7) — the derived index side has no silent-drift mode otherwise |
 
 V4c is the one that matters most — it is where the re-scan trap (85 % waste, 17 poses instead of
 ~100) would resurface.
@@ -216,10 +309,12 @@ V4c is the one that matters most — it is where the re-scan trap (85 % waste, 1
 
 ## Part E — Open questions
 
-- **Which image indices does DK actually own?** The manifest's index side still has to come from
-  somewhere. `Animation.cs`'s tables are not ported to `port/DkcTool`; porting them is what would
-  turn strip→indices from hand-authoring into derivation. This is the single biggest remaining
-  authoring cost.
+- **Which image indices does DK actually own?** Half-answered by A.7: the tables *are* ported now
+  (`--stats-anim`), so a strip can name an animation id instead of 13 hex indices. What remains is
+  labelling — nothing marks an animation as DK's. Frame count narrows most strips to single
+  digits and index locality clusters a character's animations together, so this is one
+  decode-and-look pass, not a research problem. **It is the one thing still blocking a working
+  import**, and it is the first thing to do in M4.
 - **Hitboxes.** 500 re-posed frames make M2b's Part G drift report load-bearing rather than
   advisory. Still out of scope, still auto-derivable from the opaque bbox.
 - **Does the target hack need palette edits?** A.1 says no for these two sheets — they are already
@@ -237,4 +332,8 @@ V4c is the one that matters most — it is where the re-scan trap (85 % waste, 1
 | Wrong pose ↔ index mapping | Length mismatch refuses; QA overlay makes it visible pre-boot |
 | Re-scan trap on batch | C.3 step 1: one scan, one ledger; V4c |
 | Batch aborts mid-run | C.3 step 4: report and continue |
-| Built against the 92 KB pool | Part B: M3 first — 808 KB does not fit and never will |
+| Built against the 92 KB pool | Part B: M3 first (done) — 808 KB does not fit and never will |
+| Batch allocates from the stock pool on an expanded ROM | C.3 step 1: `Expansion.FreeRunsFor`, never a bare `FreeSpace.Scan` |
+| Crash mid-batch leaves an expanded ROM with no expansion record | C.3: `--batch` never expands; `--expand` is a separate, already-gated step |
+| Derived indices drift silently if the walk breaks | V4f: 440/440 parse asserted |
+| Strip assigned the wrong animation id | Length mismatch refuses (C.2); QA overlay annotates each pose with its resolved index |
