@@ -600,10 +600,26 @@ visible in a still image; both were found only by measuring the imported cycle a
 on the same axis. `--baseline` is that instrument, and it should be run on every imported run before
 the run is called done. V4 7/7 unchanged.
 
-**Open decision: should `--align-strip` be the default for `--batch`?** It is measurably correct and
-the current default is measurably wrong for any multi-pose run — but flipping it changes behaviour
-for every future import, including one run by someone who never reads the flag list. Left off
-pending a call.
+**Attempted to make `--align-strip` the default, and backed it out.** It is measurably correct for
+new artwork, so defaulting it on looked obviously right. It turns **V4d red**.
+
+V4d's gate 1 re-imports the ROM's *own* sprites and requires the resulting frame to be
+pixel-identical — a content-preserving relocation. Alignment moves them, so the frame differs
+(1801 px initially). Two fixes narrowed it and neither closed it:
+
+- The synthetic fixture laid every pose out at the same `y`, flattening the vertical relationships
+  alignment reconstructs from. Preserving each pose's original origin took the diff to 1062 px.
+  *(Kept — the fixture is more faithful either way.)*
+- Centring X inside the slot's own box rather than about a computed centre point removes a 1 px
+  truncation. It changed nothing here, so X was not the residual.
+
+**The actual blocker, and it is structural:** the slicer measures **opaque-pixel** bounds, while a
+slot exposes **tile-placement** bounds, which are 8 px-grid aligned. The two "baselines" are not the
+same quantity, so a sheet-derived offset cannot reproduce a slot-derived one exactly. Making
+alignment the default requires reconciling those two coordinate systems first.
+
+Left opt-in. That is the conservative choice and it is the gate's call, not a preference: **a gate
+that says an identity no longer holds is evidence, and this one was right to refuse.**
 
 **One residual risk, untested.** The run's *absolute* height is now tied to the first pose's slot
 bottom. If that particular frame's lowest pixel is a knuckle rather than a foot, the whole cycle

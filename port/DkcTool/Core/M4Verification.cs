@@ -176,21 +176,29 @@ namespace DkcTool.Core
         private static (SKBitmap Bitmap, string Path, List<int> Indices) BuildSyntheticSheet(
             Rom rom, SKColor[] palette, int count)
         {
-            var poses = new List<(int Index, int[,] Pixels)>();
+            // Each pose's original canvas origin is captured, not discarded. Laying every pose out
+            // at the same y would flatten the vertical relationships the real sheets carry, and
+            // BatchImporter's strip alignment reconstructs placement *from* those relationships --
+            // so a flattened fixture cannot round-trip, and V4d's "re-import is a content-preserving
+            // relocation" identity would fail for a reason that says nothing about the importer.
+            var poses = new List<(int Index, int[,] Pixels, int OriginY)>();
             foreach (int index in GfxTable.EnumerateImageIndices(rom))
             {
                 if (poses.Count >= count) break;
                 int address = GfxTable.ResolveSpriteAddress(rom, index);
                 int[,]? pose;
-                try { pose = M2bVerification.ExtractOwnPose(rom, address, out _, out _); }
+                int originY;
+                try { pose = M2bVerification.ExtractOwnPose(rom, address, out _, out originY); }
                 catch { continue; }
                 if (pose == null) continue;
-                poses.Add((index, pose));
+                poses.Add((index, pose, originY));
             }
 
             const int gap = 24;
+            int minOriginY = poses.Count == 0 ? 0 : poses.Min(p => p.OriginY);
             int width = gap + poses.Sum(p => p.Pixels.GetLength(1) + gap);
-            int height = gap * 2 + (poses.Count == 0 ? 0 : poses.Max(p => p.Pixels.GetLength(0)));
+            int height = gap * 2 + (poses.Count == 0 ? 0
+                : poses.Max(p => p.OriginY - minOriginY + p.Pixels.GetLength(0)));
 
             var bitmap = new SKBitmap(Math.Max(1, width), Math.Max(1, height));
             var indices = new List<int>();
@@ -198,15 +206,16 @@ namespace DkcTool.Core
             {
                 canvas.Clear(SKColors.Transparent);
                 int x = gap;
-                foreach (var (index, pixels) in poses)
+                foreach (var (index, pixels, poseOriginY) in poses)
                 {
                     int h = pixels.GetLength(0), w = pixels.GetLength(1);
+                    int top = gap + (poseOriginY - minOriginY);
                     for (int r = 0; r < h; r++)
                         for (int c = 0; c < w; c++)
                         {
                             int pi = pixels[r, c];
                             if (pi == 0) continue;
-                            bitmap.SetPixel(x + c, gap + r, palette[pi]);
+                            bitmap.SetPixel(x + c, top + r, palette[pi]);
                         }
                     indices.Add(index);
                     x += w + gap;

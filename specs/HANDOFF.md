@@ -59,9 +59,15 @@ in stills and found only by that comparison.
 **Confirmed in play**: the two-axis build reads as smooth as a stock animation. Three attempts —
 two measured plausibly and failed in the emulator; the third matched stock on both axes and held.
 
-`--align-strip` is still **off by default** (gates unchanged). **Open decision:** it is measurably
-correct and the current default is measurably wrong for any multi-pose run, but flipping it changes
-behaviour for every future import including one run by someone who never reads the flag list.
+`--align-strip` is **opt-in**, and making it the default was tried and backed out — it turns V4d
+red. That gate re-imports the ROM's own sprites and demands a pixel-identical frame; alignment moves
+them. **The blocker is structural:** the slicer measures *opaque-pixel* bounds while a slot exposes
+*tile-placement* bounds, which are 8 px-grid aligned, so a sheet-derived offset cannot reproduce a
+slot-derived one exactly. Reconcile those two coordinate systems and the default can flip.
+
+(One fix from that attempt was kept: `BuildSyntheticSheet` now preserves each pose's original origin
+instead of top-aligning them all, which makes the fixture resemble a real sheet. It narrowed the
+diff from 1801 px to 1062 px and is a better fixture regardless.)
 
 **Still outstanding, and a prerequisite before any 533-pose run:** M2b's drift check fires
 `[DRIFT > 4px]` on *100 % of* imported poses, which trained me to read it as noise for an entire

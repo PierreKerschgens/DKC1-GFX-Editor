@@ -74,7 +74,16 @@ namespace DkcTool.Core
         {
             var report = new BatchReport();
 
-            // Strip-level vertical placement (spec A.17). The sheet already aligns a run's poses to
+            // Strip-level placement (spec A.17). Opt-in via `--align-strip`, and confirmed in an
+            // emulator to play as smoothly as a stock animation. It is *not* the default, and the
+            // reason is recorded rather than left as an oversight: making it default turns V4d's
+            // identity gate red. That gate re-imports the ROM's own sprites and requires the frame
+            // to come back pixel-identical, which alignment cannot currently satisfy -- the slicer
+            // measures **opaque pixel** bounds while a slot exposes **tile-placement** bounds, and
+            // those are 8px-grid aligned, so the two baselines are not the same quantity. Flipping
+            // the default needs that reconciled first.
+            //
+            // Strip-level vertical placement. The sheet already aligns a run's poses to
             // each other -- their bottoms differ only by the bob the artist drew. Anchoring each
             // pose to its own target slot throws that away and substitutes the *replaced*
             // animation's per-frame variation, which is what made an imported walk cycle bob.
