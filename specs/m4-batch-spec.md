@@ -404,9 +404,8 @@ on my reading alone, and that reading has been wrong twice in this spec:
 
 **Unresolved, with the reason recorded rather than left blank:**
 
-- *Steel Keg Ride, Ride Look, Minecart ×2, Barrel Pick Up / Throw* — excluded by the filter above.
-  Matching them needs the 14 prop-drawing animations rendered, which `--anim-sheet` currently
-  cannot show (it inherits the same "entirely inside" selection).
+- *Steel Keg Ride, Ride Look, Minecart ×2, Barrel Pick Up / Throw* — **the filter was lifted
+  (`--anim-sheet --props`) and this did not solve them.** See A.15.
 - *Rope Idle / Climb / Turn, Swing, Ledge* — several hanging and climbing groups exist
   (`0x130..0x17C`, `0x158`, `0x164`), but rope, ledge and swing are not distinguishable from one
   another by silhouette, and guessing among them is precisely the error mode A.9 documents.
@@ -416,6 +415,32 @@ on my reading alone, and that reading has been wrong twice in this spec:
 **Score: 4 confirmed, 6 proposed, 19 open of 29 runs.** The honest summary is that the ROM side is
 tooled and inventoried but not solved, and the largest remaining obstacle is structural (the prop
 filter), not perceptual.
+
+### A.15 Lifting the prop filter — a prediction that failed, and one fact gained
+
+`--anim-sheet --props` selects the complement of the default: animations touching the range that
+*also* draw outside it. A.14 predicted this would close roughly six runs, since the sheet names
+several riding animations. **It closed none.**
+
+All 14 prop-drawing animations (12 distinct index sets) are **animal-buddy mounts**, frames
+alternating DK with the buddy: Rambi, Expresso, Winky, Enguarde. There is no minecart animation and
+no steel keg among them. The sheet's *Steel Keg Ride*, *Ride Look* and both *Minecart* captions
+remain unmatched, and the reason is not the one A.14 gave.
+
+**What was actually gained.** Every one of those animations draws its DK frames from
+`0x538..0x594`, so that region is **DK's mounted/riding pose set** — a fact no other pass had
+established. `anim 27` (8 frames, `0x538`) draws DK alone from the same region, which makes
+`0x538..0x594` the region to search for *Ride Look* and *Steel Keg Ride* rather than the whole block.
+
+**Where the missing animations probably are.** If a minecart or keg animation exists, it likely
+draws only the *vehicle*, with DK composited by game code — in which case it never touches DK's
+range and neither selection will ever surface it. That is a hypothesis, not a result; confirming it
+means finding the vehicle sprites (the survey shows minecart art near `0x1C88..0x1CB0`) and checking
+which animations reference them.
+
+**Recorded because the prediction was confident and wrong.** "Lift the filter and ~6 runs close" was
+reasoning from the caption list to the ROM without checking the ROM. The filter was worth lifting —
+it produced a real fact — but not for the stated reason.
 
 **Palette as the identity test, not a caveat.** A survey rendered in one palette locates boundaries
 by silhouette but cannot prove *identity* — so the palette-flip check above does that job instead,

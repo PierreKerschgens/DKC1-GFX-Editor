@@ -176,7 +176,8 @@ if (args.Length >= 3 && args[1] == "--anim-sheet")
         int.Parse(ArgValue(args, "--to") ?? "999"),
         int.Parse(ArgValue(args, "--frames") ?? "24"),
         int.Parse(ArgValue(args, "--cell") ?? "46"),
-        float.Parse(ArgValue(args, "--zoom") ?? "1"));
+        float.Parse(ArgValue(args, "--zoom") ?? "1"),
+        Array.IndexOf(args, "--props") >= 0);
 }
 
 if (args.Length >= 3 && args[1] == "--contact-range")

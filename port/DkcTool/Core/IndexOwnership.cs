@@ -327,10 +327,19 @@ namespace DkcTool.Core
         /// </summary>
         public static int RunAnimSheet(Rom rom, int low, int high, string outPath, SKColor[] palette,
                                        int fromGroup, int toGroup, int maxFrames = 24, int cell = 46,
-                                       float maxScale = 1f)
+                                       float maxScale = 1f, bool propsOnly = false)
         {
             var scripts = AnimationTable.ParseAll(rom).Where(s => s.Ok && s.FrameCount > 0).ToList();
-            var inside = scripts.Where(s => s.ImageIndices.All(i => i >= low && i <= high)).ToList();
+
+            // Default selection is "draws entirely inside the range". That is right for matching a
+            // strip by its own frames, but it excludes every animation that draws the character
+            // *and* something else -- a held barrel, a minecart, a mounted animal buddy (A.14).
+            // Those are exactly the animations the sheet's riding captions name, so propsOnly
+            // selects the complement: touches the range, and also draws outside it.
+            var inside = propsOnly
+                ? scripts.Where(s => s.ImageIndices.Any(i => i >= low && i <= high)
+                                  && s.ImageIndices.Any(i => i < low || i > high)).ToList()
+                : scripts.Where(s => s.ImageIndices.All(i => i >= low && i <= high)).ToList();
 
             var groups = inside
                 .GroupBy(s => string.Join(",", s.Distinct.OrderBy(x => x)))
@@ -346,8 +355,9 @@ namespace DkcTool.Core
                 .ToList();
 
             var page = groups.Skip(fromGroup).Take(Math.Max(0, toGroup - fromGroup + 1)).ToList();
-            Console.WriteLine($"=== animation sheet 0x{low:X}..0x{high:X} ===");
-            Console.WriteLine($"{inside.Count} in-block animation(s) -> {groups.Count} distinct index set(s); " +
+            Console.WriteLine($"=== animation sheet 0x{low:X}..0x{high:X}" +
+                              (propsOnly ? " (prop/mount animations only)" : "") + " ===");
+            Console.WriteLine($"{inside.Count} animation(s) -> {groups.Count} distinct index set(s); " +
                               $"rendering {fromGroup}..{Math.Min(toGroup, groups.Count - 1)}");
 
             const int labelW = 168, pad = 4;
