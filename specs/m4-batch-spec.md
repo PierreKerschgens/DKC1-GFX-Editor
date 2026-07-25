@@ -390,17 +390,28 @@ candidate list.
 | 12 "Start Crawl" (+13) | 3 | `0xE0..0x12C` |
 | 20 "Ground Slap" | 74 | `0x2E4..0x32C` |
 
-**Proposed, distinctive action, not yet confirmed** — each is a recognisable pose sequence but rests
-on my reading alone, and that reading has been wrong twice in this spec:
+**Checked against the sheet, one by one.** Each proposal from the first pass was verified by
+cropping its captioned strip and comparing it with the animation. **Two survived, one was rejected
+outright, one resolved only to a region, and two remain unconfirmed** — a 2-of-6 hit rate, which is
+roughly what A.9 should have led anyone to expect.
 
-| captioned run | candidate | why |
+| captioned run | proposal | verdict |
 |---|---|---|
-| 3 "Bang Chest" | 100 (`0x7A4`) | front-facing, hands beating at chest |
-| 14 "Death" | 16 (`0x27C`) | falls, tumbles, ends prone |
-| 30 "Swim" | 90 (`0x3A4`) | prone, horizontal stroking |
-| 33 "Sad/Failure" | 84 / 85 (`0x5B4`) | crouches, then lies down |
-| 31 "Victory" | 72 (`0x6B8`) or 79 (`0x748`) | arms raised overhead |
-| 2 / 4 "Swap" | 78 (`0x55C`) | front-facing, arms out, walking toward camera |
+| 30 "Swim" | 90 (`0x3A4..0x3DC`) | **confirmed** — horizontal breaststroke, head right, arms reaching; identical posture |
+| 14 "Death" | 16 (`0x27C`) | **confirmed** — front recoil, head-over-heels tumble, ends prone |
+| 3 "Bang Chest" | 100 (`0x7A4`) | **region confirmed, animation ambiguous** — anim 99 draws the same front-facing chest-beating |
+| 33 "Sad/Failure" | 84 / 85 (`0x5B4`) | **rejected** — the sheet is DK *standing* dejected; 84/85 has him lying down |
+| 31 "Victory" | 72 (`0x6B8`) | **unconfirmed** — the sheet runs neutral → arms overhead; anim 72 is 3 frames of arms-up only |
+| 2 / 4 "Swap" | 78 (`0x55C`) | **unconfirmed** — the sheet is a turn-and-wave handoff; anim 78 is arms spread, walking |
+
+> **A verification method that was itself wrong, and nearly cost a correct match.** Death was first
+> checked by rendering the *index range* `0x27C..0x2C4`, which showed no tumble and looked like a
+> rejection. But an animation's frames are not its index range — anim 16's draw order visits frames
+> the contiguous range does not contain, and vice versa. Only `--anim-sheet`, which walks the script,
+> shows what an animation actually plays. **Verify against draw order, never against an index range.**
+
+**Running total: 6 confirmed** (Walk, Roll, Start Crawl, Ground Slap, Swim, Death), 1 region-level
+(Bang Chest), 1 rejected, and the rest open.
 
 **Unresolved, with the reason recorded rather than left blank:**
 
