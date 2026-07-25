@@ -110,7 +110,9 @@ The sheet side is done; the ROM side is ~20 % done. `m4-batch-spec.md` A.10–A.
 `0x2E4..0x32C`, Swim → `0x3A4..0x3DC`, Death → anim 16. Treat as unverified — **three** pairings in
 this tier have now been falsified, including Roll.
 
-**Known wrong:** `0x330..0x37C` is Run, not Roll (A.20). **Roll is unidentified again.**
+**Known wrong:** `0x330..0x37C` is Run, not Roll (A.20). `0x188..0x1FC` is not Roll either — booted
+and falsified (A.21), despite being an unmistakable somersault on the contact sheet. **Roll is
+unidentified.** Static identification is **0 for 4**; use `--poison-index`, not more montages.
 `0x130..0x17C` is a climb/hang, not the Run — its height swells 40→72→36, a one-shot, and DK is
 upright with both arms overhead.
 
@@ -156,6 +158,14 @@ distinguish them by silhouette. Needs someone who knows the game.
    stock's walk centre-X spans 4 px smoothly and stock's run spans 9 px with a 6 px single-frame
    step. Before calling a placement rule done, run it against an animation with *different* motion
    characteristics (A.20).
+10. **When a search keeps returning negative results, improve the *test*, not the guesses.** Four
+    wrong DK pairings were each cheap to try — one manifest, one boot — so building an instrument
+    never won against trying the next candidate, and the guesses ended up costing far more than the
+    tool did. `--poison-index` took one commit and should have existed at A.14 (A.21).
+11. **Never ask an operator to notice an absence.** "Did the new art appear?" failed four times;
+    imported art can resemble stock closely, and a move lasting under a second cannot be judged from
+    a still. Ask a question with a positive, unmistakable answer — "did DK explode into static?" —
+    and always pair a negative result with a positive control on a *confirmed* range (A.21).
 
 ---
 
@@ -175,6 +185,19 @@ Research/inspection, all read-only:
 --baseline <lo>..<hi>                opaque bbox per sprite + foot-line spread (bob measurement)
 --coords <lo>..<hi>                  placement bbox vs opaque bbox per slot, and their slack
 ```
+
+**The mapping oracle** (writes an output ROM, but only garbage — never use it as a base for real work):
+
+```
+--poison-index <lo>..<hi> --out <rom.sfc>
+```
+
+Overwrites a range's char data with noise; headers, placements and pointers untouched, so every
+animation plays as before and only the pixels turn to static. Boot it and whichever action turns DK
+into garbage is drawn from that range. **Ask "did DK explode?", never "did the art change?"** — the
+second question is one operators cannot reliably answer and it has produced four wrong conclusions
+(A.21). Bisects: poison wide, halve on a hit. Always pair with a positive control on a *confirmed*
+range (`port/dk-poison-run.sfc` poisons Run) before trusting a negative.
 
 `--baseline` measures a *run*; `--coords` explains a *slot*. When a placement calculation looks
 right but lands wrong by a small constant, `--coords` is the one that finds it (A.19).

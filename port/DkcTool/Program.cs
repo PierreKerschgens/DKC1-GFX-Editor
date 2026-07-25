@@ -405,6 +405,57 @@ if (args.Length >= 3 && args[1] == "--inspect")
     return RunInspect(rom, Convert.ToInt32(args[2], 16));
 }
 
+if (args.Length >= 3 && args[1] == "--poison-index")
+{
+    // dotnet run -- <rom> --poison-index <lo>..<hi> --out <rom.sfc>
+    //
+    // A mapping oracle. Overwrites a range's *char data* with noise, leaving the header,
+    // placement table, size and pointer untouched -- so every animation still plays exactly
+    // as before and only the pixels become garbage. Boot it, perform actions, and whichever
+    // action turns DK into static is drawn from this range.
+    //
+    // This exists because "does the new art appear?" turned out to be a question operators
+    // cannot always answer (spec A.21): imported art can resemble stock closely enough, or be
+    // placed off-screen-ish, or the tester may not have triggered the move at all. Garbage is
+    // unmistakable, which makes a *negative* result trustworthy -- and a negative result is
+    // what the whole strip->animation search keeps needing.
+    //
+    // Bisects: poison a wide range, and if the action garbles, halve it.
+    string[] pzB = args[2].Split("..");
+    if (pzB.Length != 2) { Console.Error.WriteLine("--poison-index needs <loHex>..<hiHex>"); return 1; }
+    string pzOut = ArgValue(args, "--out") ?? throw new ArgumentException("--poison-index needs --out");
+    int pzLo = Convert.ToInt32(pzB[0], 16), pzHi = Convert.ToInt32(pzB[1], 16);
+
+    var pzSeen = new HashSet<int>();
+    int pzCount = 0, pzBytes = 0;
+    foreach (int index in DkcTool.Core.GfxTable.EnumerateImageIndices(rom))
+    {
+        if (index < pzLo || index > pzHi) continue;
+        int addr = DkcTool.Core.GfxTable.ResolveSpriteAddress(rom, index);
+        // Aliased indices share one sprite; poisoning it twice is harmless but miscounts.
+        if (!pzSeen.Add(addr)) continue;
+
+        byte[] head = rom.ReadBytes(addr, 8);
+        int charStart = addr + 8 + 2 * (head[0] + head[1] + head[3]);
+        int charLen = (head[5] << 5) + head[7] * 0x20;
+        if (charLen <= 0) continue;
+
+        var noise = new byte[charLen];
+        for (int i = 0; i < charLen; i++)
+            noise[i] = DkcTool.Core.Emulator.PoisonProbe.Noise(charStart + i);
+        rom.WriteBytes(charStart, noise);
+        pzCount++;
+        pzBytes += charLen;
+    }
+
+    rom.Save(pzOut);
+    Console.WriteLine($"Poisoned {pzCount} sprite(s) ({pzBytes} bytes of char data) in 0x{pzLo:X}..0x{pzHi:X}.");
+    Console.WriteLine($"Wrote {pzOut}");
+    Console.WriteLine("Headers, placements and pointers are untouched -- animations play as before,");
+    Console.WriteLine("only the pixels are noise. Whichever action turns DK into static uses this range.");
+    return 0;
+}
+
 if (args.Length >= 3 && args[1] == "--coords")
 {
     // dotnet run -- <rom> --coords <lo>..<hi>

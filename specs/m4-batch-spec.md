@@ -834,6 +834,46 @@ large enough for the boot to see. Here it was.
 **The DK run is now complete**: mapping confirmed in motion, placement confirmed in motion, both
 axes measured against stock.
 
+### A.21 Roll falsified again, and the instrument that should have been built first
+
+`0x188..0x1FC` was imported into and booted: **the roll art is unchanged**. The identification is
+wrong. Static identification of DK animations is now **0 for 4** (Walk→4/108, Start Crawl→3,
+Roll→`0x330..0x37C`, Roll→`0x188..0x1FC`).
+
+**The aspect-ratio scan was a better method that still failed.** It is genuinely stronger than
+frame-count matching — it found a real, distinctive tumble that no counting would have surfaced, and
+it found it in seconds. But it answers *what does this sprite look like*, and gotcha 1 says in as
+many words that this never establishes what the game uses it for. The lesson did not need
+rediscovering; it needed **applying**, and a scan that produces a confident-looking picture is
+exactly the thing that makes the rule feel skippable.
+
+**The deeper problem is that the test itself is unreliable.** "Does the new art appear?" asks the
+operator to notice an *absence*, against art they have seen a hundred times, during a move lasting
+under a second. The screenshots from this boot show DK low with arms extended forward — a posture
+that matches stock `0x33C..0x36C` (Run) closely enough that the frames cannot be told apart from a
+still. A negative result from that question is not worth much, and the whole strip→animation search
+consists of negative results.
+
+**So the question was changed.** `--poison-index <lo>..<hi> --out <rom>` overwrites a range's
+**char data** with `PoisonProbe`'s noise, leaving the header, placement table, size and pointer
+untouched. Every animation still plays exactly as before; only the pixels become garbage. Verified:
+the poisoned sprites render as unmistakable static in DK's own silhouette.
+
+That converts the question from "did the art change?" to "**did DK explode?**" — which needs no
+comparison, no memory of what stock looks like, and no still-frame judgement. It also makes
+*negative* results trustworthy for the first time, and it **bisects**: poison a wide range, and if
+the action garbles, halve it. log₂ boots instead of one guess per boot.
+
+**Run a positive control with it.** `port/dk-poison-run.sfc` poisons the *confirmed* Run range, so
+"running turns DK to static" validates the method on this exact ROM and level before any negative
+result is trusted. Every past falsification in this spec cost a wrong conclusion partly because the
+negative half was never controlled.
+
+**Why this was not built five sections ago,** which is the reusable part: each individual guess
+looked cheap — one manifest, one boot — so building an instrument never won against just trying the
+next candidate. Four failures in, the guesses have cost far more than the tool did. **When a search
+is producing repeated negative results, stop improving the guesses and start improving the test.**
+
 ### A.13 `0x858..0x8A8` is **not** DK — it is a foreign island (corrected)
 
 > **This section previously concluded "DK at reduced scale". That was wrong**, and it was wrong in
