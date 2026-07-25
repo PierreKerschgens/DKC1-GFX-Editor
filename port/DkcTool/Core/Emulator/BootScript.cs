@@ -40,19 +40,27 @@ namespace DkcTool.Core.Emulator
         /// Tapping stops after this many frames, so a capture taken well after level entry is not
         /// disturbed by a Start press (which pauses, in-game).
         ///
-        /// Tuned, not guessed: at 2,100 snes9x never reaches the level at all (black frame at
-        /// 2,700) -- the taps at ~2,192 and ~2,492 are what get past the file select and the
-        /// level card. 2,600 keeps exactly the taps the working snes9x path needs.
-        /// **This value is snes9x-specific**; bsnes-mercury is still on the file select at that
-        /// point and needs a longer window. See the spec's capture-point discussion.
+        /// Tuned by bisection, and the window is narrow: the tap at ~2,192 is what enters the
+        /// level, and the tap at ~2,492 *pauses* it. At 2,100 snes9x never reaches the level at
+        /// all (black at 2,700); at 2,600 it reaches the level and is then paused -- the scene is
+        /// frozen (settle 90 and 240 give an identical frame), input is ignored (300 frames of
+        /// Right moves nothing), and no sprite is re-DMA'd. At 2,300 the game is live: DK walks
+        /// and the screen scrolls.
+        ///
+        /// This is also what made bsnes-mercury look broken. DKC1's pause overlay dims the scene
+        /// with a dither pattern, which at 256px reads as garbled vertical striping -- mercury's
+        /// timing had it paused where snes9x's did not.
+        ///
+        /// **The value is snes9x-specific.** Any other core needs its own window, which is the
+        /// reason the gate prefers a save state over this script.
         /// </summary>
-        public const int TapWindow = 2600;
+        public const int TapWindow = 2300;
 
         /// <summary>Runs <paramref name="frames"/> frames from power-on. With
         /// <paramref name="pressStart"/> false (the default for the gate) no input is sent at
         /// all, which is what keeps different cores in the same state -- see
         /// <see cref="AttractFrame"/>.</summary>
-        public static void RunTo(LibretroCore core, int frames, bool pressStart)
+        public static void RunTo(LibretroCore core, int frames, bool pressStart, int tapWindow = TapWindow)
         {
             if (!pressStart)
             {
@@ -60,19 +68,19 @@ namespace DkcTool.Core.Emulator
                 return;
             }
 
-            RunToWithStartTaps(core, frames);
+            RunToWithStartTaps(core, frames, tapWindow);
         }
 
         /// <summary>Start-tap script that walks intro -> title -> file select -> level. Needed to
         /// reach gameplay, but see <see cref="AttractFrame"/> for why the gate avoids it.</summary>
-        public static void RunToWithStartTaps(LibretroCore core, int frames)
+        public static void RunToWithStartTaps(LibretroCore core, int frames, int tapWindow = TapWindow)
         {
             for (int f = 0; f < frames; f += TapInterval)
             {
                 int chunk = System.Math.Min(TapInterval, frames - f);
 
                 // Past the tap window the level is loaded; further Start presses would pause it.
-                if (f >= TapWindow || chunk <= 8)
+                if (f >= tapWindow || chunk <= 8)
                 {
                     core.RunFrames(chunk);
                     continue;
@@ -87,11 +95,11 @@ namespace DkcTool.Core.Emulator
         /// <summary>Boots <paramref name="romBytes"/> and runs the script to
         /// <paramref name="frames"/>, returning the final frame.</summary>
         public static SkiaSharp.SKBitmap CaptureAt(string corePath, byte[] romBytes, int frames,
-                                                  bool pressStart = false)
+                                                  bool pressStart = false, int tapWindow = TapWindow)
         {
             using var core = new LibretroCore(corePath);
             core.LoadGame(romBytes);
-            RunTo(core, frames, pressStart);
+            RunTo(core, frames, pressStart, tapWindow);
             return FrameCapture.ToBitmap(core);
         }
     }

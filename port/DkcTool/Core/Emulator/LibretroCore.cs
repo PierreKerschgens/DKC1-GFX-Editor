@@ -40,6 +40,7 @@ namespace DkcTool.Core.Emulator
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)] private delegate void GetSystemInfoFn(out RetroSystemInfo info);
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)] private delegate UIntPtr SerializeSizeFn();
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)] private delegate bool SerializeFn(IntPtr data, UIntPtr size);
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] private delegate bool UnserializeFn(IntPtr data, UIntPtr size);
 
         [StructLayout(LayoutKind.Sequential)]
         private struct RetroGameInfo
@@ -115,6 +116,7 @@ namespace DkcTool.Core.Emulator
         private readonly GetAvInfoFn _retroGetAvInfo;
         private readonly SerializeSizeFn _retroSerializeSize;
         private readonly SerializeFn _retroSerialize;
+        private readonly UnserializeFn _retroUnserialize;
 
         private bool _gameLoaded, _disposed;
         private string? _tempRomPath;
@@ -187,6 +189,7 @@ namespace DkcTool.Core.Emulator
             _retroGetAvInfo = Bind<GetAvInfoFn>("retro_get_system_av_info");
             _retroSerializeSize = Bind<SerializeSizeFn>("retro_serialize_size");
             _retroSerialize = Bind<SerializeFn>("retro_serialize");
+            _retroUnserialize = Bind<UnserializeFn>("retro_unserialize");
 
             Bind<GetSystemInfoFn>("retro_get_system_info")(out var sysInfo);
             LibraryName = Marshal.PtrToStringAnsi(sysInfo.LibraryName) ?? "?";
@@ -366,9 +369,12 @@ namespace DkcTool.Core.Emulator
         /// importer produced.</summary>
         public void LoadGame(byte[] romBytes, string? path = null)
         {
-            // A need_fullpath core ignores the in-memory buffer entirely, so give it a real file.
-            // The control ROMs only exist in memory, hence the temp copy (cleaned up on Dispose).
-            if (NeedsFullPath)
+            // Always hand the core a real path, even when it also takes the ROM in memory.
+            // bsnes cores derive their save-RAM path from it, and a core loaded without one
+            // behaves differently enough to land the game on a different screen -- which cost a
+            // long debugging detour when state capture (no path) and --emu-boot (path) diverged
+            // despite both cores being provably deterministic.
+            if (NeedsFullPath || path == null)
             {
                 _tempRomPath = Path.Combine(Path.GetTempPath(),
                     $"dkctool-{Guid.NewGuid():N}{Path.GetExtension(path) ?? ".sfc"}");
@@ -391,6 +397,12 @@ namespace DkcTool.Core.Emulator
                 if (!_retroLoadGame(ref info))
                     throw new InvalidOperationException("retro_load_game failed -- core rejected the ROM.");
                 _gameLoaded = true;
+
+                // The libretro spec requires the frontend to call retro_get_system_av_info after
+                // retro_load_game, and bsnes cores rely on it: skipping it left the game running
+                // but rendering a garbled scene. Calling it here means every code path gets it,
+                // rather than only the ones that happened to want the AV info.
+                _retroGetAvInfo(out _);
             }
             finally
             {
@@ -434,6 +446,29 @@ namespace DkcTool.Core.Emulator
                     throw new InvalidOperationException("retro_serialize failed.");
                 Marshal.Copy(buffer, managed, 0, size);
                 return managed;
+            }
+            finally { Marshal.FreeHGlobal(buffer); }
+        }
+
+        /// <summary>
+        /// Restores a core save state. The state carries CPU/PPU/WRAM/**VRAM**, not the ROM, so a
+        /// state captured on one ROM can be restored while running a slightly different one --
+        /// which is exactly what the V3 gate needs (capture once on the baseline, replay on each
+        /// control ROM from an identical starting state, with no input script and no timing drift).
+        ///
+        /// The VRAM caveat is real and must be respected by callers: right after a restore, video
+        /// memory still holds the tiles the *original* ROM had DMA'd. An imported sprite only
+        /// appears once the game re-DMAs that frame, so run some frames before capturing.
+        ///
+        /// Returns false if the core rejects the state (some cores checksum the ROM).
+        /// </summary>
+        public bool LoadState(byte[] state)
+        {
+            IntPtr buffer = Marshal.AllocHGlobal(state.Length);
+            try
+            {
+                Marshal.Copy(state, 0, buffer, state.Length);
+                return _retroUnserialize(buffer, (UIntPtr)state.Length);
             }
             finally { Marshal.FreeHGlobal(buffer); }
         }

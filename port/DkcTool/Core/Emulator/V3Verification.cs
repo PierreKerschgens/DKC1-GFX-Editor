@@ -19,6 +19,9 @@ namespace DkcTool.Core.Emulator
     {
         public const string DefaultCore = "port/emu/cores/snes9x_libretro.dylib";
 
+        /// <summary>Save state the gate prefers as its capture point, when one exists.</summary>
+        public const string DefaultStateName = "jungle";
+
         /// <summary>Indices re-imported when building the control ROMs.</summary>
         public const int DefaultIndexCount = 60;
 
@@ -41,11 +44,17 @@ namespace DkcTool.Core.Emulator
             System.IO.Path.Combine(GoldenDirectory,
                 $"{System.IO.Path.GetFileNameWithoutExtension(corePath)}-f{frame:D5}.png");
 
+        /// <summary>Golden for a save-state capture point (named, not frame-numbered).</summary>
+        public static string GoldenPath(string corePath, string stateName) =>
+            System.IO.Path.Combine(GoldenDirectory,
+                $"{System.IO.Path.GetFileNameWithoutExtension(corePath)}-{stateName}.png");
+
         public sealed class Result
         {
             public string Core = "";
             public int CaptureFrame;
             public int IndicesImported;
+            public string CapturePoint = "";
             public string BaselineSummary = "";
             public string GoldenPath = "";
             public string RelocatedDiff = "";
@@ -56,7 +65,10 @@ namespace DkcTool.Core.Emulator
 
         public static Result Run(Rom baseRom, string corePath = DefaultCore,
                                  int indexCount = DefaultIndexCount,
-                                 int captureFrame = BootScript.InGameFrame)
+                                 int captureFrame = BootScript.InGameFrame,
+                                 string stateName = DefaultStateName,
+                                 int settleFrames = StateCapture.SettleFrames,
+                                 bool walk = true)
         {
             var result = new Result { Core = corePath, CaptureFrame = captureFrame };
 
@@ -65,11 +77,33 @@ namespace DkcTool.Core.Emulator
             var vandalised = BuildControlRom(baseRom, indexCount, flattenTo: 5, out _);
             result.IndicesImported = imported;
 
-            // pressStart: the in-game capture point is only reachable with the tap script.
-            bool tap = captureFrame >= BootScript.FileSelectFrame;
-            using var baselineFrame = BootScript.CaptureAt(corePath, baselineBytes, captureFrame, tap);
-            using var relocatedFrame = BootScript.CaptureAt(corePath, relocated, captureFrame, tap);
-            using var vandalFrame = BootScript.CaptureAt(corePath, vandalised, captureFrame, tap);
+            // Prefer a save-state capture point when one exists for this core: it pins the game
+            // state instead of a frame number, so no input script can mistime and no cross-core
+            // drift applies. Falls back to the tap script when no state has been captured.
+            string statePath = StateCapture.PathFor(corePath, stateName);
+            bool useState = System.IO.File.Exists(statePath);
+            result.CapturePoint = useState ? $"state {statePath}" : $"scripted frame {captureFrame}";
+
+            SKBitmap baselineFrame, relocatedFrame, vandalFrame;
+            if (useState)
+            {
+                byte[] state = System.IO.File.ReadAllBytes(statePath);
+                baselineFrame = StateCapture.CaptureFromState(corePath, baselineBytes, state, settleFrames, walk);
+                relocatedFrame = StateCapture.CaptureFromState(corePath, relocated, state, settleFrames, walk);
+                vandalFrame = StateCapture.CaptureFromState(corePath, vandalised, state, settleFrames, walk);
+            }
+            else
+            {
+                // pressStart: the in-game capture point is only reachable with the tap script.
+                bool tap = captureFrame >= BootScript.FileSelectFrame;
+                baselineFrame = BootScript.CaptureAt(corePath, baselineBytes, captureFrame, tap);
+                relocatedFrame = BootScript.CaptureAt(corePath, relocated, captureFrame, tap);
+                vandalFrame = BootScript.CaptureAt(corePath, vandalised, captureFrame, tap);
+            }
+
+            using var _b = baselineFrame;
+            using var _r = relocatedFrame;
+            using var _v = vandalFrame;
 
             // Gate 0 -- the baseline must match a human-inspected reference frame for THIS core.
             //
@@ -82,7 +116,9 @@ namespace DkcTool.Core.Emulator
             //
             // A core with no golden therefore FAILS rather than passes -- an unverified core is
             // an unverified result.
-            string goldenPath = GoldenPath(corePath, captureFrame);
+            string goldenPath = useState
+                ? GoldenPath(corePath, stateName)
+                : GoldenPath(corePath, captureFrame);
             result.GoldenPath = goldenPath;
             result.BaselineSummary = $"{baselineFrame.Width}x{baselineFrame.Height}";
 

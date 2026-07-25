@@ -23,3 +23,6 @@ port/emu/cores/
 # V3 reference frames — frames of a copyrighted game, same rule as the ROM.
 # Capture locally with --emu-golden and inspect before trusting.
 port/emu/goldens/
+
+# V3 save states — derived from a copyrighted ROM, same rule as goldens.
+port/emu/states/

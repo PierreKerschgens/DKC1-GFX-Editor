@@ -62,6 +62,11 @@ if (args.Length >= 2 && args[1] == "--stats-m2b")
     return M2bFeasibility.Run(rom);
 }
 
+if (args.Length >= 2 && args[1] == "--emu-state")
+{
+    return RunEmuState(args[0], args);
+}
+
 if (args.Length >= 2 && args[1] == "--emu-golden")
 {
     return RunEmuGolden(args[0], args);
@@ -579,7 +584,15 @@ static int RunEmuBoot(string romPath, string[] args)
     Console.WriteLine($"AV info      : {w}x{h} @ {fps:F2} Hz, pixel format {emu.CorePixelFormat}");
 
     var sw = System.Diagnostics.Stopwatch.StartNew();
-    emu.RunFrames(frames);
+    string? script = ArgValue(args, "--script");
+    if (script == "taps")
+        DkcTool.Core.Emulator.BootScript.RunTo(emu, frames, pressStart: true,
+            int.Parse(ArgValue(args, "--tap-window") ?? DkcTool.Core.Emulator.BootScript.TapWindow.ToString()));
+    else
+        emu.RunFrames(frames);
+
+    int holdRight = int.Parse(ArgValue(args, "--hold-right") ?? "0");
+    if (holdRight > 0) emu.HoldFor(holdRight, DkcTool.Core.Emulator.Joypad.Right);
     sw.Stop();
 
     Console.WriteLine($"Ran          : {frames} frames in {sw.ElapsedMilliseconds} ms " +
@@ -744,10 +757,14 @@ static int RunVerifyV3(Rom rom, string[] args)
     int frame = int.Parse(ArgValue(args, "--frames")
         ?? DkcTool.Core.Emulator.BootScript.InGameFrame.ToString());
 
-    var r = DkcTool.Core.Emulator.V3Verification.Run(rom, core, count, frame);
+    int settle = int.Parse(ArgValue(args, "--settle")
+        ?? DkcTool.Core.Emulator.StateCapture.SettleFrames.ToString());
+    bool walk = Array.IndexOf(args, "--no-walk") < 0;
+    var r = DkcTool.Core.Emulator.V3Verification.Run(rom, core, count, frame,
+        DkcTool.Core.Emulator.V3Verification.DefaultStateName, settle, walk);
 
     Console.WriteLine($"Core            : {r.Core}");
-    Console.WriteLine($"Capture frame   : {r.CaptureFrame} ({r.IndicesImported} indices re-imported per control ROM)");
+    Console.WriteLine($"Capture point   : {r.CapturePoint} ({r.IndicesImported} indices re-imported per control ROM)");
     Console.WriteLine($"Baseline        : {r.BaselineSummary}");
     Console.WriteLine($"Gate1 relocated : {r.RelocatedDiff}   (expect: identical)");
     Console.WriteLine($"Gate2 vandal    : {r.VandalDiff}   (expect: localised difference)");
@@ -766,15 +783,62 @@ static int RunEmuGolden(string romPath, string[] args)
     int frame = int.Parse(ArgValue(args, "--frames")
         ?? DkcTool.Core.Emulator.BootScript.InGameFrame.ToString());
 
-    string path = DkcTool.Core.Emulator.V3Verification.GoldenPath(core, frame);
+    // Match the gate: if a save state exists for this core, the golden must come from the
+    // same capture point the gate will use, or it would be comparing different scenes.
+    string stateName = ArgValue(args, "--name") ?? DkcTool.Core.Emulator.V3Verification.DefaultStateName;
+    string statePath = DkcTool.Core.Emulator.StateCapture.PathFor(core, stateName);
+    bool useState = File.Exists(statePath);
+
+    string path = useState
+        ? DkcTool.Core.Emulator.V3Verification.GoldenPath(core, stateName)
+        : DkcTool.Core.Emulator.V3Verification.GoldenPath(core, frame);
     Directory.CreateDirectory(Path.GetDirectoryName(path)!);
 
-    using var bmp = DkcTool.Core.Emulator.BootScript.CaptureAt(core, File.ReadAllBytes(romPath), frame,
-        pressStart: frame >= DkcTool.Core.Emulator.BootScript.FileSelectFrame);
+    int gsettle = int.Parse(ArgValue(args, "--settle")
+        ?? DkcTool.Core.Emulator.StateCapture.SettleFrames.ToString());
+    bool gwalk = Array.IndexOf(args, "--no-walk") < 0; // match the gate default
+    string gout = ArgValue(args, "--out") ?? "";
+    using var bmp = useState
+        ? DkcTool.Core.Emulator.StateCapture.CaptureFromState(core, File.ReadAllBytes(romPath),
+                                                              File.ReadAllBytes(statePath), gsettle, gwalk)
+        : DkcTool.Core.Emulator.BootScript.CaptureAt(core, File.ReadAllBytes(romPath), frame,
+              pressStart: frame >= DkcTool.Core.Emulator.BootScript.FileSelectFrame);
+    Console.WriteLine($"Capture point: {(useState ? "state " + statePath : "scripted frame " + frame)}");
+    if (gout.Length > 0) path = gout;
     SaveBitmap(bmp, path);
 
     Console.WriteLine($"Wrote golden : {path} ({bmp.Width}x{bmp.Height})");
     Console.WriteLine("NOW LOOK AT IT. It must show the expected in-game scene. A garbled or black");
     Console.WriteLine("frame will be accepted as the reference and make every later run pass on garbage.");
+    return 0;
+}
+
+// Creates a save-state capture point for a core (specs/v3-emulator-spec.md).
+// Drives the tap script to --frames, serializes, and writes both the state and a
+// preview PNG which MUST be inspected before the state is trusted.
+//   dotnet run -- <rom> --emu-state --name jungle [--core P] [--frames N]
+static int RunEmuState(string romPath, string[] args)
+{
+    string core = ArgValue(args, "--core") ?? DkcTool.Core.Emulator.V3Verification.DefaultCore;
+    string name = ArgValue(args, "--name") ?? "default";
+    int frames = int.Parse(ArgValue(args, "--frames")
+        ?? DkcTool.Core.Emulator.BootScript.InGameFrame.ToString());
+
+    string path = DkcTool.Core.Emulator.StateCapture.PathFor(core, name);
+    Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+
+    int tapWindow = int.Parse(ArgValue(args, "--tap-window")
+        ?? DkcTool.Core.Emulator.BootScript.TapWindow.ToString());
+    int stHoldRight = int.Parse(ArgValue(args, "--hold-right") ?? "0");
+    var (state, frame) = DkcTool.Core.Emulator.StateCapture.Create(core, File.ReadAllBytes(romPath),
+                                                                   frames, tapWindow, stHoldRight);
+    using (frame)
+    {
+        File.WriteAllBytes(path, state);
+        SaveBitmap(frame, path + ".png");
+        Console.WriteLine($"Wrote state  : {path} ({state.Length} bytes) at frame {frames}");
+        Console.WriteLine($"Preview      : {path}.png ({frame.Width}x{frame.Height})");
+    }
+    Console.WriteLine("LOOK AT THE PREVIEW. If it isn't the scene you want, adjust --frames.");
     return 0;
 }
