@@ -258,6 +258,43 @@ namespace DkcTool.Core
             data.SaveTo(fs);
         }
 
+        /// <summary>
+        /// Lists animations drawing entirely inside an index range, grouped by frame count -- the
+        /// query the remaining manual step needs (m4-batch-spec Part E: "which sheet strip maps to
+        /// which animation"). Once A.8 has fixed a character's block, a strip of N poses can only
+        /// be an animation of N frames *within that block*, which is a far smaller candidate set
+        /// than A.7's 440-way frame-count match.
+        ///
+        /// "Entirely inside" is deliberate: an animation with one index outside the range draws
+        /// something that is not this character (a held barrel, a mounted buddy), so its frame
+        /// count does not correspond 1:1 to a strip of this character's poses.
+        /// </summary>
+        public static int RunAnimsIn(Rom rom, int low, int high, int? frameFilter)
+        {
+            var scripts = AnimationTable.ParseAll(rom).Where(s => s.Ok && s.FrameCount > 0).ToList();
+            var inside = scripts.Where(s => s.ImageIndices.All(i => i >= low && i <= high)).ToList();
+
+            Console.WriteLine($"=== animations drawing entirely inside 0x{low:X}..0x{high:X} ===");
+            Console.WriteLine($"{inside.Count} of {scripts.Count} non-empty animation(s)");
+            Console.WriteLine();
+
+            foreach (var g in inside.GroupBy(s => s.FrameCount).OrderBy(g => g.Key))
+            {
+                if (frameFilter.HasValue && g.Key != frameFilter.Value) continue;
+                Console.WriteLine($"  {g.Key,3} frames -> {g.Count(),2} animation(s): " +
+                                  string.Join(", ", g.Select(s => $"{s.Animation}")));
+                if (frameFilter.HasValue)
+                    foreach (var s in g)
+                    {
+                        var d = s.Distinct.OrderBy(x => x).ToList();
+                        Console.WriteLine($"        anim {s.Animation,3}: {d.Count,3} distinct, " +
+                                          $"0x{d[0]:X}..0x{d[^1]:X}");
+                        Console.WriteLine($"          {string.Join(" ", s.ImageIndices.Select(i => $"0x{i:X}"))}");
+                    }
+            }
+            return 0;
+        }
+
         /// <summary>Groups a sorted index set into maximal runs of consecutive stride-4 indices.</summary>
         public static IEnumerable<(int Low, int High, int Count)> Runs(IEnumerable<int> indices)
         {

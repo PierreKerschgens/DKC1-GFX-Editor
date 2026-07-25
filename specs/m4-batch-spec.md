@@ -151,6 +151,10 @@ table derails within a few instructions and hits an out-of-range command.
 **What this buys.** A manifest entry can name an *animation id* and let the indices derive from it,
 instead of listing 13 hex indices per strip by hand. ~45 strips × one id each.
 
+> **Superseded in part by A.9.** Everything above holds as a way to *write down* a mapping. The
+> paragraphs below, which treat frame count as the thing that narrows the search, do not survive
+> contact with a strip whose identity is independently known. A.9 has the measurement.
+
 **What it does not buy.** Matching a strip to an animation by frame count alone is ambiguous:
 
 ```
@@ -213,6 +217,40 @@ The last slot was read off the render by the project owner, not inferred: `0x950
 indistinct, and was initially written up here as "transitional or unused". It is DK. Recorded
 because it is the failure mode of this whole method — a slot too murky to caption confidently is a
 slot to *show someone*, not to guess at.
+
+### A.9 Frame-count matching does not work — it selects the wrong animation (negative result)
+
+A.7 called count-matching *ambiguous* and treated A.8's block as the fix: restrict to DK's 69
+in-block animations and a strip's pose count should narrow it to a handful. Tested against strips
+whose identity is known independently — **the sheet's captions are legible to a human at 3× zoom,
+even though no parser can read them** — it does not narrow toward the right answer. It excludes it.
+
+| sheet strip | poses | count-matched candidates in DK's block | correct? |
+|---|---|---|---|
+| 6, captioned **"Walk"** | 20 | 5 (anims 2, 3, 5, 14, 20 — crawl, climb, tumble) | **none.** The real walk is anim 4/108, `0x8C..0xDC`, **21 frames** — excluded by the count filter |
+| 10, captioned **"Jump"** | 19 | 1 (anim 74, `0x2E4..0x32C`) — a *unique* match | **no.** Anim 74 keeps DK grounded with arms forward, ending bent over; it reads as the hand-slap, not a jump |
+
+Two attempts, two wrong answers, the second from the strongest signal the method can emit (a unique
+in-block match). The 20 is not a slicing artefact — the band genuinely ends after 20 poses, checked
+at the right edge.
+
+**Why it cannot work, which A.5 already implied.** The author redrew the set to his own taste and
+said so: he removed frames that were "the same frames played in reverse" and others that "are
+looped". His frame counts are therefore *independent* of the ROM's, so agreement between a strip's
+pose count and an animation's frame count carries no information. A.7 read coincidence as evidence.
+
+**Consequences.**
+- The `animation` shorthand (C.2) stays, but only as a way to *record* a mapping already known. It
+  is not a discovery mechanism, and this spec should never have implied it was.
+- `LengthMismatch` will fire often and correctly. It is the guard that caught this.
+- **8 of 46 DK strips have pose counts (13, 17, 22, 25) that no DK animation has at all.** Those
+  cannot map 1:1 under M4's scope in principle, not merely in practice.
+- M4 replaces sprite images and repoints the GFX table; it does not rewrite animation bytecode. So
+  wherever the counts differ, a faithful import needs either stale leftover frames or script
+  editing — **the latter is a new milestone, not a detail of this one.**
+
+The mapping is therefore a per-strip caption-read plus an action match, with both sides now tooled:
+`--slice` for the sheet, `--anims-in` + `--contact-range` for the ROM.
 
 **Palette as the identity test, not a caveat.** A survey rendered in one palette locates boundaries
 by silhouette but cannot prove *identity* — so the palette-flip check above does that job instead,
@@ -372,9 +410,13 @@ V4c is the one that matters most — it is where the re-scan trap (85 % waste, 1
   remains: `0x858..0x8AC` (small DK-proportioned sprites) is flagged but unconfirmed. It does not
   block authoring a manifest for any strip well inside the block.
 - **Assigning sheet strips to index runs.** A.8 gives the index *block*; it does not say which
-  13-pose strip maps to which run within it. This is now the actual remaining manual step, and it
-  is much smaller than the original question — an ordered walk of ~46 strips against a known
-  561-index range, with the QA overlay (C.4) making a wrong mapping visible before boot.
+  strip maps to which run within it, and A.9 shows frame count cannot decide it. The remaining step
+  is a per-strip caption-read plus action match against `--contact-range` renders — mechanical, but
+  46 of them, and not automatable by any signal measured so far.
+- **What to do where the counts differ (A.9).** A strip with no equal-length animation cannot be
+  imported 1:1 without either leaving stale ROM frames or editing the animation scripts. Script
+  editing is out of M4's scope and is the natural M5. Until it exists, a faithful full-character
+  import is not achievable for every strip — which is a scope finding the PRD does not yet reflect.
 - **Hitboxes.** 500 re-posed frames make M2b's Part G drift report load-bearing rather than
   advisory. Still out of scope, still auto-derivable from the opaque bbox.
 - **Does the target hack need palette edits?** A.1 says no for these two sheets — they are already
@@ -397,3 +439,4 @@ V4c is the one that matters most — it is where the re-scan trap (85 % waste, 1
 | Crash mid-batch leaves an expanded ROM with no expansion record | C.3: `--batch` never expands; `--expand` is a separate, already-gated step |
 | Derived indices drift silently if the walk breaks | V4f: 440/440 parse asserted |
 | Strip assigned the wrong animation id | Length mismatch refuses (C.2); QA overlay annotates each pose with its resolved index |
+| **Strip assigned by frame count** | **A.9: does not work — 0 for 2, including a unique match. Match by caption + action, never by count** |

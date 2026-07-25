@@ -108,6 +108,21 @@ if (args.Length >= 2 && args[1] == "--whose")
                               ArgValue(args, "--palette") ?? "Donkey Kong 1P");
 }
 
+if (args.Length >= 3 && args[1] == "--anims-in")
+{
+    // dotnet run -- <rom> --anims-in <loHex>..<hiHex> [--frames N]
+    string[] aiBounds = args[2].Split("..");
+    if (aiBounds.Length != 2)
+    {
+        Console.Error.WriteLine("--anims-in needs <loHex>..<hiHex>, e.g. 0x8C..0x950");
+        return 1;
+    }
+    int aiFrames = int.TryParse(ArgValue(args, "--frames"), out int f) ? f : -1;
+    return IndexOwnership.RunAnimsIn(rom, Convert.ToInt32(aiBounds[0], 16),
+                                     Convert.ToInt32(aiBounds[1], 16),
+                                     aiFrames < 0 ? (int?)null : aiFrames);
+}
+
 if (args.Length >= 3 && args[1] == "--contact-range")
 {
     // dotnet run -- <rom> --contact-range <loHex>..<hiHex> --contact out.png [--palette <name>]
