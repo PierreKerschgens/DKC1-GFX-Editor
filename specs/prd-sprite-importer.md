@@ -203,9 +203,31 @@ Not part of this PRD.
   existing slot") did not survive contact with the data: a re-tiled pose fits its
   original slot only 1.7% of the time, so M2b implements FR6 as **relocation into
   scanned free space + repoint** — still no ROM expansion, so M3 is unaffected.
+- **M2c — Widening the free-space pool** (unplanned, inserted before M3).
+  ✅ **Done 2026-07-25** (`specs/m2c-free-space-spec.md`). Asked whether the allocator's
+  pool could be widened instead of paying for ExHiROM. It can, by 15 KB (77 → 92 KB,
+  99 poses) — and the same pass measured *why* the other 74 KB is not free. The 15 KB
+  is real but nowhere near a character's worth, which is what made M3 unavoidable.
 - **M3 — ROM expansion.** FR7; import a pose larger than its slot.
+  ✅ **Done 2026-07-25** (`specs/m3-expansion-spec.md`). `--expand` writes a reversible
+  ledger entry and `--revert` reconstructs the original (sha256-checked and gated);
+  `Expansion.ExtendedRuns`/`FreeRunsFor` are the allocator source for an expanded ROM.
+  `--verify-m3 --all-cores`: **6/6 cores pass**. Getting there meant fixing a real bug —
+  a stale mirrored ExHiROM header at `0x40FFC0`, which only `bsnes_libretro` caught.
+  V2b cumulative against an expanded ROM: 2,711/2,714 sprites round-trip into the
+  extended half, 53 % of 3.8 MB used.
+  **Supersedes FR7**, which describes expansion as appending banks and bumping the size
+  byte. That is wrong for this ROM and fails totally — see the spec's B.1.
 - **M4 — Batch + report.** FR8 over a manifest; QA overlay sheet.
-- **M5 (optional) — Sheet auto-slicing** and/or **QA GUI viewer.**
+  ✅ **Done 2026-07-25** (`specs/m4-batch-spec.md`). `--slice` (segmentation + stable
+  strip/pose numbering), `Manifest`, `--batch` (one pristine scan, one ledger,
+  report-and-continue, QA overlay), `--verify-m4` (V4a–V4f green; V4d 2/2 cores by
+  default, 6/6 under `--all-cores`). Also answered the milestone's blocking unknown:
+  **DK owns image indices `0x8C..0x950` (562 slots); Diddy begins at `0x954`** — located
+  from M0's `0x8C` seed and confirmed by palette flip (spec A.8).
+  **Amends §6 and FR8** — the input sheets are not pre-sliced, so slicing landed here
+  rather than in M5.
+- **M5 (optional) —** ~~Sheet auto-slicing~~ (absorbed into M4) and/or **QA GUI viewer.**
 
 ## 10. Technical approach
 
@@ -228,8 +250,27 @@ Not part of this PRD.
 
 ## 12. Open questions
 
-- Per-sprite VRAM/char ceiling the game enforces? (Determines max tiles/pose.)
-- Where is safe free space vs. required expansion for DK/DK Jr.'s frame set?
-- How is the pose→image-index mapping provided (hand-authored manifest vs. derived
-  from the animation tables in `Animation.cs`)?
-- Does the target hack need palette edits too, or reuse stock `Donkey Kong 1P`?
+- ~~Per-sprite VRAM/char ceiling?~~ **Answered (M2b): 88 chars.** Enforced as a refusal;
+  it is also what automatically catches the slicer's ~4 % mis-merges (m4 A.3).
+- ~~Safe free space vs. required expansion for DK/DK Jr.'s frame set?~~ **Answered
+  (M2c + M4 A.6): expansion is required, not optional.** The stock pool is 92 KB / 99
+  poses after widening; the two sheets need 808 KB, and **DK alone needs 487 KB — 5.3×
+  the pool.** No amount of widening closes that (M2c's entire recovery was 15 KB).
+  Against M3's extended space it is 21 %.
+- ~~How is the pose→image-index mapping provided?~~ **Answered (M4 A.7/A.8): both, split
+  by axis.** The *index* side derives from the animation tables (440 scripts ported,
+  440/440 parse); the *assignment* of a sheet strip to an animation is hand-authored,
+  because the sheet's captions are rendered pixels and cannot be read as metadata.
+  A.8 narrows the search space to DK's 562-slot block.
+- ~~Does the target hack need palette edits?~~ **Answered (M4 A.1): no, for these two
+  sheets.** Both are already `Donkey Kong 1P` — 16 distinct opaque colours, 15 matching
+  exactly, the 16th being pure black used only in row captions. Unverified for any
+  other character's sheet.
+
+**Still open:**
+- **Which sheet strip maps to which animation.** A.8 gives DK's index block; it does not
+  say which of the ~46 strips belongs to which run inside it. This is the remaining
+  manual step and the one place a wrong answer replaces the right sprite on the wrong
+  frame. Mitigated by the length-mismatch refusal and the QA overlay, not eliminated.
+- **Hitboxes** (§7) — still out of scope, still auto-derivable from the opaque bbox.
+  ~500 re-posed frames make M2b's drift report load-bearing rather than advisory.
