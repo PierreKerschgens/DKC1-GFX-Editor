@@ -721,10 +721,28 @@ systems commensurable rather than to weaken the gate. **When a placement calcula
 correct and lands wrong by a small constant, suspect the units before the algebra** — `--coords` is
 the instrument for that, as `--baseline` is for the run-level spread.
 
-**Still owed: an in-game boot.** Every number above says the reconciled build is at least as good
-as the confirmed-in-play `dk-move-aligned2.sfc` and better positioned absolutely. That is a
-measurement, and A.16's rule stands — measurement has been wrong before. `port/dk-move-reconciled.sfc`
-is built and unbooted.
+**Booted, and the result is worth stating carefully.** `port/dk-move-reconciled.sfc` was played:
+**still smooth, and no visible difference to the feet.** Three separate claims come out of that with
+three different strengths, and collapsing them into "confirmed" would be the same overclaiming A.16
+warned about:
+
+- **Confirmed — no regression.** The reconciled build plays as smoothly as `dk-move-aligned2.sfc`,
+  which was itself confirmed in play. Defaulting alignment on is safe. This was the load-bearing
+  risk and it is retired.
+- **Not confirmed — the 2 px correction.** It is below the threshold of visibility in play. The
+  measurement says the placement is more correct; the boot cannot tell. **The practical value of
+  this change is the gate, not visible quality** — it makes alignment defaultable by making the
+  identity exact. Anyone expecting to *see* A.19 in motion is expecting the wrong thing.
+- **Partially retired — the knuckle-anchor risk.** Its failure signature (A.17's closing paragraph)
+  was a *consistently* sunk or hovering DK across the whole cycle — gross, not subtle, and it was
+  not observed. So `0xE0`'s lowest opaque pixel is at worst near-foot. Not proven; the obvious
+  failure simply did not appear.
+
+**The generalisable point.** Sub-3px placement error is not play-observable, so `--baseline` and
+`--coords` are not merely convenient here — for this size of defect they are the *only* instruments
+that work. That inverts A.16's rule without repealing it: booting remains the only thing that
+establishes what a sprite is *used for*, and measurement remains the only thing that resolves where
+it *sits* to within a few pixels. Use each for what it can actually settle.
 
 ### A.13 `0x858..0x8A8` is **not** DK — it is a foreign island (corrected)
 

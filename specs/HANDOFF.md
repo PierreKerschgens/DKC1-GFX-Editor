@@ -76,9 +76,10 @@ It also fixed a real error, not just a gate: the old build sat **2 px high and 1
 (bottom 125..128 vs stock's 127..129). The reconciled build is 127..130 / centre-X 126..130, which
 matches stock exactly. That was the residual risk A.17 flagged and could not test.
 
-**`port/dk-move-reconciled.sfc` is built and has not been booted.** Every number says it is at least
-as good as the confirmed-in-play `dk-move-aligned2.sfc`, but per gotcha 1 that is a measurement, and
-measurements here have been wrong before. **Boot it.**
+**Booted and confirmed smooth** (`port/dk-move-reconciled.sfc`) — no regression against the
+already-confirmed `dk-move-aligned2.sfc`, so the default flip is safe. The 2 px correction itself was
+**not** visible in play and should not be claimed as confirmed: sub-3px placement error is below what
+play can resolve, which is why `--baseline` and `--coords` exist. A.19 has the three-way split.
 
 (One fix from the earlier attempt was kept: `BuildSyntheticSheet` preserves each pose's original
 origin instead of top-aligning them all, which makes the fixture resemble a real sheet.)
@@ -136,6 +137,10 @@ distinguish them by silhouette. Needs someone who knows the game.
    silently rebase every future gate on a hacked image. Use `--emu-diff`.
 7. **DK knuckle-walks.** Upright = idle, on all fours = locomotion. Getting this backwards
    invalidated two "confirmed" pairings at once.
+8. **Booting settles *what a sprite is for*; measuring settles *where it sits*.** The companion to
+   gotcha 1, and it does not repeal it. A 2 px placement error is invisible in play — the A.19 build
+   was booted and read as no different. Don't ask the emulator a question `--baseline`/`--coords`
+   answer better, and don't record "looked fine" as confirmation of a sub-3px claim (A.19).
 
 ---
 
