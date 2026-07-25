@@ -794,11 +794,36 @@ The walk never exposed it. Stock's walk centre-X spans 4 px and moves smoothly; 
 
 Vertical is fine here: imported bottoms span 4 px (the sheet's own bob) against stock's 8 px.
 
-**Open — the fix has a real trade-off, not an obvious answer.** Strip-level X (anchor a run to one
-centre, let the sheet's art carry the motion) removes the inherited jitter, but **breaks V4d's
-identity**: re-importing a slot's own art needs `originX = OpaqueMinX` per pose, which only per-pose
-centring gives. The two requirements are genuinely opposed, so this wants to be a per-run choice
-rather than a new global default.
+**Implemented as `--flat-x`, and it stays opt-in.** Strip-level X anchors a run to one centre and
+lets the sheet's art carry the horizontal motion. It **cannot** be the default: a single shared
+centre is not each pose's own centre, so it breaks V4d's identity, which needs `originX =
+OpaqueMinX` per pose. The two requirements are genuinely opposed — unlike A.19's, this tension does
+not dissolve under a change of coordinates — so it is a per-run choice.
+
+The centre is the **mean** of the replaced frames' centres, not the reference pose's own: a run's
+first frame is as likely as any to be a horizontal extreme, and averaging cannot be thrown off by
+one outlier the way picking can. (Here both give 126–127, so the choice is not load-bearing on this
+run — it is chosen for the runs where it would be.)
+
+| build | foot line | centre X |
+|---|---|---|
+| stock run | 122..130, 8 px | 122..131, **9 px** |
+| `--align-strip` (default) | 124..128, 4 px | 122..131, **9 px** — stock's, frame for frame |
+| **`--flat-x`** | 124..128, 4 px | **127..127, 0 px** |
+
+**Y is deliberately left alone.** The 4 px vertical is a *double* oscillation — the sheet's strip 7
+bottoms run 374 373 374 375 377 377 375 373 373 374 375 374 376 376 377 377 376 375 373 373, two
+footfalls per cycle, which is what a run should do. It is the artist's motion and flattening it
+would be the error A.17 warned about from the other direction. Only X was inheriting something it
+should not.
+
+**Note what `--flat-x` gives up.** Cropping each pose to its own bbox destroys whatever inter-pose
+horizontal relationship the sheet had, so the choice is between *inherited* jitter (the replaced
+animation's) and *no* horizontal motion at all. There is no third option available from a sheet, and
+A.17's original reasoning about page layout is why. For a cycle whose horizontal travel is driven by
+the game moving the sprite — which a run is — zero is the right answer.
+
+`port/dk-run-flatx.sfc` is built and unbooted. V4 stays 7/7 (the flag defaults off).
 
 ### A.13 `0x858..0x8A8` is **not** DK — it is a foreign island (corrected)
 

@@ -1,0 +1,187 @@
+{
+  "version": 1,
+  "sourceRomSha256": "628147468c3539283197f58f03b94df49758a332831857481ea9cc31645f0527",
+  "allocations": [
+    {
+      "imageIndex": "0x330",
+      "offset": "0x7A22",
+      "length": "0x3C0",
+      "previousPointer": "0xD7620A",
+      "source": "run-test.json strip7:0",
+      "timestamp": "2026-07-25T22:50:36.0330150\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x334",
+      "offset": "0x174BA",
+      "length": "0x35A",
+      "previousPointer": "0xD7646A",
+      "source": "run-test.json strip7:1",
+      "timestamp": "2026-07-25T22:50:36.0385800\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x338",
+      "offset": "0x17814",
+      "length": "0x39E",
+      "previousPointer": "0xD766E6",
+      "source": "run-test.json strip7:2",
+      "timestamp": "2026-07-25T22:50:36.0440820\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x33C",
+      "offset": "0x17BB2",
+      "length": "0x35A",
+      "previousPointer": "0xD76984",
+      "source": "run-test.json strip7:3",
+      "timestamp": "2026-07-25T22:50:36.0523990\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x340",
+      "offset": "0x13E9C1",
+      "length": "0x35A",
+      "previousPointer": "0xD76C82",
+      "source": "run-test.json strip7:4",
+      "timestamp": "2026-07-25T22:50:36.0582840\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x344",
+      "offset": "0x13ED1B",
+      "length": "0x404",
+      "previousPointer": "0xD76FE6",
+      "source": "run-test.json strip7:5",
+      "timestamp": "2026-07-25T22:50:36.0639520\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x348",
+      "offset": "0x13F11F",
+      "length": "0x3C0",
+      "previousPointer": "0xD772F0",
+      "source": "run-test.json strip7:6",
+      "timestamp": "2026-07-25T22:50:36.0700590\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x34C",
+      "offset": "0x13F4DF",
+      "length": "0x3C0",
+      "previousPointer": "0xD77632",
+      "source": "run-test.json strip7:7",
+      "timestamp": "2026-07-25T22:50:36.0767160\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x350",
+      "offset": "0x13F89F",
+      "length": "0x3C0",
+      "previousPointer": "0xD77952",
+      "source": "run-test.json strip7:8",
+      "timestamp": "2026-07-25T22:50:36.0830210\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x354",
+      "offset": "0x17FA3C",
+      "length": "0x3C0",
+      "previousPointer": "0xD77CB6",
+      "source": "run-test.json strip7:9",
+      "timestamp": "2026-07-25T22:50:36.0892590\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x358",
+      "offset": "0x18EED0",
+      "length": "0x404",
+      "previousPointer": "0xD77FD6",
+      "source": "run-test.json strip7:10",
+      "timestamp": "2026-07-25T22:50:36.0954930\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x35C",
+      "offset": "0x18F2D4",
+      "length": "0x404",
+      "previousPointer": "0xD782FC",
+      "source": "run-test.json strip7:11",
+      "timestamp": "2026-07-25T22:50:36.1043340\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x360",
+      "offset": "0x18F6D8",
+      "length": "0x404",
+      "previousPointer": "0xD78600",
+      "source": "run-test.json strip7:12",
+      "timestamp": "2026-07-25T22:50:36.1111170\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x364",
+      "offset": "0x18FADC",
+      "length": "0x3E2",
+      "previousPointer": "0xD78948",
+      "source": "run-test.json strip7:13",
+      "timestamp": "2026-07-25T22:50:36.1178400\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x368",
+      "offset": "0x1CE9E0",
+      "length": "0x448",
+      "previousPointer": "0xD78C2A",
+      "source": "run-test.json strip7:14",
+      "timestamp": "2026-07-25T22:50:36.1247250\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x36C",
+      "offset": "0x13FC5F",
+      "length": "0x39E",
+      "previousPointer": "0xD78EEA",
+      "source": "run-test.json strip7:15",
+      "timestamp": "2026-07-25T22:50:36.1305930\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x370",
+      "offset": "0x1CEE28",
+      "length": "0x35A",
+      "previousPointer": "0xD79188",
+      "source": "run-test.json strip7:16",
+      "timestamp": "2026-07-25T22:50:36.1374610\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x374",
+      "offset": "0x1CF182",
+      "length": "0x39E",
+      "previousPointer": "0xD79426",
+      "source": "run-test.json strip7:17",
+      "timestamp": "2026-07-25T22:50:36.1433470\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x378",
+      "offset": "0x1CF520",
+      "length": "0x39E",
+      "previousPointer": "0xD796E0",
+      "source": "run-test.json strip7:18",
+      "timestamp": "2026-07-25T22:50:36.1493500\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x37C",
+      "offset": "0x1CF8BE",
+      "length": "0x3C0",
+      "previousPointer": "0xD7995C",
+      "source": "run-test.json strip7:19",
+      "timestamp": "2026-07-25T22:50:36.1555770\u002B00:00",
+      "fillByte": "0x00"
+    }
+  ],
+  "expansion": null
+}

@@ -179,8 +179,12 @@ Research/inspection, all read-only:
 `--baseline` measures a *run*; `--coords` explains a *slot*. When a placement calculation looks
 right but lands wrong by a small constant, `--coords` is the one that finds it (A.19).
 
-Writing: `--import`, `--batch` (both take `--dry-run`; `--batch` also `--no-align-strip`),
-`--expand`, `--revert`.
+Writing: `--import`, `--batch` (both take `--dry-run`; `--batch` also `--no-align-strip` and
+`--flat-x`), `--expand`, `--revert`.
+
+`--flat-x` anchors a run to one horizontal centre instead of matching each replaced frame's. Use it
+when the imported art does not lunge and the replaced animation does (A.20). It **cannot** become
+the default — it breaks V4d's identity by construction — so it is a per-run judgement call.
 `--revert` undoes imports **and** expansion, byte-exactly, across a chain of runs (V4g).
 
 Test ROMs in `port/` (gitignored): `dk-walk-test.sfc` (walk art in idle slots),

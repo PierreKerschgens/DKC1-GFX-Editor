@@ -1035,7 +1035,9 @@ static int RunBatchCli(Rom rom, string[] args)
         anchorBottom: Array.IndexOf(args, "--anchor-bottom") >= 0,
         // Strip alignment is the default (spec A.19). `--align-strip` is kept as a no-op so
         // existing invocations and the specs' recorded command lines still work.
-        alignStrip: Array.IndexOf(args, "--no-align-strip") < 0);
+        alignStrip: Array.IndexOf(args, "--no-align-strip") < 0,
+        // Opt-in, and it must stay opt-in: it breaks the V4d identity by construction (A.20).
+        flatX: Array.IndexOf(args, "--flat-x") >= 0);
 
     Console.WriteLine();
     Console.WriteLine($"Imported             : {report.Imported.Count()}/{plan.Count}, " +

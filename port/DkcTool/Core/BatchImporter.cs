@@ -70,7 +70,7 @@ namespace DkcTool.Core
         /// </summary>
         public static BatchReport Run(Rom rom, List<PlannedPose> plan, SKBitmap sheetBitmap, SKColor[] palette,
             ImportLedger ledger, List<FreeSpace.Run> freeRuns, bool dryRun, string sourceTag,
-            bool anchorBottom = false, bool alignStrip = true)
+            bool anchorBottom = false, bool alignStrip = true, bool flatX = false)
         {
             var report = new BatchReport();
 
@@ -95,32 +95,54 @@ namespace DkcTool.Core
             // first pose happens to be the deepest.
             //
             // Horizontally the sheet gives nothing usable -- a strip's X positions are page layout,
-            // not animation offsets -- so X is handled per pose instead, by matching the replaced
-            // frame's *centre* rather than its left edge. Left-edge anchoring makes a wider pose
-            // grow rightwards and drags the body sideways; centring reproduces whatever horizontal
+            // not animation offsets -- so X defaults to per pose, matching the replaced frame's
+            // *centre* rather than its left edge. Left-edge anchoring makes a wider pose grow
+            // rightwards and drags the body sideways; centring reproduces whatever horizontal
             // travel the original frame had. Measured: 7 px of centre drift before, 4 px in stock.
             //
-            // Together those make alignment an exact identity when a slot's own artwork is
-            // re-imported into it, which is what V4d gate 1 demands and why this is now the
-            // default rather than opt-in.
+            // Per-pose X is what keeps alignment an exact identity when a slot's own artwork is
+            // re-imported into it (originX lands back on OpaqueMinX for either parity), which is
+            // what V4d gate 1 demands and why alignment can be the default at all.
+            //
+            // But it inherits the replaced animation's per-frame variation -- the very thing
+            // per-pose anchoring was condemned for on the Y axis (A.17) -- and on the DK *run* that
+            // is a visible defect (A.20). Stock's run lunges: its bbox centre jumps 9 px over two
+            // frames, which reads fine there because the drawn body moved with it. Imported art
+            // that does not lunge just teleports sideways. `flatX` is the escape hatch: anchor the
+            // whole run to one centre and let the sheet's own art carry the horizontal motion.
+            //
+            // It cannot be the default -- a single shared centre is not each pose's own centre, so
+            // it breaks the V4d identity. The two requirements are genuinely opposed, so this is a
+            // per-run choice (`--flat-x`), not a new global rule.
             var originY = new Dictionary<(int Strip, int Position), int>();
             var originX = new Dictionary<(int Strip, int Position), int>();
             if (alignStrip)
             {
                 foreach (var strip in plan.GroupBy(p => p.Strip))
                 {
+                    // One read per pose: SpriteSlot.Read decodes the sprite and scans the whole
+                    // pointer table for aliases, so it is far too expensive to call twice.
+                    var slots = strip.ToDictionary(p => p.Position, p => SpriteSlot.Read(rom, p.ImageIndex));
+
                     var refPose = strip.OrderBy(p => p.Position).First();
                     int baseline = refPose.RectY + refPose.RectH - 1;
-                    int reference = SpriteSlot.Read(rom, refPose.ImageIndex).OpaqueMaxY;
+                    int reference = slots[refPose.Position].OpaqueMaxY;
+
+                    // The mean of the replaced frames' centres, not the reference pose's own:
+                    // a run's first frame is as likely as any to be a horizontal extreme, and
+                    // averaging cannot be thrown off by one outlier the way picking can.
+                    int flatCentre = flatX
+                        ? (int)Math.Round(slots.Values.Average(s => (s.OpaqueMinX + s.OpaqueMaxX) / 2.0))
+                        : 0;
 
                     foreach (var p in strip)
                     {
                         int belowBaseline = (p.RectY + p.RectH - 1) - baseline;
                         originY[(p.Strip, p.Position)] = reference + belowBaseline - (p.RectH - 1);
 
-                        var slot = SpriteSlot.Read(rom, p.ImageIndex);
-                        int slotCentreX = (slot.OpaqueMinX + slot.OpaqueMaxX) / 2;
-                        originX[(p.Strip, p.Position)] = slotCentreX - (p.RectW - 1) / 2;
+                        var slot = slots[p.Position];
+                        int centreX = flatX ? flatCentre : (slot.OpaqueMinX + slot.OpaqueMaxX) / 2;
+                        originX[(p.Strip, p.Position)] = centreX - (p.RectW - 1) / 2;
                     }
                 }
             }
