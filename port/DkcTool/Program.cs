@@ -100,6 +100,46 @@ if (args.Length >= 2 && args[1] == "--stats-anim")
     return AnimationTable.Run(rom);
 }
 
+if (args.Length >= 2 && args[1] == "--whose")
+{
+    // dotnet run -- <rom> --whose [seedIndexHex]   (default 0x8c: M0's confirmed DK sprite)
+    string seed = args.Length >= 3 && !args[2].StartsWith("--") ? args[2] : "8c";
+    return IndexOwnership.Run(rom, Convert.ToInt32(seed, 16), ArgValue(args, "--contact"),
+                              ArgValue(args, "--palette") ?? "Donkey Kong 1P");
+}
+
+if (args.Length >= 3 && args[1] == "--contact-range")
+{
+    // dotnet run -- <rom> --contact-range <loHex>..<hiHex> --contact out.png [--palette <name>]
+    // Renders an arbitrary index range, to see what sits between a component's runs.
+    string[] bounds = args[2].Split("..");
+    if (bounds.Length != 2)
+    {
+        Console.Error.WriteLine("--contact-range needs <loHex>..<hiHex>, e.g. 0xE0..0x200");
+        return 1;
+    }
+    int lo = Convert.ToInt32(bounds[0], 16), hi = Convert.ToInt32(bounds[1], 16);
+    string contactOut = ArgValue(args, "--contact") ?? "contact.png";
+    string contactPal = ArgValue(args, "--palette") ?? "Donkey Kong 1P";
+    if (!PalettePointers.Table.TryGetValue(contactPal, out int cpAddr))
+    {
+        Console.Error.WriteLine($"Unknown palette '{contactPal}'.");
+        return 1;
+    }
+    var cpPalette = Palette.Read(rom, cpAddr);
+    var cpValid = GfxTable.EnumerateImageIndices(rom).ToHashSet();
+    // --stride N samples every Nth populated index, to scan a wide span in one sheet when
+    // locating a block boundary; stride 1 (default) renders every index in the range.
+    int cpStride = int.Parse(ArgValue(args, "--stride") ?? "1");
+    var cpRange = Enumerable.Range(0, (hi - lo) / 4 + 1).Select(i => lo + i * 4)
+                            .Where(cpValid.Contains)
+                            .Where((_, i) => i % cpStride == 0).ToList();
+    float cpZoom = float.Parse(ArgValue(args, "--zoom") ?? "1");
+    IndexOwnership.WriteContactSheet(rom, cpRange, cpPalette, contactOut, cpZoom);
+    Console.WriteLine($"Wrote {contactOut}: 0x{lo:X}..0x{hi:X}, {cpRange.Count} populated index(es), palette '{contactPal}'.");
+    return 0;
+}
+
 if (args.Length >= 2 && args[1] == "--slice")
 {
     // dotnet run -- <rom> --slice <sheet.png> [--overlay out.png]

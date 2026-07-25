@@ -167,9 +167,58 @@ draw from a tight index range** — so once one DK animation is identified, its 
 table are overwhelmingly likely to be DK's too. Identifying the character's block once, by
 inspection, is the actual manual step.
 
-**Still open:** nothing here labels an animation as DK's. That is one decode-and-look pass over a
-few hundred candidates, not a research problem — but it is not done, and M4 cannot produce a
-working import until it is.
+**Now answered — see A.8.** Nothing in the *scripts* labels an animation as DK's, but the seed
+`0x8C` plus a rendered contact sheet settles it directly.
+
+### A.8 DK's block, located from the M0 seed
+
+M0 recorded that image index `0x8C` decodes to a correctly-posed Donkey Kong
+(`prd-sprite-importer.md` §9), so DK's indices can be grown from a known point rather than searched
+for. `Core/IndexOwnership.cs` (`--whose`, `--contact-range`) does both halves of the pass.
+
+**The graph method alone is not sufficient — recorded because it looks like it should be.** Treating
+animation↔index as a bipartite graph and taking the connected component containing `0x8C` converges
+in two rounds to 14 animations / 56 indices in five runs. It is tempting to stop there: it is
+derived, deterministic, and the closure terminating fast reads as convergence on the truth. It is a
+**lower bound**. Rendering the gap between its runs (`0xE0..0x1FC`, which the closure never reached)
+shows 72 *more* indices, every one of them DK. The component only spans indices that DK animations
+share; DK sprites reachable only from animations outside the component, or from no animation at all,
+are invisible to it — and A.7 already measured that 32.7 % of the GFX table is animation-unreachable.
+
+**What settles it is the contact sheet.** `--contact-range` decodes an index range, crops each
+sprite to its opaque bounds and captions it with its index. A stride-12 survey of the whole
+table (227 cells) shows the character layout at a glance, and the boundary then binary-searches in
+two renders:
+
+| range | contents |
+|---|---|
+| `0x8C..0x854` | DK, continuous |
+| `0x858..0x8AC` | small DK-proportioned sprites (distant/scaled DK) — **the one block worth a second look** |
+| `0x8B0..0x950` | DK, continuous |
+| `0x954..` | Diddy Kong — the character boundary, **confirmed by palette flip** (below) |
+
+**The boundary is confirmed, not eyeballed.** Rendering one range twice — once in `Donkey Kong 1P`,
+once in `Diddy Kong 1P` — inverts cleanly at `0x954`: below it DK is correct and Diddy is a garish
+red mess, above it Diddy resolves with a bright red cap and DK washes out. A sprite drawn with the
+wrong character's palette is visibly wrong, so the flip point *is* the ownership boundary. This is
+the check that answers the A.8 caveat about palette-based identity, and it is cheap enough to repeat
+for any other character: `--contact-range <lo>..<hi> --palette <name>`.
+
+So **DK owns `0x8C..0x950` — 562 indices**. That the DK sheet holds 533 poses (A.1) against 562
+stock DK slots is the corroboration: the sheet's author matched frame counts to the original, and
+the two land within 5 % of each other. Nothing in A.7's frame-count ambiguity could have produced
+that agreement, which is why the visual pass was the right instrument.
+
+The last slot was read off the render by the project owner, not inferred: `0x950` decodes dark and
+indistinct, and was initially written up here as "transitional or unused". It is DK. Recorded
+because it is the failure mode of this whole method — a slot too murky to caption confidently is a
+slot to *show someone*, not to guess at.
+
+**Palette as the identity test, not a caveat.** A survey rendered in one palette locates boundaries
+by silhouette but cannot prove *identity* — so the palette-flip check above does that job instead,
+and it is strictly better evidence than a silhouette. `0x858..0x8AC` (small DK-proportioned sprites)
+is still flagged rather than claimed: it reads as DK in DK's palette, but nobody has run the flip
+against a plausible alternative for it.
 
 ---
 
@@ -285,6 +334,9 @@ Chained imports across sessions stay unsolved and stay refused (`sourceRomSha256
 ```
 dotnet run -- <rom> --slice <sheet.png> [--overlay out.png]        # strip/pose numbering, no writes
 dotnet run -- <rom> --stats-anim                                   # animation id -> indices (A.7)
+dotnet run -- <rom> --whose [seedHex] [--contact out.png]          # index ownership from a seed (A.8)
+dotnet run -- <rom> --contact-range <lo>..<hi> --contact out.png \
+                    [--stride N] [--zoom N] [--palette <name>]     # decode-and-look sheet (A.8)
 dotnet run -- <rom> --batch <manifest.json> --out <rom.sfc> [--dry-run]
 dotnet run -- <rom> --verify-m4
 ```
@@ -314,12 +366,15 @@ V4c is the one that matters most — it is where the re-scan trap (85 % waste, 1
 
 ## Part E — Open questions
 
-- **Which image indices does DK actually own?** Half-answered by A.7: the tables *are* ported now
-  (`--stats-anim`), so a strip can name an animation id instead of 13 hex indices. What remains is
-  labelling — nothing marks an animation as DK's. Frame count narrows most strips to single
-  digits and index locality clusters a character's animations together, so this is one
-  decode-and-look pass, not a research problem. **It is the one thing still blocking a working
-  import**, and it is the first thing to do in M4.
+- ~~**Which image indices does DK actually own?**~~ **Answered (A.8): `0x8C..0x950`, 562 indices;
+  Diddy begins at `0x954`, confirmed by palette flip and read off the render by the project
+  owner.** Located from M0's `0x8C` seed with `--whose` + `--contact-range`. One small follow-up
+  remains: `0x858..0x8AC` (small DK-proportioned sprites) is flagged but unconfirmed. It does not
+  block authoring a manifest for any strip well inside the block.
+- **Assigning sheet strips to index runs.** A.8 gives the index *block*; it does not say which
+  13-pose strip maps to which run within it. This is now the actual remaining manual step, and it
+  is much smaller than the original question — an ordered walk of ~46 strips against a known
+  561-index range, with the QA overlay (C.4) making a wrong mapping visible before boot.
 - **Hitboxes.** 500 re-posed frames make M2b's Part G drift report load-bearing rather than
   advisory. Still out of scope, still auto-derivable from the opaque bbox.
 - **Does the target hack need palette edits?** A.1 says no for these two sheets — they are already
