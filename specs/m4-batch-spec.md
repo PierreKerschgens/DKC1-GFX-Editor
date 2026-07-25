@@ -978,6 +978,46 @@ Round 2 therefore paints **both** ambiguous regions at once: `0x380..0x4FC` spli
 (white/red/light pink) against the brown region in amber. One boot both resolves the ambiguity and
 bisects — the re-run costs nothing extra because the mistake was caught before the boot, not after.
 
+#### Round 2 result — Roll is `0x380..0x3FC`
+
+| action | colour | range |
+|---|---|---|
+| **roll** | white | **`0x380..0x3FC`** |
+| crouching in a narrow place | white | `0x380..0x3FC` |
+| getting hit | red | `0x400..0x47C` |
+| bouncing on an enemy | red → **white** → red | spans both |
+| teetering on a cliff edge | white, then loops red | spans both |
+| swimming | alternates normal / white | spans `0x380..0x3FC` and an unpainted range |
+| both idle animations | normal | (unpainted, as expected) |
+| — | **no amber seen at all** | — |
+| — | **no light pink seen at all** | — |
+
+**Roll went from ~430 candidate indices to 32 in two boots.** For comparison, four rounds of
+silhouette-guessing moved it zero.
+
+**Three results beyond the roll:**
+
+1. **The brown region is not used by any tested action** — nothing painted amber. Combined with
+   round 1, `0x800..0x854`/`0x8AC..0x950` and `0x480..0x4FC` are both untouched by ~20 common
+   actions. Those are the first ranges to suspect of being *not DK*, like `0x858..0x8A8` (A.13).
+
+2. **Jump is now cornered.** It was not amber here and not white in round 1, so it is drawn from a
+   confirmed or characterised range: `0x8C..0xDC`, `0xE0..0x12C`, `0x130..0x17C`, `0x188..0x1FC` or
+   `0x330..0x37C`. Idle, Walk and Run are independently confirmed as other things, which leaves
+   **`0x130..0x17C`** — whose 40→72→36 height arc reads exactly like crouch, apex, landing. The
+   "climb" reading (A.20) is probably wrong and this is probably Jump. One paint round settles it.
+
+3. **Animations interleave across ranges.** The enemy bounce goes red→white→red and the cliff teeter
+   starts white then loops red, so `0x380..0x3FC` and `0x400..0x47C` are a shared *pool*, not one
+   animation each. Swimming alternates between a painted and an unpainted range. **A contiguous
+   index range is not an animation** — gotcha 2 again, now with direct in-play evidence rather than
+   draw-order inference.
+
+The contact sheet for `0x380..0x3FC` shows horizontal, arm-forward poses in `0x380..0x3DC` (which
+matches the swim sighting and the old provisional Swim guess of `0x3A4..0x3DC`) and upright poses in
+`0x3E0..0x3FC`. **Prediction, recorded before the boot so it can be scored:** roll is
+`0x3E0..0x3FC`. Round 3 splits the 32 into four 8-index buckets to check.
+
 **The methodological result.** Every previous round asked one yes/no question and mostly got "no".
 This round asked an operator to *play the game and report colours*, and returned ~15 localisations,
 two structural corrections and a falsifiable lead on jump. The change was not a better hypothesis —

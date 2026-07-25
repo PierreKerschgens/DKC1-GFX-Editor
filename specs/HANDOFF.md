@@ -123,19 +123,25 @@ this tier have now been falsified, including Roll.
 despite being an unmistakable somersault. Static identification is **0 for 4** — use `--paint`, not
 montages.
 
-⚠️ **Every "black" answer in that survey is ambiguous** between `0x380..0x4FC` and the brown region
-(`0x800..0x854`/`0x8AC..0x950`) — the two marker colours were not distinguishable in play. Roll
-included. `port/dk-paint-round2.sfc` re-runs both regions with legible colours.
+**Round 2 (A.22):** **Roll is `0x380..0x3FC`** — 32 indices, from ~430, in two boots. Also: narrow
+crouch → `0x380..0x3FC`; getting hit → `0x400..0x47C`; enemy bounce and cliff teeter span *both*
+ranges; swimming alternates `0x380..0x3FC` with an unpainted range. **No amber and no light pink
+were ever seen**, so `0x800..0x854`/`0x8AC..0x950` and `0x480..0x4FC` are untouched by ~20 common
+actions — suspect them of not being DK, like `0x858..0x8A8`.
 
 **Resolved:** DK has **two** idle animations — standing, and a chest-beating one after several
 seconds. `0x8C..0xDC` (A.16) and the white `0x180..0x32C` sighting are different animations, not a
 contradiction. The chest-beat has its own sheet strip (3, "Bang Chest", 7 poses).
 
 **Open, do not treat as settled:**
-- *Jump* was **unchanged** under paint, so it comes from an already-characterised range.
-  `0x130..0x17C` (called "a climb") fits a jump better than a climb — windup, hold, recovery.
+- *Jump* is cornered: not amber in round 2, not white in round 1, so it draws from a confirmed or
+  characterised range. Idle/Walk/Run are independently something else, which leaves **`0x130..0x17C`**
+  — the 40→72→36 height arc reads as crouch/apex/landing. The A.20 "climb" reading is probably wrong.
+  One paint round settles it.
 - `0x680..0x7FC` paints the **life/balloon HUD**, so it is not purely DK. A.8's ownership claim has
   another shared island in it besides `0x858..0x8A8`.
+- **A contiguous index range is not an animation** — now with direct in-play evidence, not just
+  draw-order inference: the enemy bounce runs red→white→red across two ranges (A.22).
 `0x130..0x17C` is a climb/hang, not the Run — its height swells 40→72→36, a one-shot, and DK is
 upright with both arms overhead.
 
