@@ -67,6 +67,25 @@ if (args.Length >= 2 && args[1] == "--stats-freespace")
     return FreeSpaceResearch.Run(rom);
 }
 
+if (args.Length >= 2 && args[1] == "--stats-m4")
+{
+    // dotnet run -- <rom> --stats-m4 <sheet.png> [<sheet.png> ...] [--palette <name>]
+    string m4PalName = ArgValue(args, "--palette") ?? "Donkey Kong 1P";
+    if (!PalettePointers.Table.TryGetValue(m4PalName, out int m4PalAddr))
+    {
+        Console.Error.WriteLine($"Unknown palette '{m4PalName}'.");
+        return 1;
+    }
+    var m4Sheets = args.Skip(2).TakeWhile(a => !a.StartsWith("--")).ToArray();
+    if (m4Sheets.Length == 0)
+    {
+        Console.Error.WriteLine("--stats-m4 needs one or more sheet PNGs.");
+        return 1;
+    }
+    return SheetResearch.Run(m4Sheets, Palette.Read(rom, m4PalAddr), m4PalName,
+        ArgValue(args, "--overlay"));
+}
+
 if (args.Length >= 2 && args[1] == "--stats-m3")
 {
     return Expansion.Run(rom);
