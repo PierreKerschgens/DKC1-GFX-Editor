@@ -662,6 +662,70 @@ measurement.
 by silhouette but cannot prove *identity* — so the palette-flip check above does that job instead,
 and it is strictly better evidence than a silhouette.
 
+### A.19 The two coordinate systems, reconciled — alignment is now the default
+
+A.17 left `--align-strip` opt-in behind a blocker it called structural: the slicer measures
+**opaque-pixel** bounds while a slot exposes **tile-placement** bounds, so a sheet-derived offset
+could not reproduce a slot-derived one and V4d's identity gate refused. That is resolved. Alignment
+is the **default**; `--no-align-strip` opts out (`--align-strip` is kept as an accepted no-op).
+
+**First, the gap was measured rather than assumed.** New read-only command `--coords <lo>..<hi>`
+prints both boxes per slot:
+
+| range | slots | boxes disagree | max \|dMinY\| | max \|dMinX\| |
+|---|---|---|---|---|
+| first 60 indices | 60 | 36 | 7 px | 1 px |
+| walk `0xE0..0x12C` | 20 | **20** | 6 px | 0 px |
+
+So the slack is real, it is per-sprite, and it is almost entirely **vertical** — which is why the
+vertical bob was the hard one and X fell out on the first try.
+
+**Two defects, and both had to go for the identity to close.**
+
+1. **Wrong currency.** `reference` was the target slot's `PlacementMaxY` — a *tile* bottom —
+   subtracted from a *sheet* baseline, which is an ink bottom. That injects the slot's grid slack
+   into the run's absolute height. Fixed by reading the slot's **opaque** box:
+   `SpriteSlot` now carries `OpaqueMinX/MinY/MaxX/MaxY` alongside the placement four, computed in
+   the same canvas coordinates, so both boxes live on one type with a doc comment saying which to
+   use when.
+
+2. **Mismatched reference pose.** The baseline came from the strip's *deepest* pose while the
+   reference came from the *first* pose's slot. Those are the same pose only by luck; otherwise the
+   whole run is offset by the difference. Fixed by having one reference pose supply both sides.
+
+With both, the arithmetic collapses to an exact identity when a slot's own art is re-imported into
+it — `originY = OpaqueMinY`, and the X centring algebra cancels to `OpaqueMinX` for either parity —
+which is precisely what V4d gate 1 demands.
+
+**Result: V4 7/7, V4d 6/6 cores** with alignment on by default. M1, M2a, M2b and M3 unaffected.
+
+**And it corrected a real placement error, not just a gate.** Re-measuring the DK walk with
+`--baseline 0xE0..0x12C`:
+
+| ROM | bottom edge | foot-line spread | centre X | centre-X spread |
+|---|---|---|---|---|
+| **stock DKC walk** | **127..129** | **2 px** | **126..130** | **4 px** |
+| old `--align-strip` | 125..128 | 3 px | 127..131 | 4 px |
+| **reconciled** | **127..130** | **3 px** | **126..130** | **4 px** |
+
+The spreads were already right; the *absolute* placement was not. The old build sat 2 px high and
+1 px right — small, constant, and exactly the residual risk A.17 flagged in its last paragraph
+("the run's absolute height is now tied to the first pose's slot bottom … if that frame's lowest
+pixel is a knuckle rather than a foot, the whole cycle will sit a few pixels off"). It was, and
+using the opaque box removes it. The reconciled build's centre-X range now matches stock's exactly.
+
+**The lesson, and it is the reusable one.** The blocker was labelled structural and it was really a
+units error — two quantities with the same name ("the slot's bottom") measured in different
+systems. A gate caught it, refused to be argued with, and was right; the fix was to make the two
+systems commensurable rather than to weaken the gate. **When a placement calculation is obviously
+correct and lands wrong by a small constant, suspect the units before the algebra** — `--coords` is
+the instrument for that, as `--baseline` is for the run-level spread.
+
+**Still owed: an in-game boot.** Every number above says the reconciled build is at least as good
+as the confirmed-in-play `dk-move-aligned2.sfc` and better positioned absolutely. That is a
+measurement, and A.16's rule stands — measurement has been wrong before. `port/dk-move-reconciled.sfc`
+is built and unbooted.
+
 ### A.13 `0x858..0x8A8` is **not** DK — it is a foreign island (corrected)
 
 > **This section previously concluded "DK at reduced scale". That was wrong**, and it was wrong in

@@ -405,6 +405,46 @@ if (args.Length >= 3 && args[1] == "--inspect")
     return RunInspect(rom, Convert.ToInt32(args[2], 16));
 }
 
+if (args.Length >= 3 && args[1] == "--coords")
+{
+    // dotnet run -- <rom> --coords <lo>..<hi>
+    //
+    // Prints a slot's two bounding boxes side by side: the tile-placement one the ROM's
+    // bytes are written in, and the opaque-pixel one a sheet is measured in. They are
+    // different quantities (SpriteSlot's doc comment), and mistaking one for the other is
+    // what made strip alignment place a run systematically low (spec A.17/A.19). When a
+    // placement calculation looks right and lands wrong, this is the first thing to check.
+    string[] cdB = args[2].Split("..");
+    if (cdB.Length != 2) { Console.Error.WriteLine("--coords needs <loHex>..<hiHex>"); return 1; }
+    int cdLo = Convert.ToInt32(cdB[0], 16), cdHi = Convert.ToInt32(cdB[1], 16);
+    int seen = 0, differ = 0, maxSlackY = 0, maxSlackX = 0;
+
+    Console.WriteLine("idx      placement (minX minY maxX maxY)   opaque (minX minY maxX maxY)   slack (dMinX dMinY dMaxY)");
+    foreach (int index in DkcTool.Core.GfxTable.EnumerateImageIndices(rom))
+    {
+        if (index < cdLo || index > cdHi) continue;
+        var slot = DkcTool.Core.SpriteSlot.Read(rom, index);
+        seen++;
+
+        int dMinX = slot.OpaqueMinX - slot.PlacementMinX;
+        int dMinY = slot.OpaqueMinY - slot.PlacementMinY;
+        int dMaxY = slot.OpaqueMaxY - slot.PlacementMaxY;
+        if (dMinX != 0 || dMinY != 0 || dMaxY != 0) differ++;
+        maxSlackY = Math.Max(maxSlackY, Math.Abs(dMinY));
+        maxSlackX = Math.Max(maxSlackX, Math.Abs(dMinX));
+
+        Console.WriteLine($"0x{index:X4}   {slot.PlacementMinX,4} {slot.PlacementMinY,4} {slot.PlacementMaxX,4} {slot.PlacementMaxY,4}" +
+                          $"              {slot.OpaqueMinX,4} {slot.OpaqueMinY,4} {slot.OpaqueMaxX,4} {slot.OpaqueMaxY,4}" +
+                          $"            {dMinX,5} {dMinY,5} {dMaxY,5}");
+    }
+
+    Console.WriteLine();
+    Console.WriteLine($"{seen} sprite(s); {differ} where the two boxes disagree; " +
+                      $"max |dMinY| = {maxSlackY} px, max |dMinX| = {maxSlackX} px");
+    Console.WriteLine("Anything compared against a sheet must use the opaque box; the ROM's own bytes use placement.");
+    return 0;
+}
+
 // --- 1. Palette swatch (always) ---
 string palName = args.Length >= 2 ? args[1] : "Donkey Kong 1P";
 if (!PalettePointers.Table.TryGetValue(palName, out int palAddr))
@@ -993,7 +1033,9 @@ static int RunBatchCli(Rom rom, string[] args)
     var report = BatchImporter.Run(working, plan, sheetBitmap, palette, ledger, freeRuns, dryRun,
         sourceTag: Path.GetFileName(manifestPath),
         anchorBottom: Array.IndexOf(args, "--anchor-bottom") >= 0,
-        alignStrip: Array.IndexOf(args, "--align-strip") >= 0);
+        // Strip alignment is the default (spec A.19). `--align-strip` is kept as a no-op so
+        // existing invocations and the specs' recorded command lines still work.
+        alignStrip: Array.IndexOf(args, "--no-align-strip") < 0);
 
     Console.WriteLine();
     Console.WriteLine($"Imported             : {report.Imported.Count()}/{plan.Count}, " +

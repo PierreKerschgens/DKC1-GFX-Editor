@@ -70,51 +70,56 @@ namespace DkcTool.Core
         /// </summary>
         public static BatchReport Run(Rom rom, List<PlannedPose> plan, SKBitmap sheetBitmap, SKColor[] palette,
             ImportLedger ledger, List<FreeSpace.Run> freeRuns, bool dryRun, string sourceTag,
-            bool anchorBottom = false, bool alignStrip = false)
+            bool anchorBottom = false, bool alignStrip = true)
         {
             var report = new BatchReport();
 
-            // Strip-level placement (spec A.17). Opt-in via `--align-strip`, and confirmed in an
-            // emulator to play as smoothly as a stock animation. It is *not* the default, and the
-            // reason is recorded rather than left as an oversight: making it default turns V4d's
-            // identity gate red. That gate re-imports the ROM's own sprites and requires the frame
-            // to come back pixel-identical, which alignment cannot currently satisfy -- the slicer
-            // measures **opaque pixel** bounds while a slot exposes **tile-placement** bounds, and
-            // those are 8px-grid aligned, so the two baselines are not the same quantity. Flipping
-            // the default needs that reconciled first.
+            // Strip-level placement (spec A.17). The sheet already aligns a run's poses to each
+            // other -- their bottoms differ only by the bob the artist drew. Anchoring each pose to
+            // its own target slot throws that away and substitutes the *replaced* animation's
+            // per-frame variation, which is what made an imported walk cycle bob.
             //
-            // Strip-level vertical placement. The sheet already aligns a run's poses to
-            // each other -- their bottoms differ only by the bob the artist drew. Anchoring each
-            // pose to its own target slot throws that away and substitutes the *replaced*
-            // animation's per-frame variation, which is what made an imported walk cycle bob.
+            // Instead: pick one reference pose, place it exactly where its target slot's artwork
+            // sat, and carry every sibling's sheet-relative offset through unchanged.
             //
-            // Instead: measure each pose's height above its strip's own baseline on the sheet, and
-            // reproduce exactly that offset below a single ground reference for the whole run. The
-            // reference is the first target slot's placement bottom, so the run keeps sitting where
-            // the animation it replaces sat.
+            // Both sides of that subtraction must be measured in the same currency, which is the
+            // part that took two goes to get right (spec A.17, A.19). The sheet speaks
+            // **opaque-pixel** bounds; a slot's placement bbox speaks **tile** bounds, 8px-grid
+            // aligned and looser than the art by a per-sprite amount (up to 7px in Y, measured).
+            // Subtracting one from the other silently injects that slack, so the reference is read
+            // from the slot's *opaque* box -- the same quantity SheetSlicer reports.
+            //
+            // The reference pose supplies the baseline on *both* sides too. Taking the baseline
+            // from the strip's deepest pose while taking the reference from the first pose's slot
+            // offsets the whole run by the difference between them, which is only zero when the
+            // first pose happens to be the deepest.
             //
             // Horizontally the sheet gives nothing usable -- a strip's X positions are page layout,
             // not animation offsets -- so X is handled per pose instead, by matching the replaced
             // frame's *centre* rather than its left edge. Left-edge anchoring makes a wider pose
             // grow rightwards and drags the body sideways; centring reproduces whatever horizontal
             // travel the original frame had. Measured: 7 px of centre drift before, 4 px in stock.
+            //
+            // Together those make alignment an exact identity when a slot's own artwork is
+            // re-imported into it, which is what V4d gate 1 demands and why this is now the
+            // default rather than opt-in.
             var originY = new Dictionary<(int Strip, int Position), int>();
             var originX = new Dictionary<(int Strip, int Position), int>();
             if (alignStrip)
             {
                 foreach (var strip in plan.GroupBy(p => p.Strip))
                 {
-                    int baseline = strip.Max(p => p.RectY + p.RectH - 1);
-                    var first = strip.OrderBy(p => p.Position).First();
-                    int reference = SpriteSlot.Read(rom, first.ImageIndex).PlacementMaxY;
+                    var refPose = strip.OrderBy(p => p.Position).First();
+                    int baseline = refPose.RectY + refPose.RectH - 1;
+                    int reference = SpriteSlot.Read(rom, refPose.ImageIndex).OpaqueMaxY;
 
                     foreach (var p in strip)
                     {
-                        int aboveBaseline = baseline - (p.RectY + p.RectH - 1);
-                        originY[(p.Strip, p.Position)] = reference - aboveBaseline - (p.RectH - 1);
+                        int belowBaseline = (p.RectY + p.RectH - 1) - baseline;
+                        originY[(p.Strip, p.Position)] = reference + belowBaseline - (p.RectH - 1);
 
                         var slot = SpriteSlot.Read(rom, p.ImageIndex);
-                        int slotCentreX = (slot.PlacementMinX + slot.PlacementMaxX) / 2;
+                        int slotCentreX = (slot.OpaqueMinX + slot.OpaqueMaxX) / 2;
                         originX[(p.Strip, p.Position)] = slotCentreX - (p.RectW - 1) / 2;
                     }
                 }

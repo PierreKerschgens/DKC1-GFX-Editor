@@ -1,6 +1,6 @@
 # Handoff — sprite-importer-port
 
-State of play for whoever picks this up next. Written 2026-07-25.
+State of play for whoever picks this up next. Written 2026-07-25, updated 2026-07-26.
 The durable record is in the numbered specs; this file is the map and the open edges.
 
 ---
@@ -11,8 +11,8 @@ The durable record is in the numbered specs; this file is the map and the open e
 |---|---|
 | M0 core port, M1 encoder, M2a tiler, M2b writer, M2c free space | done, gated |
 | M3 ROM expansion (ExHiROM) | done, `--verify-m3 --all-cores` 6/6 |
-| M4 batch import | done, `--verify-m4` **7/7** (V4a–V4g) |
-| M5 | not started. Two candidates have emerged — see "What M5 probably is" |
+| M4 batch import | done, `--verify-m4` **7/7** (V4a–V4g), V4d 6/6 cores with alignment defaulted on |
+| M5 | not started. One candidate left — see "What M5 probably is" |
 
 **Always run the tool from the repo root.** Asset paths (`port/sprites`, `port/emu/states`) are
 relative, and from the wrong directory sheet-dependent gates report SKIP, which is indistinguishable
@@ -59,15 +59,29 @@ in stills and found only by that comparison.
 **Confirmed in play**: the two-axis build reads as smooth as a stock animation. Three attempts —
 two measured plausibly and failed in the emulator; the third matched stock on both axes and held.
 
-`--align-strip` is **opt-in**, and making it the default was tried and backed out — it turns V4d
-red. That gate re-imports the ROM's own sprites and demands a pixel-identical frame; alignment moves
-them. **The blocker is structural:** the slicer measures *opaque-pixel* bounds while a slot exposes
-*tile-placement* bounds, which are 8 px-grid aligned, so a sheet-derived offset cannot reproduce a
-slot-derived one exactly. Reconcile those two coordinate systems and the default can flip.
+**Strip alignment is now the default** (A.19). It was opt-in because defaulting it turned V4d red,
+and that was called a structural blocker — the slicer measures *opaque-pixel* bounds while a slot
+exposes *tile-placement* bounds. It was really a **units error**, and it is fixed:
 
-(One fix from that attempt was kept: `BuildSyntheticSheet` now preserves each pose's original origin
-instead of top-aligning them all, which makes the fixture resemble a real sheet. It narrowed the
-diff from 1801 px to 1062 px and is a better fixture regardless.)
+- `SpriteSlot` now carries `OpaqueMinX/MinY/MaxX/MaxY` beside the placement four. Anything compared
+  against a sheet uses the opaque box; the ROM's own bytes use placement. The doc comment on that
+  type says which is which — read it before touching placement code.
+- One reference pose supplies the baseline on **both** sides (it used to be the strip's deepest pose
+  on the sheet against the *first* pose's slot in the ROM — the same pose only by luck).
+
+Together those make re-importing a slot's own art an exact identity, which is what V4d demands.
+**V4 7/7, V4d 6/6 cores.** `--no-align-strip` opts out; `--align-strip` is an accepted no-op.
+
+It also fixed a real error, not just a gate: the old build sat **2 px high and 1 px right**
+(bottom 125..128 vs stock's 127..129). The reconciled build is 127..130 / centre-X 126..130, which
+matches stock exactly. That was the residual risk A.17 flagged and could not test.
+
+**`port/dk-move-reconciled.sfc` is built and has not been booted.** Every number says it is at least
+as good as the confirmed-in-play `dk-move-aligned2.sfc`, but per gotcha 1 that is a measurement, and
+measurements here have been wrong before. **Boot it.**
+
+(One fix from the earlier attempt was kept: `BuildSyntheticSheet` preserves each pose's original
+origin instead of top-aligning them all, which makes the fixture resemble a real sheet.)
 
 **Drift severity split — done** (A.18). The old `[DRIFT > 4px]` fired on 100 % of poses and was
 therefore ignored for a whole session while describing this very bug. Now `[FEET MOVED ±Npx]` vs
@@ -139,15 +153,20 @@ Research/inspection, all read-only:
 --palette-sweep <idx> --out f        one sprite under all 79 palettes
 --near <idx> [--count N]             neighbours in ROM *data* order, not table order
 --baseline <lo>..<hi>                opaque bbox per sprite + foot-line spread (bob measurement)
+--coords <lo>..<hi>                  placement bbox vs opaque bbox per slot, and their slack
 ```
 
-Writing: `--import`, `--batch` (both take `--dry-run`; `--batch` also `--align-strip`),
+`--baseline` measures a *run*; `--coords` explains a *slot*. When a placement calculation looks
+right but lands wrong by a small constant, `--coords` is the one that finds it (A.19).
+
+Writing: `--import`, `--batch` (both take `--dry-run`; `--batch` also `--no-align-strip`),
 `--expand`, `--revert`.
 `--revert` undoes imports **and** expansion, byte-exactly, across a chain of runs (V4g).
 
 Test ROMs in `port/` (gitignored): `dk-walk-test.sfc` (walk art in idle slots),
 `dk-move-test.sfc` (walk art in walk slots), `dk-move-anchored.sfc` (`--anchor-bottom`, failed),
-**`dk-move-aligned2.sfc` (`--align-strip`, both axes — the current fix)**; `dk-move-aligned.sfc` is the vertical-only version.
+`dk-move-aligned.sfc` (vertical-only), `dk-move-aligned2.sfc` (both axes — confirmed in play),
+**`dk-move-reconciled.sfc` (A.19, current default — measured best, not yet booted)**.
 
 ---
 
@@ -158,8 +177,8 @@ Two candidates, both surfaced by M4 rather than planned:
 1. **Animation-script editing.** 8 of 46 DK strips have pose counts no DK animation has, and the
    author changed frame counts deliberately. Without script editing, a faithful full-character
    import is impossible for those runs — you can only leave stale frames (A.9).
-2. ~~**Strip-level pose placement.**~~ Implemented as `--align-strip`; awaiting in-game
-   confirmation. If it holds, M5 is (1) plus the drift-check severity split.
+2. ~~**Strip-level pose placement.**~~ Done — implemented, confirmed in play, and as of A.19 the
+   default, with the two coordinate systems reconciled. M5 is (1).
 
 ---
 
