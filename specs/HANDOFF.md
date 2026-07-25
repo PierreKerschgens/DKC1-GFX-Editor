@@ -113,11 +113,13 @@ Research/inspection, all read-only:
 --near <idx> [--count N]             neighbours in ROM *data* order, not table order
 ```
 
-Writing: `--import`, `--batch` (both take `--dry-run`, `--anchor-bottom`), `--expand`, `--revert`.
+Writing: `--import`, `--batch` (both take `--dry-run`; `--batch` also `--align-strip`),
+`--expand`, `--revert`.
 `--revert` undoes imports **and** expansion, byte-exactly, across a chain of runs (V4g).
 
 Test ROMs in `port/` (gitignored): `dk-walk-test.sfc` (walk art in idle slots),
-`dk-move-test.sfc` (walk art in walk slots), `dk-move-anchored.sfc` (same, `--anchor-bottom`).
+`dk-move-test.sfc` (walk art in walk slots), `dk-move-anchored.sfc` (`--anchor-bottom`, failed),
+**`dk-move-aligned.sfc` (`--align-strip`, the current candidate fix — needs a boot)**.
 
 ---
 
@@ -128,9 +130,8 @@ Two candidates, both surfaced by M4 rather than planned:
 1. **Animation-script editing.** 8 of 46 DK strips have pose counts no DK animation has, and the
    author changed frame counts deliberately. Without script editing, a faithful full-character
    import is impossible for those runs — you can only leave stale frames (A.9).
-2. **Strip-level pose placement.** The bob fix above. Needed before any large import, not after.
-
-Do (2) first; it blocks the thing (1) is for.
+2. ~~**Strip-level pose placement.**~~ Implemented as `--align-strip`; awaiting in-game
+   confirmation. If it holds, M5 is (1) plus the drift-check severity split.
 
 ---
 
