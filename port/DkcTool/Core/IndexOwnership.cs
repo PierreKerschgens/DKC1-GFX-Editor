@@ -274,8 +274,25 @@ namespace DkcTool.Core
             var scripts = AnimationTable.ParseAll(rom).Where(s => s.Ok && s.FrameCount > 0).ToList();
             var inside = scripts.Where(s => s.ImageIndices.All(i => i >= low && i <= high)).ToList();
 
+            // An animation that draws DK *and* something else -- a held barrel, a minecart, a mounted
+            // buddy -- is not "entirely inside" and is filtered out here. That is correct for
+            // count-matching a strip, but it means the candidate set silently omits exactly the
+            // riding/carrying animations, which several sheet captions name. Report them.
+            var partial = scripts.Where(s => s.ImageIndices.Any(i => i >= low && i <= high)
+                                          && s.ImageIndices.Any(i => i < low || i > high)).ToList();
+
             Console.WriteLine($"=== animations drawing entirely inside 0x{low:X}..0x{high:X} ===");
             Console.WriteLine($"{inside.Count} of {scripts.Count} non-empty animation(s)");
+            Console.WriteLine($"{partial.Count} more touch this range but also draw outside it " +
+                              "(held props / mounts) -- excluded from the list below:");
+            foreach (var s in partial.Take(20))
+            {
+                var outside = s.Distinct.Where(i => i < low || i > high).OrderBy(i => i).ToList();
+                Console.WriteLine($"  anim {s.Animation,3} ({s.FrameCount,3}f): {outside.Count} outside " +
+                                  $"index(es), e.g. 0x{outside[0]:X}" +
+                                  (outside.Count > 1 ? $"..0x{outside[^1]:X}" : ""));
+            }
+            if (partial.Count > 20) Console.WriteLine($"  ... and {partial.Count - 20} more");
             Console.WriteLine();
 
             foreach (var g in inside.GroupBy(s => s.FrameCount).OrderBy(g => g.Key))

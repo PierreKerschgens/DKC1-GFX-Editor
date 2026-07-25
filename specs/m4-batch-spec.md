@@ -370,12 +370,52 @@ first Diddy group begins at `0x964`, with nothing DK-shaped above `0x950`.
 
 Not one pair has matching counts, which is A.9 holding across every case checked so far.
 
-**Deliberately not asserted: the other ~25.** Identifying an action from a montage row is exactly
-the judgement that has been wrong twice in this spec (A.9's two count-matches), and a wrong pairing
-here puts the right artwork on the wrong frame — the PRD's own top risk. The remaining runs need a
-side-by-side of the sheet strip against candidate rows, and that is a human pass with game knowledge,
-not an inference from sprite silhouettes. The tooling for it is complete; the judgement is not
-automatable.
+### A.14 Matching the captioned runs — results, and a filter that hid the riding ones
+
+**A structural finding that outranks any individual match.** `--anims-in` selects animations drawing
+*entirely inside* a range. That is right for count-matching, and it silently excludes exactly the
+animations that draw DK **plus a prop or a mount** — 14 of them for DK's block. Their outside
+indices are things like `0x2710..0x2724`, which renders as **Rambi**. So several sheet captions
+(*Steel Keg Ride*, *Ride Look*, *Minecart Idle*, *Minecart Up and Down*, and probably the barrel
+pair) cannot be matched from the 69-group set at all: their animations were never candidates. This
+is the mount-command case A.8 flagged as a risk to the closure, reappearing as a blind spot in the
+candidate list.
+
+**Confirmed** — action match against a caption, each checked at `--zoom 2`:
+
+| captioned run | animation | indices |
+|---|---|---|
+| 6 "Walk" | 4 / 108 | `0x8C..0xDC` |
+| 8 "Roll" (+9) | 2 / 14 / 20 | `0x330..0x37C` |
+| 12 "Start Crawl" (+13) | 3 | `0xE0..0x12C` |
+| 20 "Ground Slap" | 74 | `0x2E4..0x32C` |
+
+**Proposed, distinctive action, not yet confirmed** — each is a recognisable pose sequence but rests
+on my reading alone, and that reading has been wrong twice in this spec:
+
+| captioned run | candidate | why |
+|---|---|---|
+| 3 "Bang Chest" | 100 (`0x7A4`) | front-facing, hands beating at chest |
+| 14 "Death" | 16 (`0x27C`) | falls, tumbles, ends prone |
+| 30 "Swim" | 90 (`0x3A4`) | prone, horizontal stroking |
+| 33 "Sad/Failure" | 84 / 85 (`0x5B4`) | crouches, then lies down |
+| 31 "Victory" | 72 (`0x6B8`) or 79 (`0x748`) | arms raised overhead |
+| 2 / 4 "Swap" | 78 (`0x55C`) | front-facing, arms out, walking toward camera |
+
+**Unresolved, with the reason recorded rather than left blank:**
+
+- *Steel Keg Ride, Ride Look, Minecart ×2, Barrel Pick Up / Throw* — excluded by the filter above.
+  Matching them needs the 14 prop-drawing animations rendered, which `--anim-sheet` currently
+  cannot show (it inherits the same "entirely inside" selection).
+- *Rope Idle / Climb / Turn, Swing, Ledge* — several hanging and climbing groups exist
+  (`0x130..0x17C`, `0x158`, `0x164`), but rope, ledge and swing are not distinguishable from one
+  another by silhouette, and guessing among them is precisely the error mode A.9 documents.
+- *Idle, Turn, Jump, Intro Cutscene, End Credits ×2* — plausible candidates exist for each; none is
+  distinctive enough to assert.
+
+**Score: 4 confirmed, 6 proposed, 19 open of 29 runs.** The honest summary is that the ROM side is
+tooled and inventoried but not solved, and the largest remaining obstacle is structural (the prop
+filter), not perceptual.
 
 **Palette as the identity test, not a caveat.** A survey rendered in one palette locates boundaries
 by silhouette but cannot prove *identity* — so the palette-flip check above does that job instead,
