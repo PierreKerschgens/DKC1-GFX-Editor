@@ -67,6 +67,28 @@ if (args.Length >= 2 && args[1] == "--stats-freespace")
     return FreeSpaceResearch.Run(rom);
 }
 
+if (args.Length >= 2 && args[1] == "--stats-m3")
+{
+    return Expansion.Run(rom);
+}
+
+if (args.Length >= 2 && args[1] == "--verify-m3")
+{
+    return RunVerifyM3(rom, args);
+}
+
+if (args.Length >= 2 && args[1] == "--expand")
+{
+    // Writes an expanded ROM so it can be booted by hand / by --emu-boot. Research aid only.
+    string expOut = ArgValue(args, "--out") ?? throw new ArgumentException("--expand needs --out");
+    bool expMirror = Array.IndexOf(args, "--mirror") >= 0;
+    byte? expMode = ArgValue(args, "--map") is string m ? Convert.ToByte(m, 16) : Expansion.MapModeExHiRom;
+    int expSize = Convert.ToInt32(ArgValue(args, "--size") ?? "0x800000", 16);
+    File.WriteAllBytes(expOut, Expansion.Build(rom, expSize, expMode, fixChecksum: true, mirrorLowBank: expMirror));
+    Console.WriteLine($"wrote {expOut}: 0x{expSize:X} bytes, map mode 0x{expMode:X2}");
+    return 0;
+}
+
 if (args.Length >= 2 && args[1] == "--poison")
 {
     return RunPoison(rom, args);
@@ -780,6 +802,36 @@ static int RunVerifyV3(Rom rom, string[] args)
     Console.WriteLine($"Gate2 vandal    : {r.VandalDiff}   (expect: localised difference)");
     foreach (var f in r.Failures) Console.WriteLine("  FAIL " + f);
     Console.WriteLine(r.Passed ? "V3 verification: PASS" : "V3 verification: FAIL");
+    return r.Passed ? 0 : 1;
+}
+
+// M3 expansion probe (specs/m3-expansion-spec.md Part B): four experiments on whether an
+// 8 MB ExHiROM DKC1 boots and whether its new space is addressable.
+//   dotnet run -- <rom> --verify-m3 [--core P] [--name STATE] [--count N] [--dump DIR]
+static int RunVerifyM3(Rom rom, string[] args)
+{
+    string core = ArgValue(args, "--core") ?? DkcTool.Core.Emulator.V3Verification.DefaultCore;
+    string stateName = ArgValue(args, "--name") ?? DkcTool.Core.Emulator.V3Verification.DefaultStateName;
+    int count = int.Parse(ArgValue(args, "--count")
+        ?? DkcTool.Core.Emulator.V3Verification.DefaultIndexCount.ToString());
+    int settle = int.Parse(ArgValue(args, "--settle")
+        ?? DkcTool.Core.Emulator.StateCapture.SettleFrames.ToString());
+    bool walk = Array.IndexOf(args, "--no-walk") < 0;
+
+    var r = DkcTool.Core.Emulator.ExpansionProbe.Run(rom, core, stateName, count, settle, walk);
+
+    Console.WriteLine($"Core         : {r.Core}");
+    Console.WriteLine($"Capture point: state {r.CapturePoint}");
+    Console.WriteLine();
+    foreach (var e in r.Experiments)
+    {
+        Console.WriteLine($"{e.Id}  {e.What}");
+        Console.WriteLine($"    expect : {e.Expectation}");
+        Console.WriteLine($"    got    : {e.Observed}");
+        Console.WriteLine($"    {(e.Passed ? "PASS" : "FAIL")}   ({e.Note})");
+        Console.WriteLine();
+    }
+    Console.WriteLine(r.Passed ? "M3 probe: PASS" : "M3 probe: FAIL");
     return r.Passed ? 0 : 1;
 }
 

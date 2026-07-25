@@ -133,7 +133,7 @@ namespace DkcTool.Core
             // only safe for a one-shot import.
             var freeRuns = options.FreeRuns ?? FreeSpace.Scan(rom);
             int offset = FreeSpace.Allocate(freeRuns, serialized.Length, ledger.AllocatedRanges);
-            int newAddress = 0xC00000 + offset;
+            int newAddress = GfxTable.PointerFor(offset);
             result.AllocatedOffset = offset;
             result.NewPointerAddress = newAddress;
 
