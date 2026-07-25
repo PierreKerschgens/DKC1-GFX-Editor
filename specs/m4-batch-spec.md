@@ -383,12 +383,14 @@ candidate list.
 
 **Confirmed** — action match against a caption, each checked at `--zoom 2`:
 
-| captioned run | animation | indices |
-|---|---|---|
-| 6 "Walk" | 4 / 108 | `0x8C..0xDC` |
-| 8 "Roll" (+9) | 2 / 14 / 20 | `0x330..0x37C` |
-| 12 "Start Crawl" (+13) | 3 | `0xE0..0x12C` |
-| 20 "Ground Slap" | 74 | `0x2E4..0x32C` |
+| captioned run | animation | indices | status |
+|---|---|---|---|
+| ~~6 "Walk"~~ **0 "Idle"** | 4 / 108 | `0x8C..0xDC` | **corrected in-game — see A.16** |
+| 8 "Roll" (+9) | 2 / 14 / 20 | `0x330..0x37C` | holds |
+| ~~12 "Start Crawl"~~ | ~~3~~ | `0xE0..0x12C` | **withdrawn — see A.16** |
+| 20 "Ground Slap" | 74 | `0x2E4..0x32C` | holds |
+| 30 "Swim" | 90 | `0x3A4..0x3DC` | holds |
+| 14 "Death" | 16 | `0x27C` (draw order) | holds |
 
 **Checked against the sheet, one by one.** Each proposal from the first pass was verified by
 cropping its captioned strip and comparing it with the animation. **Two survived, one was rejected
@@ -410,8 +412,8 @@ roughly what A.9 should have led anyone to expect.
 > the contiguous range does not contain, and vice versa. Only `--anim-sheet`, which walks the script,
 > shows what an animation actually plays. **Verify against draw order, never against an index range.**
 
-**Running total: 6 confirmed** (Walk, Roll, Start Crawl, Ground Slap, Swim, Death), 1 region-level
-(Bang Chest), 1 rejected, and the rest open.
+**Running total after A.16: 4 confirmed** (Roll, Ground Slap, Swim, Death) plus **Idle** newly
+identified in-game; Walk and Start Crawl withdrawn; 1 region-level (Bang Chest); 2 rejected.
 
 **Unresolved, with the reason recorded rather than left blank:**
 
@@ -467,6 +469,37 @@ rendering animations will surface them.
 **Recorded because the prediction was confident and wrong.** "Lift the filter and ~6 runs close" was
 reasoning from the caption list to the ROM without checking the ROM. The filter was worth lifting —
 it produced a real fact — but not for the stated reason.
+
+### A.16 The in-game test that falsified the anchor pairing
+
+Everything above was verified by *looking at sprites*. The first time the work was verified by
+**running it**, the oldest and most-trusted pairing turned out to be wrong.
+
+The 20-pose *Walk* strip was imported into `0x8C..0xDC` and the ROM booted in zsnes. The project
+owner's report: **idling shows the new artwork and looks like DK slowly walking; moving shows the
+old artwork.** That is only consistent with one reading — `0x8C..0xDC` is DK's **idle**, not his
+walk. The new poses appear when he stands still because those are the frames the idle plays; his
+movement animation was never touched.
+
+**Two "confirmed" pairings die with it:**
+
+- *Walk → anim 4/108* is wrong. `0x8C..0xDC` is **Idle** (sheet strip 0).
+- *Start Crawl → anim 3* is wrong. It rested on reading `0xE0..0x12C` as a crawl.
+
+**And the reason both were wrong is one mistaken premise:** DK **knuckle-walks** in DKC1, on all
+fours. So the upright standing set at `0x8C..0xDC` is idle, and the on-all-fours set at
+`0xE0..0x12C` — which this spec called "Crawl" — is his locomotion. Every downstream reading
+inherited that swap.
+
+**What it suggests, now testable:** `0xE0..0x12C` is 20 frames and the sheet's *Walk* is 20 poses;
+`0x130..0x17C` is 20 frames and the sheet's *Run* is 20 poses. `port/dk-move-test.sfc` imports the
+Walk strip into `0xE0..0x12C` — if the new artwork appears **while moving**, that confirms it.
+
+**The methodological point, which outlives these two pairings.** Contact sheets and draw-order
+montages establish what a sprite *looks like*, never what the game *uses it for*. Only running the
+ROM does that, and it cost one boot to overturn a conclusion six passes of static analysis had
+treated as settled. **Every pairing in this spec that has not been observed in motion should be read
+as provisional**, including the four still marked as holding.
 
 **Palette as the identity test, not a caveat.** A survey rendered in one palette locates boundaries
 by silhouette but cannot prove *identity* — so the palette-flip check above does that job instead,

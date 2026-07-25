@@ -1,0 +1,196 @@
+{
+  "version": 1,
+  "sourceRomSha256": "628147468c3539283197f58f03b94df49758a332831857481ea9cc31645f0527",
+  "allocations": [
+    {
+      "imageIndex": "0x8C",
+      "offset": "0x7A22",
+      "length": "0x3E2",
+      "previousPointer": "0xD8B1F0",
+      "source": "walk.json strip6:0",
+      "timestamp": "2026-07-25T17:21:42.8179300\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x90",
+      "offset": "0x174BA",
+      "length": "0x37C",
+      "previousPointer": "0xD8B46C",
+      "source": "walk.json strip6:1",
+      "timestamp": "2026-07-25T17:21:42.8182620\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x94",
+      "offset": "0x17836",
+      "length": "0x35A",
+      "previousPointer": "0xD8B6E8",
+      "source": "walk.json strip6:2",
+      "timestamp": "2026-07-25T17:21:42.8184920\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x98",
+      "offset": "0x17B90",
+      "length": "0x39E",
+      "previousPointer": "0xD8B964",
+      "source": "walk.json strip6:3",
+      "timestamp": "2026-07-25T17:21:42.8187190\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x9C",
+      "offset": "0x13E9C1",
+      "length": "0x404",
+      "previousPointer": "0xD8BBE0",
+      "source": "walk.json strip6:4",
+      "timestamp": "2026-07-25T17:21:42.8189630\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xA0",
+      "offset": "0x13EDC5",
+      "length": "0x448",
+      "previousPointer": "0xD8BE9A",
+      "source": "walk.json strip6:5",
+      "timestamp": "2026-07-25T17:21:42.8192100\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xA4",
+      "offset": "0x13F20D",
+      "length": "0x3E2",
+      "previousPointer": "0xD8C154",
+      "source": "walk.json strip6:6",
+      "timestamp": "2026-07-25T17:21:42.8194470\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xA8",
+      "offset": "0x13F5EF",
+      "length": "0x3C0",
+      "previousPointer": "0xD8C40E",
+      "source": "walk.json strip6:7",
+      "timestamp": "2026-07-25T17:21:42.8196750\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xAC",
+      "offset": "0x13F9AF",
+      "length": "0x39E",
+      "previousPointer": "0xD8C684",
+      "source": "walk.json strip6:8",
+      "timestamp": "2026-07-25T17:21:42.8199000\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xB0",
+      "offset": "0x17FA3C",
+      "length": "0x37C",
+      "previousPointer": "0xD8C922",
+      "source": "walk.json strip6:9",
+      "timestamp": "2026-07-25T17:21:42.8201150\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xB4",
+      "offset": "0x18EED0",
+      "length": "0x37C",
+      "previousPointer": "0xD8CBA4",
+      "source": "walk.json strip6:10",
+      "timestamp": "2026-07-25T17:21:42.8203300\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xB8",
+      "offset": "0x18F24C",
+      "length": "0x316",
+      "previousPointer": "0xD8CE42",
+      "source": "walk.json strip6:11",
+      "timestamp": "2026-07-25T17:21:42.8205330\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xBC",
+      "offset": "0x18F562",
+      "length": "0x338",
+      "previousPointer": "0xD8D0E0",
+      "source": "walk.json strip6:12",
+      "timestamp": "2026-07-25T17:21:42.8207430\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xC0",
+      "offset": "0x18F89A",
+      "length": "0x338",
+      "previousPointer": "0xD8D37E",
+      "source": "walk.json strip6:13",
+      "timestamp": "2026-07-25T17:21:42.8209770\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xC4",
+      "offset": "0x18FBD2",
+      "length": "0x37C",
+      "previousPointer": "0xD8D61C",
+      "source": "walk.json strip6:14",
+      "timestamp": "2026-07-25T17:21:42.8211930\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xC8",
+      "offset": "0x1CE9E0",
+      "length": "0x3E2",
+      "previousPointer": "0xD8D8BA",
+      "source": "walk.json strip6:15",
+      "timestamp": "2026-07-25T17:21:42.8214340\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xCC",
+      "offset": "0x1CEDC2",
+      "length": "0x426",
+      "previousPointer": "0xD8DB58",
+      "source": "walk.json strip6:16",
+      "timestamp": "2026-07-25T17:21:42.8216720\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xD0",
+      "offset": "0x1CF1E8",
+      "length": "0x3C0",
+      "previousPointer": "0xD8DDF6",
+      "source": "walk.json strip6:17",
+      "timestamp": "2026-07-25T17:21:42.8222130\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xD4",
+      "offset": "0x1CF5A8",
+      "length": "0x3C0",
+      "previousPointer": "0xD8E094",
+      "source": "walk.json strip6:18",
+      "timestamp": "2026-07-25T17:21:42.8226270\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xD8",
+      "offset": "0x1CF968",
+      "length": "0x3C0",
+      "previousPointer": "0xD8E332",
+      "source": "walk.json strip6:19",
+      "timestamp": "2026-07-25T17:21:42.8228770\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xDC",
+      "offset": "0x1DEC90",
+      "length": "0x3C0",
+      "previousPointer": "0xD8E5D0",
+      "source": "pose19.png",
+      "timestamp": "2026-07-25T17:21:44.0017310\u002B00:00",
+      "fillByte": "0x00"
+    }
+  ],
+  "expansion": null
+}

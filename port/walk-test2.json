@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "sheet": "/Users/pierre/devel/DKC1-GFX-Editor/port/sprites/Custom _ Edited - Donkey Kong Customs - Donkey Kong - Donkey Kong (Classic, DKC-Style).png",
+  "palette": "Donkey Kong 1P",
+  "strips": [
+    {
+      "strip": 6,
+      "name": "sheet 'Walk' -> 0xE0..0x12C, the on-all-fours run (suspected real walk)",
+      "indices": ["0xE0","0xE4","0xE8","0xEC","0xF0","0xF4","0xF8","0xFC","0x100","0x104",
+                  "0x108","0x10C","0x110","0x114","0x118","0x11C","0x120","0x124","0x128","0x12C"]
+    }
+  ]
+}

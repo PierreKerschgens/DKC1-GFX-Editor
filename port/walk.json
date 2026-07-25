@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "sheet": "/Users/pierre/devel/DKC1-GFX-Editor/port/sprites/Custom _ Edited - Donkey Kong Customs - Donkey Kong - Donkey Kong (Classic, DKC-Style).png",
+  "palette": "Donkey Kong 1P",
+  "strips": [
+    {
+      "strip": 6,
+      "name": "walk (sheet caption: Walk) -> DK walk cycle anim 4/108, first 20 of 21 slots",
+      "indices": [
+        "0x8C", "0x90", "0x94", "0x98", "0x9C",
+        "0xA0", "0xA4", "0xA8", "0xAC", "0xB0",
+        "0xB4", "0xB8", "0xBC", "0xC0", "0xC4",
+        "0xC8", "0xCC", "0xD0", "0xD4", "0xD8"
+      ]
+    }
+  ]
+}
