@@ -1,7 +1,8 @@
 # M2 Spec: Image → Sprite Importer (tiler + encoder)
 
-**Status:** M2a done (2026-07-24); M2b not started. **Reopens scope** beyond the
-locked M0–M1 (see `prd-sprite-importer.md` §0); to be confirmed before M2b.
+**Status:** M2a done (2026-07-24); M2b specced and ready to implement (2026-07-25) —
+see `m2b-writer-spec.md`. **Reopens scope** beyond the locked M0–M1 (see
+`prd-sprite-importer.md` §0).
 **Depends on:** M0 (decoder), M1 (`SpriteModel` + `SpriteEncoder.Serialize`, byte-exact).
 **Verification:** pixel-exact re-decode (byte-exact is impossible here — see M1 spec §B).
 
@@ -45,9 +46,11 @@ sub-cells are occupied** (zero char waste, free OAM savings), **1×1 for the res
 - **Char budget:** generated `b5+b7 ≤ 88` (target ≤ 96 tile slots / 6 rows). Warn > 72.
 - **OAM budget:** generated `b0+b1+b3 ≤ 37` (soft; only matters in-game, verified by
   emulator later).
-- **In-place (locked: no expansion):** generated **size ≤ the target slot's original
-  size**. If the pose needs more, M2 **refuses and reports "needs M3 (expansion)"** —
-  it does not overflow neighbouring data.
+- ~~**In-place (locked: no expansion):** generated **size ≤ the target slot's original
+  size**.~~ **Superseded by `m2b-writer-spec.md` Part A** — measured fit rate is 1.7%,
+  so M2b relocates into free space instead of writing in place. "No expansion" still
+  holds; "needs M3 (expansion)" is now the refusal when *free space* is exhausted, not
+  when the slot is too small.
 - The theoretical hardware ceiling (256 tiles / 16 rows) is **not** relied upon without
   a disassembly of the DMA routine; 88/6 is the safe, demonstrated envelope.
 
@@ -123,9 +126,16 @@ the irreversible ROM mutation:
   grid doesn't always land on the same 8×8 boundaries the game's own encoding used,
   so a char that was whole in the original can split across two cells when re-tiled
   from an arbitrary bbox origin; costs extra chars but still round-trips pixel-exact).
-- **M2b — write + repoint.** Serialize the model into the target slot (in place) and
-  update the 3-byte `gfxArray` pointer; guarded by the in-place size rule. Verified by
-  re-decode from the written ROM, then emulator.
+- **M2b — write + repoint.** Full design in **`m2b-writer-spec.md`** (2026-07-25).
+  ⚠️ **The in-place rule below is superseded.** Research over all 2,714 sprites
+  (`--stats-m2b`) showed a re-tiled pose fits its original slot only **45/2,714
+  (1.7%)** of the time — the game's data is hand-authored with tiles at arbitrary
+  pixel offsets (only 4.8% sit on an 8×8 lattice), which no grid tiler can match, and
+  2,580/2,698 sprite pairs have zero slack to grow into. M2b therefore **always
+  relocates**: write into scanned free space (77 KB of end-of-bank padding) and update
+  the 3-byte `gfxArray` pointer. That is PRD FR6 verbatim and still requires no ROM
+  expansion, so M3 stays deferred — and it leaves the original sprite bytes intact,
+  making every import reversible.
 
 Reuses M1 entirely: the tiler's output **is** a `SpriteModel`, serialized by the
 existing `SpriteEncoder`. M2 adds only the *forward* image→model step.
@@ -199,10 +209,11 @@ refinement.)
 
 **Still open**
 - **Q2 Pose → slot mapping:** how is "which slot each pose replaces" provided — a
-  hand-authored manifest, or derived from the animation tables? *Needed for M2b only;
-  M2a does not need it.*
-- **Q3 Sequencing:** land **M2a first** (headless, high-confidence), then **M2b** once
-  the emulator harness exists. Recommended; confirm before starting M2b.
+  hand-authored manifest, or derived from the animation tables? M2b takes an explicit
+  `--index`; the manifest is deferred to M4.
+- **Q3 Sequencing — resolved (2026-07-25):** M2a landed first; M2b proceeds on its
+  headless V2b gate, with the emulator harness (V3) as the next follow-up rather than
+  a blocker. See `m2b-writer-spec.md` Part E.
 
 ---
 

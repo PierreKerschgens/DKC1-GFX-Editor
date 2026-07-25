@@ -194,8 +194,15 @@ Not part of this PRD.
   2,714/2,714 pass; 0 failures, 0 skips. Per Part B of the spec, this is an
   index-level structural round-trip (not RGB→bytes), which is the correct and
   achievable M1 gate — RGB/tiler work is M2.
-- **M2 — Import one custom pose (no expansion).** Palette-map + encode a pose that
-  fits an existing slot; write + repoint; V2 passes.
+- **M2 — Import one custom pose (no expansion).** Palette-map + encode a pose; write +
+  repoint; V2 passes. **M2a ✅ done 2026-07-24** (`specs/m2-importer-spec.md`): image →
+  `SpriteModel` tiler, pixel-exact over 2,714 real sprites. **M2b ✅ done 2026-07-25**
+  (`specs/m2b-writer-spec.md`): `--import` writes + repoints, V2b gate passes
+  (2,711/2,714 isolated; 84 cumulative imports at 89% free-space utilisation).
+  Note the wording above ("fits an
+  existing slot") did not survive contact with the data: a re-tiled pose fits its
+  original slot only 1.7% of the time, so M2b implements FR6 as **relocation into
+  scanned free space + repoint** — still no ROM expansion, so M3 is unaffected.
 - **M3 — ROM expansion.** FR7; import a pose larger than its slot.
 - **M4 — Batch + report.** FR8 over a manifest; QA overlay sheet.
 - **M5 (optional) — Sheet auto-slicing** and/or **QA GUI viewer.**

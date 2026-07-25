@@ -24,11 +24,17 @@ using DkcTool.Core;
 // --verify-m2a runs the M2a tiler gate (specs/m2-importer-spec.md Part D, V2) against
 // a battery of synthetic index-grid poses; a ROM path is still required as args[0]
 // but is not otherwise used by this mode.
+//
+// --import/--verify-m2b (specs/m2b-writer-spec.md Part D/E): the write + repoint path.
+//   dotnet run -- <rom> --import <pose.png> --index <hex> --out <rom.sfc>
+//                       [--palette <name>] [--dry-run] [--force]
+//   dotnet run -- <rom> --verify-m2b
 
 if (args.Length < 1)
 {
     Console.Error.WriteLine("usage: dotnet run -- <rom.smc|.sfc> [paletteName] [gfxHexAddr tileCount] [imageIndexHex]");
-    Console.Error.WriteLine("   or: dotnet run -- <rom.smc|.sfc> --gate1|--gate2|--verify-m1|--verify-m2a");
+    Console.Error.WriteLine("   or: dotnet run -- <rom.smc|.sfc> --gate1|--gate2|--verify-m1|--verify-m2a|--verify-m2b");
+    Console.Error.WriteLine("   or: dotnet run -- <rom.smc|.sfc> --import <pose.png> --index <hex> --out <rom.sfc> [--palette <name>] [--dry-run] [--force]");
     return 1;
 }
 
@@ -49,6 +55,21 @@ if (args.Length >= 2 && args[1] == "--verify-m2a")
 if (args.Length >= 2 && args[1] == "--stats")
 {
     return RunStats(rom);
+}
+
+if (args.Length >= 2 && args[1] == "--stats-m2b")
+{
+    return M2bFeasibility.Run(rom);
+}
+
+if (args.Length >= 2 && args[1] == "--verify-m2b")
+{
+    return RunVerifyM2b(rom);
+}
+
+if (args.Length >= 2 && args[1] == "--import")
+{
+    return RunImportCli(rom, args[0], args);
 }
 
 if (args.Length >= 3 && args[1] == "--inspect")
@@ -362,3 +383,148 @@ static int RunVerification(Rom rom, string mode)
     Console.WriteLine(ok ? "M1 verification: PASS" : "M1 verification: FAIL");
     return ok ? 0 : 1;
 }
+
+// V2b (specs/m2b-writer-spec.md Part E): isolated corpus (each of the 2,714 real indices,
+// its own pose, into a fresh ROM copy) + cumulative corpus (~80 poses into one ROM, until
+// free space is exhausted). Both run gates 1-5; this is the blocking gate for M2b.
+static int RunVerifyM2b(Rom rom)
+{
+    var isolated = M2bVerification.RunIsolated(rom);
+    Console.WriteLine($"V2b isolated    : {isolated.PassIndices}/{isolated.TotalIndices} passed, " +
+                       $"{isolated.FailIndices} failed, {isolated.EmptySkipped} empty-skipped, " +
+                       $"{isolated.ExceedsCharBudgetSkipped} exceeds-char-budget-skipped.");
+    foreach (var f in isolated.Failures.Take(20)) Console.WriteLine("  FAIL " + f);
+
+    var cumulative = M2bVerification.RunCumulative(rom);
+    Console.WriteLine($"V2b cumulative  : {cumulative.Imported} imported, " +
+                       $"NoFreeSpace hit: {cumulative.NoFreeSpaceHit}, {cumulative.Failures.Count} gate failures, " +
+                       $"utilisation {cumulative.Utilisation:P0} " +
+                       $"({cumulative.BytesWritten}/{cumulative.FreeBytesAtStart} bytes).");
+    foreach (var f in cumulative.Failures.Take(20)) Console.WriteLine("  FAIL " + f);
+
+    bool ok = isolated.FailIndices == 0 && cumulative.Failures.Count == 0 && cumulative.NoFreeSpaceHit;
+    Console.WriteLine(ok ? "V2b verification: PASS" : "V2b verification: FAIL");
+    return ok ? 0 : 1;
+}
+
+// --import (specs/m2b-writer-spec.md Part D): PNG pose -> index grid -> tiler -> serialize ->
+// allocate free space -> write -> repoint -> ledger. --dry-run runs the same steps 1-6 and
+// prints the plan without touching the ROM buffer or the disk.
+static int RunImportCli(Rom rom, string romPath, string[] args)
+{
+    if (args.Length < 3)
+    {
+        Console.Error.WriteLine("usage: dotnet run -- <rom> --import <pose.png> --index <hex> --out <rom.sfc> [--palette <name>] [--dry-run] [--force]");
+        return 1;
+    }
+
+    string posePath = args[2];
+    string? indexHex = null, outPath = null;
+    string paletteName = "Donkey Kong 1P";
+    bool dryRun = false, force = false;
+
+    for (int i = 3; i < args.Length; i++)
+    {
+        switch (args[i])
+        {
+            case "--index": indexHex = args[++i]; break;
+            case "--out": outPath = args[++i]; break;
+            case "--palette": paletteName = args[++i]; break;
+            case "--dry-run": dryRun = true; break;
+            case "--force": force = true; break;
+            default:
+                Console.Error.WriteLine($"unknown argument '{args[i]}'");
+                return 1;
+        }
+    }
+
+    if (indexHex == null)
+    {
+        Console.Error.WriteLine("--index is required");
+        return 1;
+    }
+    int imageIndex = Convert.ToInt32(indexHex, 16);
+
+    if (!dryRun)
+    {
+        if (outPath == null)
+        {
+            Console.Error.WriteLine("--out is required for any write (use --dry-run to preview without writing)");
+            return 1;
+        }
+        if (Path.GetFullPath(outPath) == Path.GetFullPath(romPath) && !force)
+        {
+            Console.Error.WriteLine("--out resolves to the input ROM path; pass --force to overwrite the input, or choose a different --out.");
+            return 1;
+        }
+    }
+
+    if (!PalettePointers.Table.TryGetValue(paletteName, out int palAddr))
+    {
+        Console.Error.WriteLine($"Unknown palette '{paletteName}'.");
+        return 1;
+    }
+    var palette = Palette.Read(rom, palAddr);
+
+    PoseResult pose;
+    try { pose = PoseLoader.Load(posePath, palette); }
+    catch (ImportException ex) { Console.Error.WriteLine($"[{ex.Code}] {ex.Message}"); return 1; }
+
+    foreach (var w in pose.Unmapped)
+        Console.WriteLine($"WARNING: opaque pixel matching palette[0] (forced-transparent) forced to index 0: " +
+                           $"RGB({w.Color.Red},{w.Color.Green},{w.Color.Blue}) x{w.Count}, first at ({w.FirstX},{w.FirstY})");
+
+    var working = rom.Clone(); // imports work on a copy (C.1); the loaded original is never mutated
+    string sha = ImportLedger.ComputeSha256(rom.Snapshot());
+
+    string ledgerPath = ImportLedger.SidecarPath(outPath ?? romPath);
+    ImportLedger ledger;
+    try { ledger = ImportLedger.LoadOrCreate(ledgerPath, sha); }
+    catch (ImportException ex) { Console.Error.WriteLine($"[{ex.Code}] {ex.Message}"); return 1; }
+
+    ImportResult result;
+    try
+    {
+        result = SpriteImporter.Import(working, imageIndex, pose.Pixels,
+            new ImportOptions { DryRun = dryRun, Source = Path.GetFileName(posePath) }, ledger);
+    }
+    catch (ImportException ex)
+    {
+        Console.Error.WriteLine($"[{ex.Code}] {ex.Message}");
+        return 1;
+    }
+
+    PrintImportPlan(result);
+
+    if (dryRun)
+    {
+        Console.WriteLine("Dry run: no bytes written.");
+        return 0;
+    }
+
+    working.Save(outPath!);
+    ledger.Save(ledgerPath);
+    Console.WriteLine($"Wrote {outPath}");
+    Console.WriteLine($"Ledger {ledgerPath}");
+    return 0;
+}
+
+static void PrintImportPlan(ImportResult r)
+{
+    Console.WriteLine($"Image index          : 0x{r.ImageIndex:X}");
+    Console.WriteLine($"Tiled size           : 0x{r.Serialized.Length:X} bytes");
+    Console.WriteLine($"Chars / OAM entries  : {r.CharCount} chars, {r.OamEntries} OAM entries" +
+                       (r.ExceedsOamBudget ? " [over 37-OAM soft budget]" : ""));
+    Console.WriteLine($"Allocated offset     : 0x{r.AllocatedOffset:X} (pointer 0x{r.NewPointerAddress:X})");
+    Console.WriteLine($"Previous pointer     : 0x{r.PreviousPointer:X}");
+    if (r.Slot.AliasIndices.Count > 0)
+        Console.WriteLine($"Aliased indices      : {string.Join(", ", r.Slot.AliasIndices.Select(i => $"0x{i:X}"))} (still point at the untouched original)");
+
+    var d = r.Drift;
+    Console.WriteLine($"Geometry drift       : old bbox ({d.OldMinX},{d.OldMinY})-({d.OldMaxX},{d.OldMaxY}), " +
+                       $"new bbox ({d.NewMinX},{d.NewMinY})-({d.NewMaxX},{d.NewMaxY})" +
+                       (d.ExceedsThreshold ? "  [DRIFT > 4px]" : ""));
+    Console.WriteLine($"Current hitbox       : x={r.Hitbox.SignedX} y={r.Hitbox.SignedY} w={r.Hitbox.Width} h={r.Hitbox.Height} " +
+                       $"(pointer 0x{r.Hitbox.PointerAddress:X} -> 0x{r.Hitbox.RecordAddress:X})");
+}
+

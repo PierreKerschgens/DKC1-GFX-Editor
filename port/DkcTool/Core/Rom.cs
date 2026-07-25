@@ -25,8 +25,10 @@ namespace DkcTool.Core
             return new Rom(bytes);
         }
 
-        private static int Mask(int address) =>
+        public static int Mask(int address) =>
             address & (address > 0x7fffff ? 0x3fffff : 0xffffff);
+
+        public int Length => _data.Length;
 
         public byte Read8(int address) => _data[Mask(address)];
 
@@ -50,6 +52,46 @@ namespace DkcTool.Core
             var result = new byte[count];
             Array.Copy(_data, address, result, 0, count);
             return result;
+        }
+
+        /// <summary>Deep copy; imports mutate the copy, never the loaded original.</summary>
+        public Rom Clone() => new Rom((byte[])_data.Clone());
+
+        public void Write8(int address, byte value)
+        {
+            address = Mask(address);
+            AssertInBounds(address, 1);
+            _data[address] = value;
+        }
+
+        /// <summary>Little-endian, 3 bytes (the SNES pointer width used throughout this codebase).</summary>
+        public void Write24(int address, int value)
+        {
+            address = Mask(address);
+            AssertInBounds(address, 3);
+            _data[address] = (byte)(value & 0xFF);
+            _data[address + 1] = (byte)((value >> 8) & 0xFF);
+            _data[address + 2] = (byte)((value >> 16) & 0xFF);
+        }
+
+        public void WriteBytes(int address, byte[] src)
+        {
+            address = Mask(address);
+            AssertInBounds(address, src.Length);
+            Array.Copy(src, 0, _data, address, src.Length);
+        }
+
+        /// <summary>Full-buffer copy, for the V2b containment diff (byte-diff against a pre-import snapshot).</summary>
+        public byte[] Snapshot() => (byte[])_data.Clone();
+
+        /// <summary>Writes the current buffer to <paramref name="path"/>. The loaded file itself is never touched.</summary>
+        public void Save(string path) => File.WriteAllBytes(path, _data);
+
+        private void AssertInBounds(int maskedAddress, int length)
+        {
+            if (maskedAddress < 0 || maskedAddress + length > _data.Length)
+                throw new ArgumentOutOfRangeException(nameof(maskedAddress),
+                    $"write of {length} byte(s) at masked address 0x{maskedAddress:X} exceeds ROM buffer (0x{_data.Length:X}).");
         }
 
         /// <summary>The 21-char internal ROM name at 0xFFC0 (SNES header).</summary>
