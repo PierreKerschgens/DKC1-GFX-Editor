@@ -62,6 +62,16 @@ if (args.Length >= 2 && args[1] == "--stats-m2b")
     return M2bFeasibility.Run(rom);
 }
 
+if (args.Length >= 2 && args[1] == "--emu-golden")
+{
+    return RunEmuGolden(args[0], args);
+}
+
+if (args.Length >= 2 && args[1] == "--verify-v3")
+{
+    return RunVerifyV3(rom, args);
+}
+
 if (args.Length >= 2 && args[1] == "--emu-vandal")
 {
     return RunEmuVandal(rom, args);
@@ -564,6 +574,7 @@ static int RunEmuBoot(string romPath, string[] args)
     using var emu = new DkcTool.Core.Emulator.LibretroCore(core);
     emu.LoadGame(romBytes, romPath);
 
+    Console.WriteLine($"Core ident   : {emu.LibraryName} {emu.LibraryVersion} (need_fullpath={emu.NeedsFullPath})");
     var (w, h, fps) = emu.GetAvInfo();
     Console.WriteLine($"AV info      : {w}x{h} @ {fps:F2} Hz, pixel format {emu.CorePixelFormat}");
 
@@ -574,7 +585,10 @@ static int RunEmuBoot(string romPath, string[] args)
     Console.WriteLine($"Ran          : {frames} frames in {sw.ElapsedMilliseconds} ms " +
                       $"({frames * 1000.0 / Math.Max(1, sw.ElapsedMilliseconds):F0} fps, " +
                       $"{frames / 60.0:F1}s of game time)");
+    int bpp = emu.CorePixelFormat == DkcTool.Core.Emulator.LibretroCore.PixelFormat.Xrgb8888 ? 4 : 2;
     Console.WriteLine($"Framebuffer  : {emu.FrameWidth}x{emu.FrameHeight}, {emu.FramesRun} refresh callbacks");
+    Console.WriteLine($"Pitch        : {emu.LastPitch} bytes/row; width*bpp = {emu.FrameWidth * bpp} " +
+                      $"({(emu.LastPitch == emu.FrameWidth * bpp ? "match" : "MISMATCH -> core renders wider than it reports")})");
 
     DkcTool.Core.Emulator.FrameCapture.Save(emu, outPath);
     Console.WriteLine($"Wrote        : {outPath}");
@@ -695,5 +709,49 @@ static int RunEmuVandal(Rom rom, string[] args)
     clone.Save(outPath);
     Console.WriteLine($"Vandalised   : {done} indices flattened to palette index {colour}, {refused} refused");
     Console.WriteLine($"Wrote        : {outPath}");
+    return 0;
+}
+
+// V3 gate (specs/v3-emulator-spec.md Part B): the two-sided emulator check.
+//   dotnet run -- <rom> --verify-v3 [--core P] [--count N] [--frames N]
+static int RunVerifyV3(Rom rom, string[] args)
+{
+    string core = ArgValue(args, "--core") ?? DkcTool.Core.Emulator.V3Verification.DefaultCore;
+    int count = int.Parse(ArgValue(args, "--count")
+        ?? DkcTool.Core.Emulator.V3Verification.DefaultIndexCount.ToString());
+    int frame = int.Parse(ArgValue(args, "--frames")
+        ?? DkcTool.Core.Emulator.BootScript.InGameFrame.ToString());
+
+    var r = DkcTool.Core.Emulator.V3Verification.Run(rom, core, count, frame);
+
+    Console.WriteLine($"Core            : {r.Core}");
+    Console.WriteLine($"Capture frame   : {r.CaptureFrame} ({r.IndicesImported} indices re-imported per control ROM)");
+    Console.WriteLine($"Baseline        : {r.BaselineSummary}");
+    Console.WriteLine($"Gate1 relocated : {r.RelocatedDiff}   (expect: identical)");
+    Console.WriteLine($"Gate2 vandal    : {r.VandalDiff}   (expect: localised difference)");
+    foreach (var f in r.Failures) Console.WriteLine("  FAIL " + f);
+    Console.WriteLine(r.Passed ? "V3 verification: PASS" : "V3 verification: FAIL");
+    return r.Passed ? 0 : 1;
+}
+
+// Captures the V3 reference frame for a core (specs/v3-emulator-spec.md Part B, gate 0).
+// The image MUST be inspected by a human before it is trusted -- that inspection is the
+// whole point: a garbled frame passes every automated "looks like a game" heuristic.
+//   dotnet run -- <rom> --emu-golden [--core P] [--frames N]
+static int RunEmuGolden(string romPath, string[] args)
+{
+    string core = ArgValue(args, "--core") ?? DkcTool.Core.Emulator.V3Verification.DefaultCore;
+    int frame = int.Parse(ArgValue(args, "--frames")
+        ?? DkcTool.Core.Emulator.BootScript.InGameFrame.ToString());
+
+    string path = DkcTool.Core.Emulator.V3Verification.GoldenPath(core, frame);
+    Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+
+    using var bmp = DkcTool.Core.Emulator.BootScript.CaptureAt(core, File.ReadAllBytes(romPath), frame);
+    SaveBitmap(bmp, path);
+
+    Console.WriteLine($"Wrote golden : {path} ({bmp.Width}x{bmp.Height})");
+    Console.WriteLine("NOW LOOK AT IT. It must show the expected in-game scene. A garbled or black");
+    Console.WriteLine("frame will be accepted as the reference and make every later run pass on garbage.");
     return 0;
 }

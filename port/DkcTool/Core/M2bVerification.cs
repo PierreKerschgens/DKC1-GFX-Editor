@@ -45,7 +45,7 @@ namespace DkcTool.Core
 
         /// <summary>Decodes a sprite's own pose, cropped to its opaque pixel bbox -- the same
         /// "known-good input" trick M2a's real-ROM corpus uses.</summary>
-        private static int[,]? ExtractOwnPose(Rom rom, int address, out int originX, out int originY)
+        public static int[,]? ExtractOwnPose(Rom rom, int address, out int originX, out int originY)
         {
             var canvas = TilerHarness.DecodeIndexCanvas(rom, address);
             int height = canvas.GetLength(0), width = canvas.GetLength(1);

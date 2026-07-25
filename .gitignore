@@ -19,3 +19,7 @@ sprite.png
 
 # Downloaded libretro cores (binaries, fetched by port/emu/fetch-cores.sh)
 port/emu/cores/
+
+# V3 reference frames — frames of a copyrighted game, same rule as the ROM.
+# Capture locally with --emu-golden and inspect before trusting.
+port/emu/goldens/

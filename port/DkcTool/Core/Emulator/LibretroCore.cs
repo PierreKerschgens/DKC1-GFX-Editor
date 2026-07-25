@@ -37,6 +37,7 @@ namespace DkcTool.Core.Emulator
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)] private delegate void SetCallbackFn(IntPtr cb);
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)] private delegate bool LoadGameFn(ref RetroGameInfo game);
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)] private delegate void GetAvInfoFn(out RetroSystemAvInfo info);
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] private delegate void GetSystemInfoFn(out RetroSystemInfo info);
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)] private delegate UIntPtr SerializeSizeFn();
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)] private delegate bool SerializeFn(IntPtr data, UIntPtr size);
 
@@ -47,6 +48,16 @@ namespace DkcTool.Core.Emulator
             public IntPtr Data;
             public UIntPtr Size;
             public IntPtr Meta;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct RetroSystemInfo
+        {
+            public IntPtr LibraryName;
+            public IntPtr LibraryVersion;
+            public IntPtr ValidExtensions;
+            [MarshalAs(UnmanagedType.U1)] public bool NeedFullPath;
+            [MarshalAs(UnmanagedType.U1)] public bool BlockExtract;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -101,6 +112,16 @@ namespace DkcTool.Core.Emulator
         private readonly SerializeFn _retroSerialize;
 
         private bool _gameLoaded, _disposed;
+        private string? _tempRomPath;
+
+        /// <summary>Core identity from retro_get_system_info, e.g. "bsnes-mercury Balanced 0.94".</summary>
+        public string LibraryName { get; }
+        public string LibraryVersion { get; }
+
+        /// <summary>Some cores (notably the modern bsnes) will not accept a ROM handed over in
+        /// memory and need a real file on disk. Loading such a core from memory "succeeds" and
+        /// then renders a black screen forever, so this is honoured rather than assumed away.</summary>
+        public bool NeedsFullPath { get; }
 
         /// <summary>Most recent frame handed to video_refresh, as 32-bit BGRA (Skia's layout).</summary>
         public byte[]? FrameBuffer { get; private set; }
@@ -110,6 +131,11 @@ namespace DkcTool.Core.Emulator
 
         /// <summary>Frames the core has produced (a duped frame still counts).</summary>
         public long FramesRun { get; private set; }
+
+        /// <summary>Row stride in bytes from the last video_refresh, for diagnosing geometry
+        /// mismatches (a pitch wider than width * bytes-per-pixel means the core is rendering
+        /// into a larger buffer than it reports).</summary>
+        public int LastPitch { get; private set; }
 
         /// <summary>Buttons held for the next <see cref="RunFrame"/>, keyed by RETRO_DEVICE_ID_JOYPAD_*.</summary>
         public HashSet<int> HeldButtons { get; } = new HashSet<int>();
@@ -140,6 +166,11 @@ namespace DkcTool.Core.Emulator
             _retroGetAvInfo = Bind<GetAvInfoFn>("retro_get_system_av_info");
             _retroSerializeSize = Bind<SerializeSizeFn>("retro_serialize_size");
             _retroSerialize = Bind<SerializeFn>("retro_serialize");
+
+            Bind<GetSystemInfoFn>("retro_get_system_info")(out var sysInfo);
+            LibraryName = Marshal.PtrToStringAnsi(sysInfo.LibraryName) ?? "?";
+            LibraryVersion = Marshal.PtrToStringAnsi(sysInfo.LibraryVersion) ?? "?";
+            NeedsFullPath = sysInfo.NeedFullPath;
 
             // Callbacks must be registered before retro_init: cores read the environment
             // callback during init to negotiate pixel format and options.
@@ -215,6 +246,7 @@ namespace DkcTool.Core.Emulator
             if (data == IntPtr.Zero) return; // duped frame: keep the previous buffer
 
             int w = (int)width, h = (int)height, stride = (int)pitch;
+            LastPitch = stride;
             var target = new byte[w * h * 4];
 
             for (int y = 0; y < h; y++)
@@ -272,6 +304,16 @@ namespace DkcTool.Core.Emulator
         /// importer produced.</summary>
         public void LoadGame(byte[] romBytes, string? path = null)
         {
+            // A need_fullpath core ignores the in-memory buffer entirely, so give it a real file.
+            // The control ROMs only exist in memory, hence the temp copy (cleaned up on Dispose).
+            if (NeedsFullPath)
+            {
+                _tempRomPath = Path.Combine(Path.GetTempPath(),
+                    $"dkctool-{Guid.NewGuid():N}{Path.GetExtension(path) ?? ".sfc"}");
+                File.WriteAllBytes(_tempRomPath, romBytes);
+                path = _tempRomPath;
+            }
+
             IntPtr buffer = Marshal.AllocHGlobal(romBytes.Length);
             IntPtr pathPtr = path == null ? IntPtr.Zero : Marshal.StringToHGlobalAnsi(path);
             try
@@ -280,8 +322,8 @@ namespace DkcTool.Core.Emulator
                 var info = new RetroGameInfo
                 {
                     Path = pathPtr,
-                    Data = buffer,
-                    Size = (UIntPtr)romBytes.Length,
+                    Data = NeedsFullPath ? IntPtr.Zero : buffer,
+                    Size = NeedsFullPath ? UIntPtr.Zero : (UIntPtr)romBytes.Length,
                     Meta = IntPtr.Zero,
                 };
                 if (!_retroLoadGame(ref info))
@@ -341,6 +383,12 @@ namespace DkcTool.Core.Emulator
 
             if (_gameLoaded) { _retroUnloadGame(); _gameLoaded = false; }
             _retroDeinit();
+
+            if (_tempRomPath != null)
+            {
+                try { File.Delete(_tempRomPath); } catch { /* best effort */ }
+                _tempRomPath = null;
+            }
 
             if (_systemDirPtr != IntPtr.Zero) { Marshal.FreeHGlobal(_systemDirPtr); _systemDirPtr = IntPtr.Zero; }
             if (_corePathPtr != IntPtr.Zero) { Marshal.FreeHGlobal(_corePathPtr); _corePathPtr = IntPtr.Zero; }
