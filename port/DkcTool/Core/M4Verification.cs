@@ -644,6 +644,80 @@ namespace DkcTool.Core
             return result;
         }
 
+        /// <summary>
+        /// V4g: an import chain reverts byte-exactly. Imports N poses in one run, then M more in a
+        /// *second* run that carries the first ledger forward, then reverts once and asserts the
+        /// result is sha256-identical to the ROM the chain started from.
+        ///
+        /// This gate exists because the claim came before the test. `ImportLedger` asserted "every
+        /// import is reversible" while `--revert` only ever undid an expansion, so the property was
+        /// documented, plausible, and never once executed. The two-run shape is the point: a single
+        /// run's ledger reverting is the easy half, and the chained case is where the ledger has to
+        /// keep the *original* sha256 rather than the intermediate one.
+        /// </summary>
+        public static GateResult RunV4g(Rom rom)
+        {
+            var result = new GateResult { Name = "V4g import chain reverts byte-exactly" };
+            string originalSha = ImportLedger.ComputeSha256(rom.Snapshot());
+            var palette = Palette.Read(rom, PalettePointers.Table["Donkey Kong 1P"]);
+
+            var prepared = PrepareSyntheticPlan(rom, palette, 12, result.Failures);
+            if (prepared == null) return result;
+            var (_, bitmap, tmpPath, plan) = prepared.Value;
+
+            try
+            {
+                var working = rom.Clone();
+                var freeRuns = Expansion.FreeRunsFor(working);
+                var ledger = new ImportLedger { SourceRomSha256 = originalSha };
+
+                // Run 1: the first six poses.
+                foreach (var p in plan.Take(6))
+                    SpriteImporter.Import(working, p.ImageIndex,
+                        PoseLoader.LoadRegion(bitmap, p.RectX, p.RectY, p.RectW, p.RectH, palette).Pixels,
+                        new ImportOptions { Source = "v4g-run1", FreeRuns = freeRuns }, ledger);
+                int afterRun1 = ledger.Allocations.Count;
+
+                // Run 2: the rest, against the same carried-forward ledger -- the chained case.
+                foreach (var p in plan.Skip(6))
+                    SpriteImporter.Import(working, p.ImageIndex,
+                        PoseLoader.LoadRegion(bitmap, p.RectX, p.RectY, p.RectW, p.RectH, palette).Pixels,
+                        new ImportOptions { Source = "v4g-run2", FreeRuns = freeRuns }, ledger);
+
+                if (ledger.Allocations.Count <= afterRun1)
+                    result.Failures.Add("second run added no allocations -- the chain is not being exercised.");
+
+                // The ledger must still name the ROM the chain started from, not run 1's output.
+                if (!string.Equals(ledger.SourceRomSha256, originalSha, StringComparison.OrdinalIgnoreCase))
+                    result.Failures.Add("ledger's sourceRomSha256 drifted from the original ROM.");
+
+                if (ImportLedger.ComputeSha256(working.Snapshot()) == originalSha)
+                    result.Failures.Add("ROM is unchanged after importing -- the gate would pass vacuously.");
+
+                if (!ledger.MatchesRom(working, out string mismatch))
+                    result.Failures.Add($"ledger does not describe its own output: {mismatch}");
+
+                var (reverted, refilled) = ledger.RevertAllocations(working);
+                if (refilled != reverted)
+                    result.Failures.Add($"only {refilled}/{reverted} allocation(s) could restore bytes -- " +
+                                        "a byte-exact revert is not provable.");
+
+                string revertedSha = ImportLedger.ComputeSha256(working.Snapshot());
+                if (revertedSha != originalSha)
+                    result.Failures.Add($"revert produced sha256 {revertedSha[..16]}..., expected {originalSha[..16]}...");
+
+                result.Summary = $"{ledger.Allocations.Count} allocation(s) over 2 chained run(s), " +
+                                 $"{refilled} refilled, sha256 back to the original";
+            }
+            finally
+            {
+                bitmap.Dispose();
+                try { File.Delete(tmpPath); } catch { }
+            }
+
+            return result;
+        }
+
         // ------------------------------------------------------------------------------- orchestration
 
         public static int Run(Rom rom, string[] args)
@@ -668,6 +742,7 @@ namespace DkcTool.Core
                 RunV4b(sheets, palette),
                 RunV4e(rom),
                 RunV4c(rom),
+                RunV4g(rom),
                 RunV4d(rom, cores),
             };
 

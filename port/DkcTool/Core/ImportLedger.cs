@@ -16,12 +16,35 @@ namespace DkcTool.Core
         public int PreviousPointer;
         public string Source = "";
         public DateTimeOffset Timestamp;
+
+        /// <summary>
+        /// The constant filler byte of the free-space run this allocation was carved from
+        /// (<see cref="FreeSpace.Run.Value"/>), or -1 for ledgers written before this field
+        /// existed.
+        ///
+        /// Recorded so a rollback can be *byte-exact* rather than pointer-only: restoring
+        /// <see cref="PreviousPointer"/> alone leaves the written sprite bytes orphaned in the
+        /// pool, so the result is logically reverted but not identical to the original, and no
+        /// sha256 check can prove it. With the filler byte, revert refills the range and the
+        /// result is provably the input ROM again -- the same self-proving discipline
+        /// <c>--revert</c> already applies to an expansion.
+        /// </summary>
+        public int FillByte = -1;
+
+        public bool CanRestoreBytes => FillByte >= 0;
     }
 
     /// <summary>
     /// JSON sidecar at <c>&lt;out&gt;.dkctool.json</c> (specs/m2b-writer-spec.md C.5), so repeat
-    /// and batch runs never hand out the same free-space bytes twice, and every import is
-    /// reversible: <see cref="ImportAllocation.PreviousPointer"/> makes rollback a 3-byte write.
+    /// and batch runs never hand out the same free-space bytes twice, and imports can be rolled
+    /// back: <see cref="ImportAllocation.PreviousPointer"/> restores the GFX pointer and
+    /// <see cref="ImportAllocation.FillByte"/> restores the bytes.
+    ///
+    /// A ledger is a chain, not a snapshot. <see cref="SourceRomSha256"/> always names the
+    /// *original* ROM the chain started from, even when the immediate input is an already-imported
+    /// image -- so a single revert returns to the original rather than to the previous step, and
+    /// no intermediate sidecar has to be kept. <see cref="MatchesRom"/> is what makes carrying a
+    /// ledger forward safe.
     /// </summary>
     public sealed class ImportLedger
     {
@@ -82,6 +105,7 @@ namespace DkcTool.Core
                     PreviousPointer = Convert.ToInt32(a.previousPointer, 16),
                     Source = a.source ?? "",
                     Timestamp = DateTimeOffset.Parse(a.timestamp ?? DateTimeOffset.UtcNow.ToString("O")),
+                    FillByte = a.fillByte is string fb ? Convert.ToInt32(fb, 16) : -1,
                 });
             }
             if (doc.expansion is ExpansionJson e)
@@ -103,7 +127,8 @@ namespace DkcTool.Core
             return ledger;
         }
 
-        public void Append(int imageIndex, int offset, int length, int previousPointer, string source)
+        public void Append(int imageIndex, int offset, int length, int previousPointer, string source,
+                           int fillByte = -1)
         {
             Allocations.Add(new ImportAllocation
             {
@@ -113,7 +138,68 @@ namespace DkcTool.Core
                 PreviousPointer = previousPointer,
                 Source = source,
                 Timestamp = DateTimeOffset.UtcNow,
+                FillByte = fillByte,
             });
+        }
+
+        /// <summary>
+        /// True if <paramref name="rom"/> really is the product of this ledger: every image index
+        /// the ledger allocated for must currently point at the allocation that last claimed it.
+        ///
+        /// This is the guard that makes carrying a ledger forward onto an already-imported ROM
+        /// safe. <see cref="LoadOrCreate"/>'s sha256 equality cannot be used there -- the whole
+        /// point of a chained import is that the input is *not* the original ROM -- so the ledger
+        /// is checked against what the ROM actually contains instead. A stale or foreign ledger
+        /// fails here, which is what stops it handing out bytes this ROM never reserved.
+        /// </summary>
+        public bool MatchesRom(Rom rom, out string detail)
+        {
+            // Last allocation wins: re-importing the same index legitimately supersedes an earlier
+            // allocation, and only the most recent one is what the pointer should reflect.
+            foreach (var group in Allocations.GroupBy(a => a.ImageIndex))
+            {
+                var last = group.OrderBy(a => a.Timestamp).Last();
+                int actual = GfxTable.ResolveSpriteAddress(rom, last.ImageIndex);
+                int expected = GfxTable.PointerFor(last.Offset);
+                if (actual != expected)
+                {
+                    detail = $"image index 0x{last.ImageIndex:X} points at 0x{actual:X}, but the " +
+                             $"ledger's newest allocation for it is 0x{last.Offset:X} " +
+                             $"(pointer 0x{expected:X}).";
+                    return false;
+                }
+            }
+            detail = "";
+            return true;
+        }
+
+        /// <summary>
+        /// Undoes every allocation in this ledger, newest first: restores each image index's
+        /// previous GFX pointer and refills the bytes the import claimed.
+        ///
+        /// Newest-first matters when one index was imported more than once -- the oldest
+        /// allocation holds the pointer the *original* ROM had, so it must be the last write to
+        /// land. Refilling is skipped for any allocation predating
+        /// <see cref="ImportAllocation.FillByte"/>; the caller is told, because without it the
+        /// result cannot be claimed byte-exact.
+        /// </summary>
+        public (int Reverted, int Refilled) RevertAllocations(Rom rom)
+        {
+            int refilled = 0;
+            foreach (var a in Allocations.OrderByDescending(x => x.Timestamp))
+            {
+                GfxTable.WritePointer(rom, a.ImageIndex, a.PreviousPointer);
+                if (!a.CanRestoreBytes) continue;
+
+                // Extended-half allocations vanish when an expansion is reverted afterwards, but
+                // refilling them is harmless and keeps the no-expansion case exact.
+                if (a.Offset + a.Length > rom.Length) continue;
+                // Rom.Mask is the identity for a raw file offset below 0x800000, so the offset can
+                // be passed straight through -- these are file offsets, not bank addresses.
+                for (int i = 0; i < a.Length; i++) rom.Write8(a.Offset + i, (byte)a.FillByte);
+                refilled++;
+            }
+            return (Allocations.Count, refilled);
         }
 
         public void Save(string path)
@@ -130,6 +216,7 @@ namespace DkcTool.Core
                     previousPointer = $"0x{a.PreviousPointer:X}",
                     source = a.Source,
                     timestamp = a.Timestamp.ToString("O"),
+                    fillByte = a.CanRestoreBytes ? $"0x{a.FillByte:X2}" : null,
                 }).ToList(),
                 expansion = RomExpansion is Expansion.ExpansionRecord e ? new ExpansionJson
                 {
@@ -180,6 +267,7 @@ namespace DkcTool.Core
             [JsonPropertyName("previousPointer")] public string previousPointer { get; set; } = "";
             [JsonPropertyName("source")] public string? source { get; set; }
             [JsonPropertyName("timestamp")] public string? timestamp { get; set; }
+            [JsonPropertyName("fillByte")] public string? fillByte { get; set; }
         }
     }
 }

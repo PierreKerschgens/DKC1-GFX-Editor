@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace DkcTool.Core
 {
@@ -143,10 +144,15 @@ namespace DkcTool.Core
                 return result;
             }
 
+            // The filler byte of the run this came from, captured *before* the write overwrites it,
+            // so a rollback can restore the bytes and not just the pointer (ImportAllocation.FillByte).
+            var sourceRun = freeRuns.FirstOrDefault(r => offset >= r.Start && offset + serialized.Length <= r.End);
+            int fillByte = sourceRun?.Value ?? -1;
+
             // 7. Write + repoint. 8. Ledger. The original slot's bytes are never touched.
             rom.WriteBytes(offset, serialized);
             GfxTable.WritePointer(rom, imageIndex, newAddress);
-            ledger.Append(imageIndex, offset, serialized.Length, slot.SpriteAddress, options.Source);
+            ledger.Append(imageIndex, offset, serialized.Length, slot.SpriteAddress, options.Source, fillByte);
             result.Written = true;
 
             return result;

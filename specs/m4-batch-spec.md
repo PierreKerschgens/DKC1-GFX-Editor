@@ -356,7 +356,20 @@ region, keep `Load` as the single-file wrapper (so M2b's `--import` path is unto
 the slicer call the shared one. The refusal behaviour — `UnmappedColor` naming the offending
 colours — must be identical on both paths, since that is the error operators will actually hit.
 
-Chained imports across sessions stay unsolved and stay refused (`sourceRomSha256`).
+**Chained imports are supported, not refused — this line used to say the opposite and was wrong.**
+The claim was that chaining "stays unsolved and stays refused (`sourceRomSha256`)". Testing it
+found no refusal at all: importing onto an already-imported ROM silently succeeded and wrote a
+ledger whose `sourceRomSha256` named the *intermediate* image, recording only its own allocation.
+The earlier run's allocations were absent, so the two sidecars formed an unlinked chain that had to
+be replayed in reverse order by hand — and writing the second import to the same filename would
+have overwritten the first sidecar and lost them outright.
+
+Chaining now carries the input's ledger forward and **preserves the original `sourceRomSha256`**, so
+one `--revert` returns to the ROM the chain began from and no intermediate sidecar has to be kept.
+`ImportLedger.MatchesRom` replaces the sha256 equality guard for this case: the ledger is checked
+against what the ROM actually contains (every allocated index must still point at its newest
+allocation), which admits a real chain and rejects a stale or foreign ledger with a precise
+diagnostic. Gated by **V4g**.
 
 ### C.4 Report (FR8's "emit a report", PRD's "QA overlay sheet")
 
@@ -396,9 +409,17 @@ expands implicitly (C.3).
 | V4d | V3 emulator gate on the batch output, both cores |
 | V4e | Refusals fire: strip/index length mismatch, unmapped colour, over-budget pose, both `animation` and `indices` on one strip, duplicate index with differing poses |
 | V4f | Animation table parses 440/440 with 0 failures (A.7) — the derived index side has no silent-drift mode otherwise |
+| V4g | An import chain reverts byte-exactly: N poses, then M more carrying the first ledger forward, then one revert back to the original's sha256 |
 
 V4c is the one that matters most — it is where the re-scan trap (85 % waste, 17 poses instead of
 ~100) would resurface.
+
+V4g exists because the claim preceded the test. `ImportLedger` asserted that "every import is
+reversible" while `--revert` only ever undid an *expansion*, so import rollback was documented,
+plausible, and had never once been executed — the ledger even lacked the filler byte needed to make
+it byte-exact rather than pointer-only. The gate's two-run shape is deliberate: a single run's
+ledger reverting is the easy half, and the chained case is the one where the ledger must keep the
+original sha256 rather than the intermediate one.
 
 ---
 

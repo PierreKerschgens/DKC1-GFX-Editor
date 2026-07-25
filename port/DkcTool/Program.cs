@@ -214,26 +214,57 @@ if (args.Length >= 2 && args[1] == "--revert")
     }
 
     var revLedger = ImportLedger.Load(revLedgerPath);
-    if (revLedger.RomExpansion is not Expansion.ExpansionRecord revRecord)
+    bool hasImports = revLedger.Allocations.Count > 0;
+    var revRecordOrNull = revLedger.RomExpansion;
+    if (!hasImports && revRecordOrNull is null)
     {
-        Console.Error.WriteLine($"ledger {revLedgerPath} records no expansion -- nothing to revert.");
+        Console.Error.WriteLine($"ledger {revLedgerPath} records neither imports nor an expansion -- " +
+                                "nothing to revert.");
         return 1;
     }
 
-    byte[] reverted = Expansion.Revert(rom.Snapshot(), revRecord);
-    string revSha = ImportLedger.ComputeSha256(reverted);
-    if (!string.Equals(revSha, revRecord.OriginalSha256, StringComparison.OrdinalIgnoreCase))
+    // Imports first, then the expansion: restoring pointers is a first-4 MB edit, and an
+    // expansion revert truncates everything above it. Doing it the other way round would drop
+    // the pointers that still need restoring.
+    var revWorking = rom.Clone();
+    bool byteExact = true;
+    if (hasImports)
     {
-        Console.Error.WriteLine($"revert produced sha256 {revSha}, expected {revRecord.OriginalSha256}. " +
-                                "The image was modified after expansion (sprites written into the " +
-                                "extended half are discarded by a revert, but the first 4 MB must " +
-                                "still match) -- refusing to write.");
+        var (revertedCount, refilled) = revLedger.RevertAllocations(revWorking);
+        byteExact = refilled == revertedCount;
+        Console.WriteLine($"reverted {revertedCount} import allocation(s); refilled {refilled}.");
+        if (!byteExact)
+            Console.WriteLine("  note: some allocations predate the ledger's fillByte field, so their " +
+                              "bytes stay orphaned in the pool. Pointers are restored and the ROM is " +
+                              "logically the original, but it is not byte-identical and no sha256 " +
+                              "check can prove it.");
+    }
+
+    byte[] reverted = revWorking.Snapshot();
+    string expectedSha = revLedger.SourceRomSha256;
+    if (revRecordOrNull is Expansion.ExpansionRecord revRecord)
+    {
+        reverted = Expansion.Revert(reverted, revRecord);
+        expectedSha = revRecord.OriginalSha256;
+    }
+
+    string revSha = ImportLedger.ComputeSha256(reverted);
+    bool shaMatches = string.Equals(revSha, expectedSha, StringComparison.OrdinalIgnoreCase);
+    if (byteExact && !string.IsNullOrEmpty(expectedSha) && !shaMatches)
+    {
+        Console.Error.WriteLine($"revert produced sha256 {revSha}, expected {expectedSha}. " +
+                                "Every allocation was restorable, so this should have reproduced the " +
+                                "original exactly -- the image was modified by something other than " +
+                                "this ledger. Refusing to write.");
         return 1;
     }
 
     File.WriteAllBytes(revOut, reverted);
-    Console.WriteLine($"reverted 0x{rom.Length:X} -> 0x{reverted.Length:X} bytes, sha256 matches the " +
-                      $"pre-expansion original.");
+    if (revRecordOrNull is not null)
+        Console.WriteLine($"reverted 0x{rom.Length:X} -> 0x{reverted.Length:X} bytes.");
+    Console.WriteLine(shaMatches
+        ? $"sha256 matches the original ({revSha[..16]}...)."
+        : $"sha256 {revSha[..16]}... (not asserted -- see the note above).");
     Console.WriteLine($"wrote {revOut}");
     return 0;
 }
@@ -381,6 +412,56 @@ static void Save(SKBitmap bmp, string path)
 
 // Dumps the exact VRAM-grid structure + per-entry cell assignment for one sprite,
 // to ground the M2 2x2 encoder design.
+/// <summary>
+/// Picks the ledger an import should append to, and the path it should be saved to.
+///
+/// Three cases, and the middle one is why this exists. A first import starts a fresh ledger. A
+/// repeat run against the same output appends to that output's sidecar. A **chained** import --
+/// writing to a new file from a ROM that was itself already imported into -- must carry the input's
+/// ledger forward, keeping its original `sourceRomSha256`, so the chain stays revertible to the
+/// original in one step and no intermediate sidecar has to be kept.
+///
+/// The chain case cannot use <see cref="ImportLedger.LoadOrCreate"/>'s sha256 equality guard: the
+/// whole point is that the input is no longer the ROM the ledger started from, so that guard
+/// rejects exactly the case it needs to allow. <see cref="ImportLedger.MatchesRom"/> replaces it --
+/// the ledger is checked against what the ROM actually contains, which still rejects a stale or
+/// foreign ledger.
+/// </summary>
+static bool TryResolveLedger(string romPath, string? outPath, Rom rom, string sha,
+                             out ImportLedger ledger, out string ledgerPath)
+{
+    ledgerPath = ImportLedger.SidecarPath(outPath ?? romPath);
+    string inputLedgerPath = ImportLedger.SidecarPath(romPath);
+    string? source = File.Exists(ledgerPath) ? ledgerPath
+                   : File.Exists(inputLedgerPath) ? inputLedgerPath
+                   : null;
+
+    if (source == null)
+    {
+        ledger = new ImportLedger { SourceRomSha256 = sha };
+        return true;
+    }
+
+    ledger = ImportLedger.Load(source);
+
+    // Built from this exact ROM: a fresh chain start, or a repeat run against the same output.
+    if (string.Equals(ledger.SourceRomSha256, sha, StringComparison.OrdinalIgnoreCase))
+        return true;
+
+    // Otherwise this ROM must be the product of that ledger, or the ledger does not belong here.
+    if (ledger.MatchesRom(rom, out string detail))
+    {
+        Console.WriteLine($"Chained import   : carrying {ledger.Allocations.Count} allocation(s) " +
+                          $"forward from {source}");
+        Console.WriteLine($"                   (ledger's original ROM sha256 {ledger.SourceRomSha256[..16]}... is preserved, " +
+                          "so one --revert returns to it)");
+        return true;
+    }
+
+    Console.Error.WriteLine($"[LedgerMismatch] ledger '{source}' does not describe this ROM: {detail}");
+    return false;
+}
+
 static int RunInspect(Rom rom, int imageIndex)
 {
     int addr = GfxTable.ResolveSpriteAddress(rom, imageIndex);
@@ -703,10 +784,8 @@ static int RunImportCli(Rom rom, string romPath, string[] args)
     var working = rom.Clone(); // imports work on a copy (C.1); the loaded original is never mutated
     string sha = ImportLedger.ComputeSha256(rom.Snapshot());
 
-    string ledgerPath = ImportLedger.SidecarPath(outPath ?? romPath);
-    ImportLedger ledger;
-    try { ledger = ImportLedger.LoadOrCreate(ledgerPath, sha); }
-    catch (ImportException ex) { Console.Error.WriteLine($"[{ex.Code}] {ex.Message}"); return 1; }
+    if (!TryResolveLedger(romPath, outPath, rom, sha, out ImportLedger ledger, out string ledgerPath))
+        return 1;
 
     ImportResult result;
     try
@@ -836,10 +915,9 @@ static int RunBatchCli(Rom rom, string[] args)
 
     var working = rom.Clone();
     string sha = ImportLedger.ComputeSha256(rom.Snapshot());
-    string ledgerPath = ImportLedger.SidecarPath(outPath ?? manifestPath);
-    ImportLedger ledger;
-    try { ledger = ImportLedger.LoadOrCreate(ledgerPath, sha); }
-    catch (ImportException ex) { Console.Error.WriteLine($"[{ex.Code}] {ex.Message}"); return 1; }
+    if (!TryResolveLedger(args[0], outPath ?? manifestPath, rom, sha,
+                          out ImportLedger ledger, out string ledgerPath))
+        return 1;
 
     var report = BatchImporter.Run(working, plan, sheetBitmap, palette, ledger, freeRuns, dryRun,
         sourceTag: Path.GetFileName(manifestPath));

@@ -210,7 +210,11 @@ Not part of this PRD.
   is real but nowhere near a character's worth, which is what made M3 unavoidable.
 - **M3 — ROM expansion.** FR7; import a pose larger than its slot.
   ✅ **Done 2026-07-25** (`specs/m3-expansion-spec.md`). `--expand` writes a reversible
-  ledger entry and `--revert` reconstructs the original (sha256-checked and gated);
+  ledger entry and `--revert` reconstructs the original (sha256-checked and gated).
+  `--revert` also rolls back **imports** — restoring each GFX pointer and refilling the
+  bytes the allocation claimed, byte-exactly and sha256-asserted, across a chain of
+  runs (M4 V4g). It was expansion-only until then, despite the ledger claiming
+  otherwise;
   `Expansion.ExtendedRuns`/`FreeRunsFor` are the allocator source for an expanded ROM.
   `--verify-m3 --all-cores`: **6/6 cores pass**. Getting there meant fixing a real bug —
   a stale mirrored ExHiROM header at `0x40FFC0`, which only `bsnes_libretro` caught.
