@@ -744,6 +744,62 @@ that work. That inverts A.16's rule without repealing it: booting remains the on
 establishes what a sprite is *used for*, and measurement remains the only thing that resolves where
 it *sits* to within a few pixels. Use each for what it can actually settle.
 
+### A.20 Run confirmed at `0x330..0x37C`, and the X axis has A.17's bug
+
+**Three mappings settled by one boot, two of them corrections.**
+
+| claim | before | after |
+|---|---|---|
+| Run | "very likely `0x130..0x17C`" (20f vs 20 poses) | **`0x330..0x37C`**, confirmed in play |
+| `0x330..0x37C` | provisionally **Roll** | **falsified** — it is Run |
+| `0x130..0x17C` | the Run candidate | a **climb/hang**, not locomotion |
+| Roll | `0x330..0x37C` | **unknown again** |
+
+**Frame-count matching is now 0 for 3.** The `0x130..0x17C` prediction rested entirely on 20 frames
+against 20 poses. `--baseline` killed it before a boot was spent: the foot line is steady but DK's
+*height* swells 40 → 72 → 36, a windup/hold/recovery one-shot rather than a loop, and the contact
+sheet shows him upright with both arms overhead. That is one of the hanging/climbing groups.
+
+`--anims-in` then showed only three 20-frame index sets exist in DK's whole block, so `0x330..0x37C`
+was the last candidate by elimination. Booted: **new art while running, stock art while walking.**
+The operator also reports the roll unchanged (the stand-up after a roll is still regular DK), which
+independently falsifies the provisional Roll pairing — that tier is now 0 for 3 as well.
+
+**The negative result is worth as much as the positive one.** `--baseline` refuted a mapping from
+the ROM side alone, before an import existed. Height *profile* across a range is a cheap and strong
+discriminator: a loop holds height roughly constant, a one-shot swells and recovers.
+
+**And the run bobs — X inherits the replaced animation's per-frame variation.**
+
+Alignment sets each pose's X to its replaced frame's bbox centre (A.17), so the imported centre-X
+sequence is stock's, frame for frame. For this animation that sequence contains a discontinuity:
+
+```
+frame:    0x358  0x35C  0x360  0x364  0x368
+centreX:   130    131    128    122    123      <- -9 px over two frames
+```
+
+Stock absorbs it because its gallop art genuinely lunges: the bbox centre moves *because* the drawn
+body moved, so the body reads as continuous. The sheet's Run poses are **upright** DK, each centred
+in its own bbox and not lunging, so the same centres teleport the whole body sideways.
+
+**This is exactly the defect A.17 fixed for Y, on the axis A.17 chose to leave per-pose** — and its
+reasoning ("a strip's X positions are page layout, not animation offsets") is still correct about
+the *sheet*, which is why the bug survived: the sheet genuinely cannot supply relative X. What was
+missed is that the fallback inherits the replaced animation's variation, which is the thing
+per-pose anchoring was condemned for in the first place.
+
+The walk never exposed it. Stock's walk centre-X spans 4 px and moves smoothly; stock's run spans
+9 px with a 6 px single-frame step. **A fix validated on one animation is not validated.**
+
+Vertical is fine here: imported bottoms span 4 px (the sheet's own bob) against stock's 8 px.
+
+**Open — the fix has a real trade-off, not an obvious answer.** Strip-level X (anchor a run to one
+centre, let the sheet's art carry the motion) removes the inherited jitter, but **breaks V4d's
+identity**: re-importing a slot's own art needs `originX = OpaqueMinX` per pose, which only per-pose
+centring gives. The two requirements are genuinely opposed, so this wants to be a per-run choice
+rather than a new global default.
+
 ### A.13 `0x858..0x8A8` is **not** DK — it is a foreign island (corrected)
 
 > **This section previously concluded "DK at reduced scale". That was wrong**, and it was wrong in

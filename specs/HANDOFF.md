@@ -104,13 +104,23 @@ The sheet side is done; the ROM side is ~20 % done. `m4-batch-spec.md` A.10–A.
 |---|---|---|
 | 0 "Idle" | `0x8C..0xDC` | anim 4/108 |
 | 6 "Walk" | `0xE0..0x12C` | anim 3 |
+| 7 "Run" | `0x330..0x37C` | anims 2/14/20 (A.20) |
 
-**Provisional** (identified from draw-order montages, *never observed in motion*): Roll →
-`0x330..0x37C`, Ground Slap → `0x2E4..0x32C`, Swim → `0x3A4..0x3DC`, Death → anim 16.
-Treat as unverified — two equally confident pairings in this tier were later falsified.
+**Provisional** (identified from draw-order montages, *never observed in motion*): Ground Slap →
+`0x2E4..0x32C`, Swim → `0x3A4..0x3DC`, Death → anim 16. Treat as unverified — **three** pairings in
+this tier have now been falsified, including Roll.
 
-**Next obvious test:** Run is very likely `0x130..0x17C` (20 frames vs the sheet's 20-pose *Run*).
-Import strip 7 there and boot; if the new art appears while running, that is a third confirmation.
+**Known wrong:** `0x330..0x37C` is Run, not Roll (A.20). **Roll is unidentified again.**
+`0x130..0x17C` is a climb/hang, not the Run — its height swells 40→72→36, a one-shot, and DK is
+upright with both arms overhead.
+
+**Frame-count matching is 0 for 3.** Stop reaching for it. `--baseline`'s *height profile* across a
+range is the cheap discriminator that works: a loop holds height roughly constant, a one-shot swells
+and recovers. It refuted the `0x130..0x17C` prediction from the ROM side alone, before an import
+existed.
+
+**Next test:** find Roll. It is not `0x330..0x37C` and it is not a 20-frame animation (those are all
+accounted for: Walk, the climb, and Run).
 
 **Known unreachable:** *Minecart ×2* and *Steel Keg Ride* cannot be matched through the animation
 table — no script draws both DK and a vehicle (A.15). Their DK poses are composited by game code.
@@ -141,6 +151,11 @@ distinguish them by silhouette. Needs someone who knows the game.
    gotcha 1, and it does not repeal it. A 2 px placement error is invisible in play — the A.19 build
    was booted and read as no different. Don't ask the emulator a question `--baseline`/`--coords`
    answer better, and don't record "looked fine" as confirmation of a sub-3px claim (A.19).
+9. **A fix validated on one animation is not validated.** Strip alignment was developed against the
+   walk and looked finished; the run exposed an untouched defect on the X axis immediately, because
+   stock's walk centre-X spans 4 px smoothly and stock's run spans 9 px with a 6 px single-frame
+   step. Before calling a placement rule done, run it against an animation with *different* motion
+   characteristics (A.20).
 
 ---
 
