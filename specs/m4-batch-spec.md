@@ -522,9 +522,29 @@ A 7 px swing across three frames of a ground-contact animation. Top-anchoring re
 original's **head** position and lets the feet drift; bottom-anchoring reproduces the original's own
 **foot** positions exactly, inheriting whatever intentional bob the stock animation had.
 
-`ImportOptions.AnchorBottom` (`--anchor-bottom` on `--import` and `--batch`) does the latter. It
-defaults **off**, so M2b's behaviour and every gate built on it are unchanged — V4 7/7 and V2b still
-pass untouched. `port/dk-move-anchored.sfc` is the same import with it on, for comparison in motion.
+`ImportOptions.AnchorBottom` (`--anchor-bottom`) does the latter. **It was tested in-game and did
+not fix the bob — if anything it was worse.** The option is kept (default off, gates unchanged) but
+it is not the fix, and the diagnosis above is incomplete.
+
+**Corrected diagnosis: the anchor is at the wrong *level*, not the wrong *edge*.**
+
+- The sheet's poses are already correctly aligned to each other. Strip 6's bottoms span **300..303**
+  — a 3 px spread that is the artist's intended foot bob.
+- The importer discards that. It crops each pose to its own bbox and re-anchors it to **its own
+  target slot's** bbox, and those vary independently (`0xE0`/`0xF4`/`0x118` bottoms are 128/133/133).
+- Worse, a target slot's bbox bottom is **not a ground line**: in a knuckle-walk the lowest point is
+  sometimes a hand and sometimes a foot, so neither edge of the original bbox is a stable reference.
+
+So per-pose anchoring cannot work by construction — *either* edge injects the original animation's
+per-frame variation on top of the new artwork's. **The fix is strip-level:** place every pose of a
+run against **one** reference, carrying the sheet's own relative vertical offsets through unchanged.
+That requires strip context, which `SpriteImporter.Import` (one pose, no siblings) does not have —
+it belongs in `BatchImporter`, which already iterates a strip's poses together.
+
+Sketch, unimplemented: for each strip, take `baseline = max(pose.MaxY)` over the strip; give each
+pose `dy = baseline - pose.MaxY`; choose one target origin for the whole run (e.g. the first slot's,
+or the median of the run's slots); place pose *i* at `originY + dy_i`. That preserves the sheet's
+authored bob exactly and introduces no per-frame variation of its own.
 
 **Why this was invisible to every check built so far.** M2b's Part G drift report *did* flag it —
 every pose printed `[DRIFT > 4px]` — and it was read as advisory noise about hitboxes. It was
