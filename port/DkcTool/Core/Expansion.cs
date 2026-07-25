@@ -149,11 +149,152 @@ namespace DkcTool.Core
         public const int LowBankMirrorSource = 0x008000;
         public const int LowBankMirrorLength = 0x008000;
 
+        /// <summary>
+        /// First allocatable offset in the extended half (specs/m3-expansion-spec.md Part C.3).
+        /// **Not** 0x400000: bank $40's upper half is where ExHiROM puts $00:8000-FFFF, so it
+        /// holds the mirrored vectors and boot code (<see cref="LowBankMirrorOffset"/>).
+        /// Allocating from 0x400000 overwrote them and the console came up in a different video
+        /// mode -- alive, but not running DKC (ExpansionProbe B.3). The whole bank is reserved
+        /// rather than just its upper half, so nothing has to reason about a 32 KB hole.
+        /// </summary>
+        public const int ExtendedStart = 0x410000;
+
+        /// <summary>
+        /// Last file offset reachable through the ExHiROM $40-$7D window. Banks $7E/$7F are WRAM,
+        /// so the final 128 KB of an 8 MB image is reachable only through the $00-$3F mirror --
+        /// which is also the one range where <see cref="Rom.Mask"/> and ExHiROM disagree (A.1).
+        /// The allocator stays out of it entirely.
+        /// </summary>
+        public const int ExtendedLimit = 0x7E0000;
+
+        /// <summary>
+        /// Free runs covering the extended half, split per bank so no allocation can cross a bank
+        /// boundary (the SNES DMA constraint <see cref="FreeSpace.Allocate"/> asserts). This is
+        /// the real allocator source for an expanded ROM: 0x3D0000 (~3.8 MB) of *known*-empty
+        /// space, verified addressable by ExpansionProbe X3 -- no scanning needed, unlike
+        /// <see cref="FreeSpace.Scan"/>'s constant-byte heuristic over the stock 92 KB pool.
+        /// </summary>
+        public static List<FreeSpace.Run> ExtendedRuns()
+        {
+            var runs = new List<FreeSpace.Run>();
+            for (int start = ExtendedStart; start < ExtendedLimit; start += 0x10000)
+                runs.Add(new FreeSpace.Run { Start = start, Length = 0x10000, Value = 0 });
+            return runs;
+        }
+
+        /// <summary>
+        /// Free-space policy (specs/m3-expansion-spec.md Part C.4): with 3.8 MB of *known*-empty
+        /// extended space, the M2c scan/promotion machinery over the stock 92 KB pool stops
+        /// mattering for new imports. An expanded ROM gets <see cref="ExtendedRuns"/> only --
+        /// never the in-ROM padding scan mixed in. Two reasons, not one: mixing would spend the
+        /// scarce, precisely-measured 92 KB pool first for no capacity benefit (the extended half
+        /// is ~40x it), and it would put a heuristic (constant-byte runs, never proven free by an
+        /// emulator gate for arbitrary bytes) and a structural guarantee (bank $40-$7D is
+        /// unwritten by construction) behind the same allocation call, so a failure in one looks
+        /// like a failure in both.
+        ///
+        /// A stock (unexpanded) ROM is unaffected -- it has no extended half, so this is exactly
+        /// <see cref="FreeSpace.Scan"/>, same as before M3.
+        /// </summary>
+        public static List<FreeSpace.Run> FreeRunsFor(Rom rom) =>
+            rom.Length > StockSize ? ExtendedRuns() : FreeSpace.Scan(rom);
+
+        /// <summary>Size and map mode of a stock, unexpanded DKC1 ROM -- the only base state
+        /// expansion is defined for. Everything in Part A/B was measured against this shape;
+        /// expanding an already-expanded ROM, or one at some other size, is untested territory
+        /// with no evidence behind it either way.</summary>
+        public const int StockSize = 0x400000;
+
+        /// <summary>The size M3's probe and gates expand to -- 8 MB, the next power of two above
+        /// the stock 4 MB (M3's checksum rule needs a power-of-two size; see the class doc).</summary>
+        public const int ExpandedSize = 0x800000;
+
+        public static void RequireStockBase(Rom baseRom)
+        {
+            if (baseRom.Length != StockSize)
+                throw new InvalidOperationException(
+                    $"base ROM is 0x{baseRom.Length:X} bytes, expected the stock 4 MB HiROM " +
+                    $"(0x{StockSize:X}). Expansion is only verified starting from that shape -- " +
+                    "see specs/m3-expansion-spec.md Part A.");
+
+            byte mapMode = baseRom.Read8(MapModeOffset);
+            if (mapMode != MapModeHiRom)
+                throw new InvalidOperationException(
+                    $"base ROM map mode is 0x{mapMode:X2}, expected 0x{MapModeHiRom:X2} (HiROM). " +
+                    "Expansion is only verified starting from a stock HiROM image, not an " +
+                    "already-expanded or otherwise-mapped one.");
+        }
+
+        /// <summary>
+        /// What <c>--expand</c> records in the ledger (specs/m3-expansion-spec.md C.1): enough of
+        /// the pre-expansion header to make expansion reversible without re-deriving anything --
+        /// <see cref="Revert"/> is a straight truncate-and-restore from these fields, not a
+        /// recomputation.
+        /// </summary>
+        public sealed class ExpansionRecord
+        {
+            public int OriginalSize;
+            public string OriginalSha256 = "";
+            public byte OriginalMapMode;
+            public byte OriginalSizeByte;
+            public int OriginalChecksum;
+            public int OriginalComplement;
+            public int TargetSize;
+            public byte MapMode;
+            public bool MirrorLowBank;
+            public DateTimeOffset Timestamp;
+        }
+
+        /// <summary>Captures the pre-expansion header fields <see cref="Build"/> is about to
+        /// overwrite, before it overwrites them.</summary>
+        public static ExpansionRecord RecordFor(Rom baseRom, int targetSize, byte mapMode, bool mirrorLowBank)
+        {
+            RequireStockBase(baseRom);
+            return new ExpansionRecord
+            {
+                OriginalSize = baseRom.Length,
+                OriginalSha256 = ImportLedger.ComputeSha256(baseRom.Snapshot()),
+                OriginalMapMode = baseRom.Read8(MapModeOffset),
+                OriginalSizeByte = baseRom.Read8(RomSizeOffset),
+                OriginalChecksum = baseRom.Read16(ChecksumOffset),
+                OriginalComplement = baseRom.Read16(ComplementOffset),
+                TargetSize = targetSize,
+                MapMode = mapMode,
+                MirrorLowBank = mirrorLowBank,
+                Timestamp = DateTimeOffset.UtcNow,
+            };
+        }
+
+        /// <summary>Undoes an expansion built from <paramref name="record"/>: truncates back to
+        /// <see cref="ExpansionRecord.OriginalSize"/> and restores the header fields expansion
+        /// overwrote. The low-bank mirror (if any) lives entirely past the truncation point and
+        /// needs no separate undo. This is the "reversible" half of C.1 -- expansion is not a
+        /// one-way door.</summary>
+        public static byte[] Revert(byte[] expandedRom, ExpansionRecord record)
+        {
+            var original = new byte[record.OriginalSize];
+            Array.Copy(expandedRom, original, record.OriginalSize);
+
+            original[MapModeOffset] = record.OriginalMapMode;
+            original[RomSizeOffset] = record.OriginalSizeByte;
+            original[ChecksumOffset] = (byte)(record.OriginalChecksum & 0xFF);
+            original[ChecksumOffset + 1] = (byte)(record.OriginalChecksum >> 8);
+            original[ComplementOffset] = (byte)(record.OriginalComplement & 0xFF);
+            original[ComplementOffset + 1] = (byte)(record.OriginalComplement >> 8);
+            return original;
+        }
+
         public static byte[] Build(Rom baseRom, int targetSize, byte? mapMode,
                                    bool fixChecksum = true, bool mirrorLowBank = false)
         {
             if (targetSize < baseRom.Length)
                 throw new ArgumentException($"target size 0x{targetSize:X} is smaller than the ROM");
+
+            // Only an actual size increase is "expansion" and needs the stock-base guard: a call
+            // with targetSize == baseRom.Length is a header/checksum rebuild on an already-built
+            // image (see BuildExtendedRom's second pass), and that is defined at any size.
+            if (targetSize > baseRom.Length)
+                RequireStockBase(baseRom);
 
             var expanded = new byte[targetSize];
             Array.Copy(baseRom.Snapshot(), expanded, baseRom.Length);

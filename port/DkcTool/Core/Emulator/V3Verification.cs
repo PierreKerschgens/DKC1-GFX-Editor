@@ -19,6 +19,19 @@ namespace DkcTool.Core.Emulator
     {
         public const string DefaultCore = "port/emu/cores/snes9x_libretro.dylib";
 
+        /// <summary>The six cores the M3 gate checks against (specs/m3-expansion-spec.md B.4,
+        /// C.5): fetch-cores.sh's full list. Each still needs its own captured state + a
+        /// human-inspected golden before a gate that uses it means anything (gate0 above).</summary>
+        public static readonly string[] AllCores =
+        {
+            "port/emu/cores/snes9x_libretro.dylib",
+            "port/emu/cores/bsnes_mercury_balanced_libretro.dylib",
+            "port/emu/cores/bsnes_libretro.dylib",
+            "port/emu/cores/bsnes2014_accuracy_libretro.dylib",
+            "port/emu/cores/bsnes2014_balanced_libretro.dylib",
+            "port/emu/cores/bsnes_mercury_accuracy_libretro.dylib",
+        };
+
         /// <summary>Save state the gate prefers as its capture point, when one exists.</summary>
         public const string DefaultStateName = "jungle";
 

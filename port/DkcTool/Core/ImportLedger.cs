@@ -28,6 +28,11 @@ namespace DkcTool.Core
         public string SourceRomSha256 = "";
         public List<ImportAllocation> Allocations = new List<ImportAllocation>();
 
+        /// <summary>Set when this ledger's ROM is the output of <c>--expand</c>
+        /// (specs/m3-expansion-spec.md C.1): the pre-expansion header fields, so the expansion
+        /// itself is recorded and <see cref="Core.Expansion.Revert"/> can undo it later.</summary>
+        public Expansion.ExpansionRecord? RomExpansion;
+
         public IEnumerable<(int Offset, int Length)> AllocatedRanges =>
             Allocations.Select(a => (a.Offset, a.Length));
 
@@ -66,6 +71,22 @@ namespace DkcTool.Core
                     Timestamp = DateTimeOffset.Parse(a.timestamp ?? DateTimeOffset.UtcNow.ToString("O")),
                 });
             }
+            if (doc.expansion is ExpansionJson e)
+            {
+                ledger.RomExpansion = new Expansion.ExpansionRecord
+                {
+                    OriginalSize = Convert.ToInt32(e.originalSize, 16),
+                    OriginalSha256 = e.originalSha256,
+                    OriginalMapMode = Convert.ToByte(e.originalMapMode, 16),
+                    OriginalSizeByte = Convert.ToByte(e.originalSizeByte, 16),
+                    OriginalChecksum = Convert.ToInt32(e.originalChecksum, 16),
+                    OriginalComplement = Convert.ToInt32(e.originalComplement, 16),
+                    TargetSize = Convert.ToInt32(e.targetSize, 16),
+                    MapMode = Convert.ToByte(e.mapMode, 16),
+                    MirrorLowBank = e.mirrorLowBank,
+                    Timestamp = DateTimeOffset.Parse(e.timestamp),
+                };
+            }
             return ledger;
         }
 
@@ -97,6 +118,19 @@ namespace DkcTool.Core
                     source = a.Source,
                     timestamp = a.Timestamp.ToString("O"),
                 }).ToList(),
+                expansion = RomExpansion is Expansion.ExpansionRecord e ? new ExpansionJson
+                {
+                    originalSize = $"0x{e.OriginalSize:X}",
+                    originalSha256 = e.OriginalSha256,
+                    originalMapMode = $"0x{e.OriginalMapMode:X2}",
+                    originalSizeByte = $"0x{e.OriginalSizeByte:X2}",
+                    originalChecksum = $"0x{e.OriginalChecksum:X4}",
+                    originalComplement = $"0x{e.OriginalComplement:X4}",
+                    targetSize = $"0x{e.TargetSize:X}",
+                    mapMode = $"0x{e.MapMode:X2}",
+                    mirrorLowBank = e.MirrorLowBank,
+                    timestamp = e.Timestamp.ToString("O"),
+                } : null,
             };
             File.WriteAllText(path, JsonSerializer.Serialize(json, new JsonSerializerOptions { WriteIndented = true }));
         }
@@ -106,6 +140,23 @@ namespace DkcTool.Core
             [JsonPropertyName("version")] public int version { get; set; }
             [JsonPropertyName("sourceRomSha256")] public string sourceRomSha256 { get; set; } = "";
             [JsonPropertyName("allocations")] public List<AllocationJson>? allocations { get; set; }
+            [JsonPropertyName("expansion")] public ExpansionJson? expansion { get; set; }
+        }
+
+        /// <summary>The reversible record of a <c>--expand</c> run (specs/m3-expansion-spec.md
+        /// C.1): everything <see cref="Expansion.Revert"/> needs to undo it.</summary>
+        private sealed class ExpansionJson
+        {
+            [JsonPropertyName("originalSize")] public string originalSize { get; set; } = "";
+            [JsonPropertyName("originalSha256")] public string originalSha256 { get; set; } = "";
+            [JsonPropertyName("originalMapMode")] public string originalMapMode { get; set; } = "";
+            [JsonPropertyName("originalSizeByte")] public string originalSizeByte { get; set; } = "";
+            [JsonPropertyName("originalChecksum")] public string originalChecksum { get; set; } = "";
+            [JsonPropertyName("originalComplement")] public string originalComplement { get; set; } = "";
+            [JsonPropertyName("targetSize")] public string targetSize { get; set; } = "";
+            [JsonPropertyName("mapMode")] public string mapMode { get; set; } = "";
+            [JsonPropertyName("mirrorLowBank")] public bool mirrorLowBank { get; set; }
+            [JsonPropertyName("timestamp")] public string timestamp { get; set; } = "";
         }
 
         private sealed class AllocationJson

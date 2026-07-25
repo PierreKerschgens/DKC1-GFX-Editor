@@ -145,11 +145,11 @@ namespace DkcTool.Core
         }
 
         /// <summary>Gate 5: ledger integrity -- no two allocations overlap, all fall within a
-        /// scanned free run, none crosses a bank boundary.</summary>
-        private static List<string> ValidateLedger(Rom preImportRom, ImportLedger ledger)
+        /// free run drawn from <paramref name="freeRuns"/>, none crosses a bank boundary.</summary>
+        private static List<string> ValidateLedger(ImportLedger ledger, List<FreeSpace.Run> freeRuns)
         {
             var failures = new List<string>();
-            var scanned = FreeSpace.Scan(preImportRom);
+            var scanned = freeRuns;
             var allocations = ledger.Allocations.OrderBy(a => a.Offset).ToList();
 
             for (int i = 0; i < allocations.Count; i++)
@@ -218,7 +218,7 @@ namespace DkcTool.Core
 
                 var failures = new List<string>();
                 RunGates(clone, preSnapshot, importResult, pose, failures);
-                failures.AddRange(ValidateLedger(new Rom((byte[])preSnapshot.Clone()), ledger));
+                failures.AddRange(ValidateLedger(ledger, FreeSpace.Scan(new Rom((byte[])preSnapshot.Clone()))));
 
                 if (failures.Count == 0) result.PassIndices++;
                 else { result.FailIndices++; result.Failures.AddRange(failures); }
@@ -229,17 +229,26 @@ namespace DkcTool.Core
 
         /// <summary>Cumulative corpus: one run importing poses into a single ROM copy, in table
         /// order, until free space is exhausted -- exercises ledger reuse, fragmentation, and a
-        /// clean NoFreeSpace refusal.</summary>
-        public static CumulativeResult RunCumulative(Rom baseRom)
+        /// clean NoFreeSpace refusal. Uses the stock in-ROM padding pool (92 KB, ~99 poses).</summary>
+        public static CumulativeResult RunCumulative(Rom baseRom) =>
+            RunCumulative(baseRom, FreeSpace.Scan(baseRom), sourceTag: "cumulative-corpus");
+
+        /// <summary>
+        /// Same corpus and gates, against whatever <paramref name="freeRuns"/> supplies. Used
+        /// directly by <see cref="RunCumulativeExtended"/> (specs/m3-expansion-spec.md C.5) to run
+        /// this same gate at ExHiROM scale: thousands of poses against the extended half instead
+        /// of 99 against the stock pool, proving the M2b writer and its gates hold at the capacity
+        /// M3 actually buys, not just at the size the pool happened to allow before it.
+        /// </summary>
+        public static CumulativeResult RunCumulative(Rom baseRom, List<FreeSpace.Run> freeRuns, string sourceTag)
         {
             var result = new CumulativeResult();
             var clone = baseRom.Clone();
-            var ledger = new ImportLedger { SourceRomSha256 = "cumulative-corpus" };
+            var ledger = new ImportLedger { SourceRomSha256 = sourceTag };
 
             // Scanned once, from the pristine ROM: re-scanning a written ROM drops each
             // allocation's whole remaining run (see ImportOptions.FreeRuns). The ledger is what
             // tracks occupancy across the run.
-            var freeRuns = FreeSpace.Scan(baseRom);
             result.FreeBytesAtStart = freeRuns.Sum(r => (long)r.Length);
 
             foreach (int index in GfxTable.EnumerateImageIndices(baseRom))
@@ -274,7 +283,7 @@ namespace DkcTool.Core
                 RunGates(clone, preImportSnapshot, importResult, pose, result.Failures);
             }
 
-            result.Failures.AddRange(ValidateLedger(baseRom, ledger));
+            result.Failures.AddRange(ValidateLedger(ledger, freeRuns));
 
             if (result.NoFreeSpaceHit && result.Utilisation < MinUtilisation)
                 result.Failures.Add(
@@ -283,6 +292,23 @@ namespace DkcTool.Core
                     $"{result.Imported} imports -- free space is being discarded, not filled.");
 
             return result;
+        }
+
+        /// <summary>
+        /// V2b cumulative against an expanded ROM (specs/m3-expansion-spec.md C.5): builds an 8 MB
+        /// ExHiROM image from <paramref name="baseRom"/> (which must be the stock 4 MB HiROM --
+        /// <see cref="Expansion.RequireStockBase"/>) and runs the cumulative corpus against
+        /// <see cref="Expansion.ExtendedRuns"/> instead of the stock pool. At ~3.8 MB of capacity
+        /// against a corpus that needs only a few MB, this is expected to import the *whole*
+        /// pointer table without ever exhausting free space -- a materially different, stronger
+        /// claim than the stock gate's "99 poses before NoFreeSpace".
+        /// </summary>
+        public static CumulativeResult RunCumulativeExtended(Rom baseRom)
+        {
+            byte[] expandedBytes = Expansion.Build(baseRom, Expansion.ExpandedSize,
+                Expansion.MapModeExHiRom, fixChecksum: true, mirrorLowBank: true);
+            var expanded = new Rom(expandedBytes);
+            return RunCumulative(expanded, Expansion.ExtendedRuns(), sourceTag: "cumulative-corpus-m3-extended");
         }
     }
 }

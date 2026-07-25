@@ -25,35 +25,15 @@ namespace DkcTool.Core.Emulator
     /// </summary>
     public static class ExpansionProbe
     {
-        public const int ExpandedSize = 0x800000;   // 8 MB, the next power of two
+        public const int ExpandedSize = Expansion.ExpandedSize;   // 8 MB, the next power of two
 
-        /// <summary>
-        /// Last file offset reachable through the ExHiROM $40-$7D window. Banks $7E/$7F are WRAM,
-        /// so the final 128 KB of an 8 MB image is reachable only through the $00-$3F mirror --
-        /// which is also the one range where <see cref="Rom.Mask"/> and ExHiROM disagree. The
-        /// probe stays out of it entirely.
-        /// </summary>
-        public const int ExtendedLimit = 0x7E0000;
-
-        /// <summary>
-        /// First allocatable offset in the extended half. **Not** 0x400000: bank $40's upper half
-        /// is where ExHiROM puts $00:8000-FFFF, so it holds the mirrored vectors and boot code
-        /// (<see cref="Expansion.LowBankMirrorOffset"/>). Allocating from 0x400000 overwrote them
-        /// and the console came up in a different video mode -- alive, but not running DKC. The
-        /// whole bank is reserved rather than just its upper half, so nothing has to reason about
-        /// a 32 KB hole.
-        /// </summary>
-        public const int ExtendedStart = 0x410000;
-
-        /// <summary>Free runs covering the extended half, split per bank so no allocation can
-        /// cross a bank boundary (the SNES DMA constraint FreeSpace.Allocate asserts).</summary>
-        public static List<FreeSpace.Run> ExtendedRuns()
-        {
-            var runs = new List<FreeSpace.Run>();
-            for (int start = ExtendedStart; start < ExtendedLimit; start += 0x10000)
-                runs.Add(new FreeSpace.Run { Start = start, Length = 0x10000, Value = 0 });
-            return runs;
-        }
+        /// <summary>Promoted to <see cref="Expansion.ExtendedStart"/> / <see cref="Expansion.ExtendedLimit"/>
+        /// / <see cref="Expansion.ExtendedRuns"/> (specs/m3-expansion-spec.md Part C.3) -- this is
+        /// now the real allocator source, not just a probe fixture. Kept as aliases so the
+        /// experiments below don't change.</summary>
+        public const int ExtendedLimit = Expansion.ExtendedLimit;
+        public const int ExtendedStart = Expansion.ExtendedStart;
+        public static List<FreeSpace.Run> ExtendedRuns() => Expansion.ExtendedRuns();
 
         public sealed class Experiment
         {

@@ -1,7 +1,11 @@
 # M3 — ROM expansion (research spec)
 
-**Status:** research complete, **not implemented**. The probe is in the tree
-(`--stats-m3`, `--verify-m3`); the writer is not.
+**Status:** implemented. Part C is done: `Expansion.Build` refuses a non-stock base and
+`--expand` writes a reversible ledger entry, `Expansion.ExtendedRuns`/`FreeRunsFor` are the real
+allocator source for an expanded ROM (no longer probe-only), and `--verify-m3 --all-cores` runs
+the gate across all six cores. 5/6 pass; `bsnes_libretro` fails for a new, distinct reason --
+see Part E. V2b cumulative against an expanded ROM passes: 2,711/2,714 real sprites round-trip
+into the extended half, 0 gate failures, free space never exhausted.
 **Predecessors:** `m2b-writer-spec.md` (relocate + repoint), `m2c-free-space-spec.md`
 (pool at 92 KB / 99 poses), `v3-emulator-spec.md` (the emulator gate this reuses).
 **Supersedes:** the PRD's FR7, which says expansion means appending banks and bumping the
@@ -136,33 +140,66 @@ thing that ships silently:
 
 ---
 
-## Part C — What implementing M3 would require
+## Part C — What implementing M3 required
 
-Not started. In dependency order:
+Done, in dependency order:
 
-1. **`Expansion.Build`** — exists (size, map mode, size byte, checksum, low-bank mirror). Needs:
-   refusal when the base is not 4 MB HiROM; a `--expand` path that writes a ledger entry so the
-   expansion itself is recorded and reversible.
+1. **`Expansion.Build`** — `RequireStockBase` refuses to grow a ROM that isn't the stock 4 MB
+   HiROM (checked only when `targetSize > baseRom.Length`, so the checksum-only rebuild pass
+   `BuildExtendedRom` already relied on still works on an already-expanded image). `--expand`
+   now calls `Expansion.RecordFor` before building and saves an `ExpansionRecord` into the usual
+   `<out>.dkctool.json` ledger sidecar: original size, sha256, map mode, size byte, checksum,
+   complement, plus the target parameters. `Expansion.Revert(bytes, record)` undoes it -- a
+   truncate to the original size plus restoring the six recorded header bytes, verified
+   byte-for-byte equal to the pre-expansion ROM.
 2. **Pointer rule** — `GfxTable.PointerFor(fileOffset)` exists: `0xC00000 + offset` below 4 MB,
    `offset` at or above it. `WritePointer` refuses an extended pointer when the ROM is too small
    to contain it, so a `$40–$7D` pointer can never be written into a stock 4 MB image.
-   *(These two are already in the tree because the probe needed them; M2b/V3 gates re-run green.)*
-3. **Allocator** — extended runs start at `0x410000`, end at `0x7E0000` (banks `$7E/$7F` are WRAM;
-   the last 128 KB of an 8 MB image is reachable only through the `$00–$3F` mirror, the one range
-   where `Mask()` disagrees — stay out of it). Usable: **0x3D0000, ~3.8 MB**.
-4. **Free-space policy** — with 3.8 MB of *known*-empty space, the M2c scan/promotion machinery
-   stops mattering for new imports. Prefer extended space and leave the 92 KB of in-ROM padding
-   alone, rather than mixing the two.
-5. **Gate** — `--verify-m3` extended to all six cores, plus a re-run of V2b cumulative against an
-   expanded ROM.
+   *(Unchanged from the research pass; M2b/V3 gates re-run green.)*
+3. **Allocator** — `Expansion.ExtendedStart`/`ExtendedLimit`/`ExtendedRuns` (moved out of
+   `ExpansionProbe`, which now just aliases them): extended runs start at `0x410000`, end at
+   `0x7E0000` (banks `$7E/$7F` are WRAM; the last 128 KB of an 8 MB image is reachable only
+   through the `$00–$3F` mirror, the one range where `Mask()` disagrees — stay out of it).
+   Usable: **0x3D0000, ~3.8 MB**. This is now real allocator source, not just a probe fixture.
+4. **Free-space policy** — `Expansion.FreeRunsFor(rom)`: an expanded ROM (`Length > 4 MB`) gets
+   `ExtendedRuns()` only, never mixed with the 92 KB in-ROM padding scan. `--import` calls it
+   instead of defaulting to a bare `FreeSpace.Scan`; a stock ROM is unaffected (it's exactly the
+   old scan). Confirmed by V2b staying at 99/87% utilisation, unchanged, after the switch.
+5. **Gate** — `--verify-m3 --all-cores` runs the four-experiment probe across all six cores in one
+   invocation (`V3Verification.AllCores`); states + human-inspected goldens were captured for the
+   four that didn't have them (`bsnes`, `bsnes2014_accuracy`, `bsnes2014_balanced`,
+   `bsnes_mercury_accuracy`). Result: **5/6 pass**; `bsnes_libretro` fails, but not for a reason
+   Part B anticipated — see Part E. `M2bVerification.RunCumulativeExtended` re-runs the V2b
+   cumulative corpus against a built 8 MB ExHiROM image, sourcing free space from
+   `ExtendedRuns()` instead of the stock pool: **2,711/2,714 real sprites imported, 0 gate
+   failures, free space never exhausted (53% of 3.8 MB used)** — a strictly stronger result than
+   the stock gate's "99 poses then a clean refusal", because at this capacity the corpus finishes
+   before the pool does.
 
-**Capacity:** 3.8 MB at the p90 sprite size (0x4AE) is roughly **3,400 poses**, against 99 today.
-Expansion is not a capacity tweak, it is ~40× the current pool. The question is never "is it
-enough" — only "does it still run".
+**Capacity:** 3.8 MB at the p90 sprite size (0x4AE) is roughly **3,400 poses**, against 99 today —
+and the cumulative gate above shows the entire current sprite corpus (2,711 importable indices)
+fits with room to spare. Expansion is not a capacity tweak, it is ~40× the current pool. The
+question was never "is it enough" — only "does it still run", and Part C.5 answers that on 5 of
+6 cores.
 
 ---
 
-## Part D — Recommendation
+## Part D — Recommendation (superseded)
+
+The original recommendation here was **do not build M3 yet**: the research had retired the risk
+that mattered, but *need* was unestablished, since nothing had hit the 99-pose ceiling with no
+real character sheet imported. That reasoning was sound at the time and is left below for the
+record. M3 was subsequently built ahead of M4 on explicit instruction, not because the need case
+changed — it had not. M4 (batch import, the slicer/manifest/import path) is still not built, and
+is still what would turn "99 poses" from a number into a verdict.
+
+What building M3 first bought: the ExHiROM decision — the one change that can make the ROM
+unbootable on hardware nobody here can test (Part E) — is now taken and in the tree, whether or
+not a character sheet ever needed it. If M4 later shows a sheet fits in 92 KB, the expansion
+machinery is unused but harmless; if it doesn't, M3 is not on M4's critical path anymore.
+
+<details>
+<summary>Original text</summary>
 
 **Do not build M3 yet.** The research retires the risk that mattered (the map change does not
 break M0–M2b, and the new space demonstrably works on two accurate cores), and that result keeps.
@@ -176,18 +213,22 @@ taken at all.
 
 If it does have to be taken, Part C is the plan and Part B is the evidence it rests on.
 
+</details>
+
 ---
 
 ## Part E — Risks
 
 | Risk | Status / mitigation |
 |---|---|
-| Map change breaks existing pointers | **Retired** — A.1: zero pointers in the one range that changes; X2 identical on two cores |
+| Map change breaks existing pointers | **Retired** — A.1: zero pointers in the one range that changes; X2 identical on all passing cores |
 | Expanded ROM does not boot | **Understood** — B.1/B.2: 32 KB low-bank mirror, verified |
-| New space not actually readable | **Retired for 2 cores** — B.3, two-sided |
+| New space not actually readable | **Retired for 5/6 cores** — B.3 + C.5, two-sided; extended-scale gate confirms it holds for the whole real corpus, not just 60 sprites |
 | Allocation clobbers the mirror | `ExtendedStart = 0x410000`, bank `$40` reserved whole |
 | `$00–$3F` mirror region used by mistake | Allocator capped at `0x7E0000`; `Mask()` disagreement documented in A.1 |
 | Checksum left stale | Recomputed on every build; rule verified against the stock ROM |
-| Other four cores reject ExHiROM | **Open** — needs a state + golden each |
+| Base ROM not stock 4 MB HiROM | **Retired** — `Expansion.RequireStockBase` refuses to grow anything else (C.1) |
+| Expansion is a one-way door | **Retired** — `--expand` ledgers an `ExpansionRecord`; `Expansion.Revert` reconstructs the original ROM byte-for-byte from it (C.1, verified) |
+| Other four cores reject ExHiROM | **Mostly retired, one new finding** — states + goldens captured and gated for all four (C.5a/b). Three pass clean (`bsnes2014_accuracy`, `bsnes2014_balanced`, `bsnes_mercury_accuracy`). `bsnes_libretro` **fails**, but not by rejecting ExHiROM or crashing: it renders 256×224 for the stock ROM (confirmed clean on the unrelated V3 gate) and switches to a 512×224 framebuffer purely from being handed the 8 MB image, before any content is compared — the pixel-diff gate can't compare across that resolution change as built. Open whether this is a hi-res/interlace auto-detect keyed off ROM size or cartridge type, or something else; not investigated further here. |
 | Real hardware / flashcart rejects ExHiROM | **Open, and untestable here.** The one risk that emulator work cannot close |
-| Built before it is needed | Part D: M4 first |
+| Built before it is needed | Superseded — see Part D. M3 was built ahead of M4 on explicit instruction; the need case from the original recommendation was never separately established |

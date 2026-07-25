@@ -8,12 +8,16 @@
 #
 # snes9x  -- fast, used for the bulk of the frame-capture runs
 # bsnes_mercury_balanced -- accurate, used to confirm anything snes9x flags
+# The other four (bsnes, bsnes2014_accuracy, bsnes2014_balanced, bsnes_mercury_accuracy) round
+# out the six cores the M3 gate checks against (specs/m3-expansion-spec.md Part C.5) -- each
+# still needs its own --emu-state + --emu-golden capture point, human-inspected, before
+# --verify-m3 will trust it (see V3Verification's gate0).
 set -euo pipefail
 
 PLATFORM="${PLATFORM:-apple/osx/arm64}"
 EXT="${EXT:-dylib}"
 BUILDBOT="https://buildbot.libretro.com/nightly/${PLATFORM}/latest"
-CORES=(snes9x bsnes_mercury_balanced)
+CORES=(snes9x bsnes_mercury_balanced bsnes bsnes2014_accuracy bsnes2014_balanced bsnes_mercury_accuracy)
 
 cd "$(dirname "$0")"
 mkdir -p cores

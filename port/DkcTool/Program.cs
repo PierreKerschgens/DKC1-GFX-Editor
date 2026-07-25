@@ -98,13 +98,23 @@ if (args.Length >= 2 && args[1] == "--verify-m3")
 
 if (args.Length >= 2 && args[1] == "--expand")
 {
-    // Writes an expanded ROM so it can be booted by hand / by --emu-boot. Research aid only.
+    // Writes an expanded ROM so it can be booted by hand / by --emu-boot, and a ledger sidecar
+    // recording the expansion (specs/m3-expansion-spec.md C.1) so it is reversible later via
+    // Expansion.Revert -- expansion is not meant to be a one-way door.
     string expOut = ArgValue(args, "--out") ?? throw new ArgumentException("--expand needs --out");
     bool expMirror = Array.IndexOf(args, "--mirror") >= 0;
-    byte? expMode = ArgValue(args, "--map") is string m ? Convert.ToByte(m, 16) : Expansion.MapModeExHiRom;
+    byte expMode = ArgValue(args, "--map") is string m ? Convert.ToByte(m, 16) : Expansion.MapModeExHiRom;
     int expSize = Convert.ToInt32(ArgValue(args, "--size") ?? "0x800000", 16);
+
+    var expRecord = Expansion.RecordFor(rom, expSize, expMode, expMirror);
     File.WriteAllBytes(expOut, Expansion.Build(rom, expSize, expMode, fixChecksum: true, mirrorLowBank: expMirror));
+
+    string expLedgerPath = ImportLedger.SidecarPath(expOut);
+    var expLedger = new ImportLedger { SourceRomSha256 = expRecord.OriginalSha256, RomExpansion = expRecord };
+    expLedger.Save(expLedgerPath);
+
     Console.WriteLine($"wrote {expOut}: 0x{expSize:X} bytes, map mode 0x{expMode:X2}");
+    Console.WriteLine($"wrote {expLedgerPath} (reversible via Expansion.Revert)");
     return 0;
 }
 
@@ -571,8 +581,10 @@ static int RunImportCli(Rom rom, string romPath, string[] args)
     ImportResult result;
     try
     {
+        // Expansion.FreeRunsFor (specs/m3-expansion-spec.md C.4): an expanded ROM allocates from
+        // the extended half only, never mixed with the stock in-ROM padding pool.
         result = SpriteImporter.Import(working, imageIndex, pose.Pixels,
-            new ImportOptions { DryRun = dryRun, Source = Path.GetFileName(posePath) }, ledger);
+            new ImportOptions { DryRun = dryRun, Source = Path.GetFileName(posePath), FreeRuns = Expansion.FreeRunsFor(rom) }, ledger);
     }
     catch (ImportException ex)
     {
@@ -826,10 +838,9 @@ static int RunVerifyV3(Rom rom, string[] args)
 
 // M3 expansion probe (specs/m3-expansion-spec.md Part B): four experiments on whether an
 // 8 MB ExHiROM DKC1 boots and whether its new space is addressable.
-//   dotnet run -- <rom> --verify-m3 [--core P] [--name STATE] [--count N] [--dump DIR]
+//   dotnet run -- <rom> --verify-m3 [--core P | --all-cores] [--name STATE] [--count N]
 static int RunVerifyM3(Rom rom, string[] args)
 {
-    string core = ArgValue(args, "--core") ?? DkcTool.Core.Emulator.V3Verification.DefaultCore;
     string stateName = ArgValue(args, "--name") ?? DkcTool.Core.Emulator.V3Verification.DefaultStateName;
     int count = int.Parse(ArgValue(args, "--count")
         ?? DkcTool.Core.Emulator.V3Verification.DefaultIndexCount.ToString());
@@ -837,21 +848,52 @@ static int RunVerifyM3(Rom rom, string[] args)
         ?? DkcTool.Core.Emulator.StateCapture.SettleFrames.ToString());
     bool walk = Array.IndexOf(args, "--no-walk") < 0;
 
-    var r = DkcTool.Core.Emulator.ExpansionProbe.Run(rom, core, stateName, count, settle, walk);
+    // --all-cores (specs/m3-expansion-spec.md C.5): the gate is only as good as the union of
+    // cores it has actually run against -- one core passing says nothing about the other five.
+    bool allCores = Array.IndexOf(args, "--all-cores") >= 0;
+    string[] cores = allCores
+        ? DkcTool.Core.Emulator.V3Verification.AllCores
+        : new[] { ArgValue(args, "--core") ?? DkcTool.Core.Emulator.V3Verification.DefaultCore };
 
-    Console.WriteLine($"Core         : {r.Core}");
-    Console.WriteLine($"Capture point: state {r.CapturePoint}");
-    Console.WriteLine();
-    foreach (var e in r.Experiments)
+    bool allPassed = true;
+    foreach (string core in cores)
     {
-        Console.WriteLine($"{e.Id}  {e.What}");
-        Console.WriteLine($"    expect : {e.Expectation}");
-        Console.WriteLine($"    got    : {e.Observed}");
-        Console.WriteLine($"    {(e.Passed ? "PASS" : "FAIL")}   ({e.Note})");
+        var r = DkcTool.Core.Emulator.ExpansionProbe.Run(rom, core, stateName, count, settle, walk);
+
+        Console.WriteLine($"Core         : {r.Core}");
+        Console.WriteLine($"Capture point: state {r.CapturePoint}");
         Console.WriteLine();
+        foreach (var e in r.Experiments)
+        {
+            Console.WriteLine($"{e.Id}  {e.What}");
+            Console.WriteLine($"    expect : {e.Expectation}");
+            Console.WriteLine($"    got    : {e.Observed}");
+            Console.WriteLine($"    {(e.Passed ? "PASS" : "FAIL")}   ({e.Note})");
+            Console.WriteLine();
+        }
+        Console.WriteLine(r.Passed ? $"M3 probe ({core}): PASS" : $"M3 probe ({core}): FAIL");
+        Console.WriteLine();
+        allPassed &= r.Passed;
     }
-    Console.WriteLine(r.Passed ? "M3 probe: PASS" : "M3 probe: FAIL");
-    return r.Passed ? 0 : 1;
+
+    if (allCores)
+        Console.WriteLine(allPassed ? "M3 probe, all six cores: PASS" : "M3 probe, all six cores: FAIL");
+
+    // V2b cumulative against an expanded ROM (specs/m3-expansion-spec.md C.5): headless, no core
+    // involved -- this is "does the M2b writer and its gates still hold once the free-space
+    // source is the extended half instead of the 92 KB pool", at the scale that actually matters
+    // (thousands of poses, not 99).
+    var extCumulative = M2bVerification.RunCumulativeExtended(rom);
+    Console.WriteLine();
+    Console.WriteLine($"V2b cumulative (expanded ROM): {extCumulative.Imported} imported, " +
+                       $"NoFreeSpace hit: {extCumulative.NoFreeSpaceHit}, {extCumulative.Failures.Count} gate failures, " +
+                       $"utilisation {extCumulative.Utilisation:P0} " +
+                       $"({extCumulative.BytesWritten}/{extCumulative.FreeBytesAtStart} bytes of extended space).");
+    foreach (var f in extCumulative.Failures.Take(20)) Console.WriteLine("  FAIL " + f);
+    bool extOk = extCumulative.Failures.Count == 0;
+    Console.WriteLine(extOk ? "V2b cumulative (expanded ROM): PASS" : "V2b cumulative (expanded ROM): FAIL");
+
+    return allPassed && extOk ? 0 : 1;
 }
 
 // M2c poison probe: overwrite candidate free space with noise and check the game does not
