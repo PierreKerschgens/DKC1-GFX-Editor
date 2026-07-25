@@ -432,11 +432,26 @@ remain unmatched, and the reason is not the one A.14 gave.
 established. `anim 27` (8 frames, `0x538`) draws DK alone from the same region, which makes
 `0x538..0x594` the region to search for *Ride Look* and *Steel Keg Ride* rather than the whole block.
 
-**Where the missing animations probably are.** If a minecart or keg animation exists, it likely
-draws only the *vehicle*, with DK composited by game code — in which case it never touches DK's
-range and neither selection will ever surface it. That is a hypothesis, not a result; confirming it
-means finding the vehicle sprites (the survey shows minecart art near `0x1C88..0x1CB0`) and checking
-which animations reference them.
+**Where the missing animations are — hypothesis tested and confirmed.** The guess was that a
+minecart animation draws only the *vehicle*, with DK composited by game code, so it never touches
+DK's range and no selection can surface it. Chased from the vehicle side:
+
+- The cart sprites are `0x1C84..0x1CC8` (confirmed by rendering).
+- Their animation coverage is almost nil: `anim 361` draws a single cart frame (`0x1CA4`),
+  `anim 226` a single barrel frame (`0x1C80`), and `anim 220`/`232` are 4-frame scripts around
+  `0x1C74..0x1C7C`. Every other sampled cart index is referenced by **0** of the 440 scripts.
+- **No animation draws both a DK index and a cart index.** The 14 prop animations' outside indices
+  are all animal buddies (`0x1ECC`, `0x1F4C`, `0x2324`, `0x2578`, `0x2710`, `0x28F0`); none lands in
+  the cart range.
+
+So *Minecart Idle* and *Minecart Up and Down* **cannot be matched through the animation table at
+all** — there is no DK+cart animation to match them to. Their DK poses exist as sprites but are
+composited by game code, which the table does not model. The same reasoning covers *Steel Keg Ride*.
+
+**What that means for the manifest.** These runs are matchable only by locating DK's riding poses
+visually, most likely in the `0x538..0x594` region this section identified. They are not blocked by
+judgement or tooling; they are outside what `Core/AnimationTable.cs` can see, and no amount of
+rendering animations will surface them.
 
 **Recorded because the prediction was confident and wrong.** "Lift the filter and ~6 runs close" was
 reasoning from the caption list to the ROM without checking the ROM. The filter was worth lifting —
