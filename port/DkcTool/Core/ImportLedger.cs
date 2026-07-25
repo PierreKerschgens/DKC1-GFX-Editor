@@ -50,13 +50,26 @@ namespace DkcTool.Core
             if (!File.Exists(path))
                 return new ImportLedger { SourceRomSha256 = sourceRomSha256 };
 
-            var doc = JsonSerializer.Deserialize<LedgerJson>(File.ReadAllText(path))
-                ?? throw new InvalidOperationException($"could not parse ledger '{path}'.");
+            var ledger = Load(path);
 
-            if (!string.Equals(doc.sourceRomSha256, sourceRomSha256, StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(ledger.SourceRomSha256, sourceRomSha256, StringComparison.OrdinalIgnoreCase))
                 throw new ImportException(ImportErrorCode.LedgerMismatch,
                     $"ledger '{path}' was built against a different ROM " +
-                    $"(sha256 {doc.sourceRomSha256}), not the current input ({sourceRomSha256}).");
+                    $"(sha256 {ledger.SourceRomSha256}), not the current input ({sourceRomSha256}).");
+
+            return ledger;
+        }
+
+        /// <summary>
+        /// Parses a ledger without the source-ROM guard. Only for callers whose input is
+        /// legitimately *not* the ROM the ledger was built from -- notably <c>--revert</c>, where
+        /// the input is the expanded image and `sourceRomSha256` names the pre-expansion original.
+        /// Every other caller wants <see cref="LoadOrCreate"/> and its mismatch refusal.
+        /// </summary>
+        public static ImportLedger Load(string path)
+        {
+            var doc = JsonSerializer.Deserialize<LedgerJson>(File.ReadAllText(path))
+                ?? throw new InvalidOperationException($"could not parse ledger '{path}'.");
 
             var ledger = new ImportLedger { SourceRomSha256 = doc.sourceRomSha256 };
             foreach (var a in doc.allocations ?? new List<AllocationJson>())

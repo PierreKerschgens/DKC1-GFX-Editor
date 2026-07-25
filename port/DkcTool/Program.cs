@@ -118,6 +118,45 @@ if (args.Length >= 2 && args[1] == "--expand")
     return 0;
 }
 
+if (args.Length >= 2 && args[1] == "--revert")
+{
+    // Undoes --expand from the ledger sidecar (specs/m3-expansion-spec.md C.1). The sha256 check
+    // is the point, not a formality: it is what turns "reversible in principle" into a claim
+    // this command proves every time it runs.
+    string revOut = ArgValue(args, "--out") ?? throw new ArgumentException("--revert needs --out");
+    string revLedgerPath = ArgValue(args, "--ledger") ?? ImportLedger.SidecarPath(args[0]);
+    if (!File.Exists(revLedgerPath))
+    {
+        Console.Error.WriteLine($"no ledger at {revLedgerPath} -- an expansion can only be " +
+                                "reverted from the record --expand wrote alongside it.");
+        return 1;
+    }
+
+    var revLedger = ImportLedger.Load(revLedgerPath);
+    if (revLedger.RomExpansion is not Expansion.ExpansionRecord revRecord)
+    {
+        Console.Error.WriteLine($"ledger {revLedgerPath} records no expansion -- nothing to revert.");
+        return 1;
+    }
+
+    byte[] reverted = Expansion.Revert(rom.Snapshot(), revRecord);
+    string revSha = ImportLedger.ComputeSha256(reverted);
+    if (!string.Equals(revSha, revRecord.OriginalSha256, StringComparison.OrdinalIgnoreCase))
+    {
+        Console.Error.WriteLine($"revert produced sha256 {revSha}, expected {revRecord.OriginalSha256}. " +
+                                "The image was modified after expansion (sprites written into the " +
+                                "extended half are discarded by a revert, but the first 4 MB must " +
+                                "still match) -- refusing to write.");
+        return 1;
+    }
+
+    File.WriteAllBytes(revOut, reverted);
+    Console.WriteLine($"reverted 0x{rom.Length:X} -> 0x{reverted.Length:X} bytes, sha256 matches the " +
+                      $"pre-expansion original.");
+    Console.WriteLine($"wrote {revOut}");
+    return 0;
+}
+
 if (args.Length >= 2 && args[1] == "--poison")
 {
     return RunPoison(rom, args);
@@ -855,7 +894,29 @@ static int RunVerifyM3(Rom rom, string[] args)
         ? DkcTool.Core.Emulator.V3Verification.AllCores
         : new[] { ArgValue(args, "--core") ?? DkcTool.Core.Emulator.V3Verification.DefaultCore };
 
-    bool allPassed = true;
+    // Headless preflight: expansion must be reversible, and nothing else in the gate would
+    // notice if it stopped being. Runs before the cores because it costs milliseconds and
+    // because a one-way expansion is a worse problem than a core disagreeing.
+    var revRecord = Expansion.RecordFor(rom, Expansion.ExpandedSize, Expansion.MapModeExHiRom, true);
+    byte[] revBuilt = Expansion.Build(rom, Expansion.ExpandedSize, Expansion.MapModeExHiRom,
+                                      fixChecksum: true, mirrorLowBank: true);
+    byte[] revBack = Expansion.Revert(revBuilt, revRecord);
+    bool revOk = ImportLedger.ComputeSha256(revBack) == revRecord.OriginalSha256;
+    Console.WriteLine($"Revert round-trip: {(revOk ? "PASS" : "FAIL")} " +
+                      $"(expand 0x{Expansion.ExpandedSize:X} -> revert -> sha256 " +
+                      $"{(revOk ? "matches" : "DIFFERS from")} the original)");
+
+    // ...and both header copies must agree, which is what bsnes_libretro reads.
+    bool hdrOk = Expansion.HasMirroredHeader(revBuilt)
+                 && revBuilt[Expansion.MapModeOffset] == revBuilt[Expansion.LowBankMirrorBase + Expansion.MapModeOffset]
+                 && revBuilt[Expansion.RomSizeOffset] == revBuilt[Expansion.LowBankMirrorBase + Expansion.RomSizeOffset]
+                 && revBuilt[Expansion.ChecksumOffset] == revBuilt[Expansion.LowBankMirrorBase + Expansion.ChecksumOffset]
+                 && revBuilt[Expansion.ChecksumOffset + 1] == revBuilt[Expansion.LowBankMirrorBase + Expansion.ChecksumOffset + 1];
+    Console.WriteLine($"Mirrored header  : {(hdrOk ? "PASS" : "FAIL")} " +
+                      "(0x40FFC0 matches 0x00FFC0 -- map mode, size byte, checksum)");
+    Console.WriteLine();
+
+    bool allPassed = revOk && hdrOk;
     foreach (string core in cores)
     {
         var r = DkcTool.Core.Emulator.ExpansionProbe.Run(rom, core, stateName, count, settle, walk);

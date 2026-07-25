@@ -1,11 +1,13 @@
 # M3 — ROM expansion (research spec)
 
-**Status:** implemented. Part C is done: `Expansion.Build` refuses a non-stock base and
-`--expand` writes a reversible ledger entry, `Expansion.ExtendedRuns`/`FreeRunsFor` are the real
-allocator source for an expanded ROM (no longer probe-only), and `--verify-m3 --all-cores` runs
-the gate across all six cores. 5/6 pass; `bsnes_libretro` fails for a new, distinct reason --
-see Part E. V2b cumulative against an expanded ROM passes: 2,711/2,714 real sprites round-trip
-into the extended half, 0 gate failures, free space never exhausted.
+**Status:** implemented, gate green. Part C is done: `Expansion.Build` refuses a non-stock base,
+`--expand` writes a reversible ledger entry and `--revert` reconstructs the original from it
+(sha256-checked, and gated), `Expansion.ExtendedRuns`/`FreeRunsFor` are the real allocator source
+for an expanded ROM, and `--verify-m3 --all-cores` runs the gate across all six cores:
+**6/6 PASS**. Getting there took fixing a real bug — the mirrored ExHiROM header at `0x40FFC0`
+was stale, which `bsnes_libretro` alone noticed (B.5). V2b cumulative against an expanded ROM
+passes: 2,711/2,714 real sprites round-trip into the extended half, 0 gate failures, free space
+never exhausted (53 % of 3.8 MB used).
 **Predecessors:** `m2b-writer-spec.md` (relocate + repoint), `m2c-free-space-spec.md`
 (pool at 92 KB / 99 poses), `v3-emulator-spec.md` (the emulator gate this reuses).
 **Supersedes:** the PRD's FR7, which says expansion means appending banks and bumping the
@@ -131,12 +133,58 @@ thing that ships silently:
 
 ### B.4 Coverage limits
 
-- Two of six cores. The other four (bsnes, bsnes2014 ×2, bsnes-mercury-accuracy) need their own
-  save state + human-inspected golden first — cheap, not free.
+- **All six cores** now, each with its own save state and human-inspected golden (the two-core
+  figure this section originally carried was the research-pass state).
 - One capture point (jungle), so this tests boot + one scene. Same ceiling as M2c Part D.
 - **No hardware, and no flashcart.** Everything above is emulator behaviour. ExHiROM support on
   real hardware and on flashcarts varies more than it does across emulators, and nothing here
   speaks to it.
+
+
+### B.5 The mirrored header — why one core refused to boot
+
+The first six-core run had `bsnes_libretro` failing all four experiments, and this spec originally
+explained it as a framebuffer-resolution change the pixel-diff gate could not compare across. That
+explanation was wrong, in both direction and kind:
+
+- The resolutions were **reversed**. The stock ROM renders the attract screen at **512×224**
+  (hi-res); the expanded ROM rendered **256×224**.
+- It was not a comparison artefact. X2/X3a/X3b compared at matching 256×224 and differed by 97 %,
+  and booting the expanded image directly from power-on — no save state, no gate — gave a **black
+  screen**, while the stock ROM on the same core booted normally.
+
+The cause was an ordering bug in `Expansion.Build`. It mirrored `$00:8000-FFFF` to `0x408000`
+**before** patching the header, and the header lives at the top of that window. So the copy at
+`0x40FFC0` kept the pre-expansion values:
+
+```
+0x00FFC0 (patched):   mode=35 size=0D cksum=E377
+0x40FFC0 (mirrored):  mode=31 size=0C cksum=2BCC   <- stale HiROM header
+```
+
+`0x40FFC0` is where ExHiROM-aware cores look for the header, and bsnes believed it: it declined to
+map the extended half. Patching that copy makes bsnes boot to the same attract screen as the stock
+ROM. The other five cores are indifferent either way — they take ExHiROM from the file size, which
+is also why the bug survived a five-of-six pass.
+
+Two things this is worth remembering for:
+
+- **A majority of cores agreeing is not evidence.** Five cores passed *because* they ignore the
+  field that was wrong. The one disagreeing core was the one reading the ROM most carefully.
+- It was recorded as an unexplained core quirk. "Not investigated further" was doing real work in
+  that sentence — the finding was one boot-and-look away.
+
+`Build` now patches the header first and `WriteChecksum` stamps both copies (the `0x1FE`
+correction becomes `2 × 0x1FE`, since two consistent pairs sit in the sum). `--verify-m3` asserts
+the two copies agree before it starts any core. After the fix bsnes passes X2/X3a/X3b, with X3b
+at 866 px and the same bbox every other core reports.
+
+One residual failure was a genuine harness limit, not a finding: X1 — the *deliberately*
+unbootable control — dies on bsnes in a way that changes the framebuffer geometry, and the probe
+treated a size mismatch as an error for every expectation. But `differs` does not need to inspect
+content: a 512×224 frame is definitively not the baseline's 256×224 one. The probe now resolves a
+geometry mismatch as satisfying `differs` and as failing `identical`/`localised`, which is the
+honest reading in both directions.
 
 ---
 
@@ -144,14 +192,17 @@ thing that ships silently:
 
 Done, in dependency order:
 
-1. **`Expansion.Build`** — `RequireStockBase` refuses to grow a ROM that isn't the stock 4 MB
-   HiROM (checked only when `targetSize > baseRom.Length`, so the checksum-only rebuild pass
+1. **`Expansion.Build`** — patches the header *before* mirroring bank `$00` (order matters, see
+   B.5) and `WriteChecksum` stamps both header copies. `RequireStockBase` refuses to grow a ROM
+   that isn't the stock 4 MB HiROM (checked only when `targetSize > baseRom.Length`, so the checksum-only rebuild pass
    `BuildExtendedRom` already relied on still works on an already-expanded image). `--expand`
    now calls `Expansion.RecordFor` before building and saves an `ExpansionRecord` into the usual
    `<out>.dkctool.json` ledger sidecar: original size, sha256, map mode, size byte, checksum,
    complement, plus the target parameters. `Expansion.Revert(bytes, record)` undoes it -- a
-   truncate to the original size plus restoring the six recorded header bytes, verified
-   byte-for-byte equal to the pre-expansion ROM.
+   truncate to the original size plus restoring the six recorded header bytes. Exposed as
+   `--revert`, which refuses to write unless the reconstruction's sha256 matches the recorded
+   original, and asserted headlessly at the top of `--verify-m3` — so reversibility is *checked*,
+   not merely implemented. (It was dead code until then: correct, but nothing exercised it.)
 2. **Pointer rule** — `GfxTable.PointerFor(fileOffset)` exists: `0xC00000 + offset` below 4 MB,
    `offset` at or above it. `WritePointer` refuses an extended pointer when the ROM is too small
    to contain it, so a `$40–$7D` pointer can never be written into a stock 4 MB image.
@@ -228,7 +279,7 @@ If it does have to be taken, Part C is the plan and Part B is the evidence it re
 | `$00–$3F` mirror region used by mistake | Allocator capped at `0x7E0000`; `Mask()` disagreement documented in A.1 |
 | Checksum left stale | Recomputed on every build; rule verified against the stock ROM |
 | Base ROM not stock 4 MB HiROM | **Retired** — `Expansion.RequireStockBase` refuses to grow anything else (C.1) |
-| Expansion is a one-way door | **Retired** — `--expand` ledgers an `ExpansionRecord`; `Expansion.Revert` reconstructs the original ROM byte-for-byte from it (C.1, verified) |
-| Other four cores reject ExHiROM | **Mostly retired, one new finding** — states + goldens captured and gated for all four (C.5a/b). Three pass clean (`bsnes2014_accuracy`, `bsnes2014_balanced`, `bsnes_mercury_accuracy`). `bsnes_libretro` **fails**, but not by rejecting ExHiROM or crashing: it renders 256×224 for the stock ROM (confirmed clean on the unrelated V3 gate) and switches to a 512×224 framebuffer purely from being handed the 8 MB image, before any content is compared — the pixel-diff gate can't compare across that resolution change as built. Open whether this is a hi-res/interlace auto-detect keyed off ROM size or cartridge type, or something else; not investigated further here. |
+| Expansion is a one-way door | **Retired** — `--expand` ledgers an `ExpansionRecord`; `--revert` reconstructs the original byte-for-byte and refuses on a sha256 mismatch; `--verify-m3` gates the round-trip |
+| Other four cores reject ExHiROM | **Retired** — states + goldens captured and gated for all four; all six cores pass after the B.5 header fix. |
 | Real hardware / flashcart rejects ExHiROM | **Open, and untestable here.** The one risk that emulator work cannot close |
 | Built before it is needed | Superseded — see Part D. M3 was built ahead of M4 on explicit instruction; the need case from the original recommendation was never separately established |

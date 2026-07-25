@@ -149,6 +149,10 @@ namespace DkcTool.Core
         public const int LowBankMirrorSource = 0x008000;
         public const int LowBankMirrorLength = 0x008000;
 
+        /// <summary>Base of the mirrored bank, so mirrored header fields are addressed as
+        /// <c>LowBankMirrorBase + ChecksumOffset</c> etc. -- 0x40FFC0 for the header itself.</summary>
+        public const int LowBankMirrorBase = 0x400000;
+
         /// <summary>
         /// First allocatable offset in the extended half (specs/m3-expansion-spec.md Part C.3).
         /// **Not** 0x400000: bank $40's upper half is where ExHiROM puts $00:8000-FFFF, so it
@@ -272,6 +276,11 @@ namespace DkcTool.Core
         /// one-way door.</summary>
         public static byte[] Revert(byte[] expandedRom, ExpansionRecord record)
         {
+            if (expandedRom.Length < record.OriginalSize)
+                throw new InvalidOperationException(
+                    $"image is 0x{expandedRom.Length:X} bytes, smaller than the recorded original " +
+                    $"(0x{record.OriginalSize:X}) -- this ledger does not describe this file.");
+
             var original = new byte[record.OriginalSize];
             Array.Copy(expandedRom, original, record.OriginalSize);
 
@@ -299,32 +308,69 @@ namespace DkcTool.Core
             var expanded = new byte[targetSize];
             Array.Copy(baseRom.Snapshot(), expanded, baseRom.Length);
 
-            // Put bank $00's upper half where ExHiROM will look for it: vectors, and the boot code
-            // the reset vector points at. 32 KB out of the 4 MB gained.
-            if (mirrorLowBank)
-                Array.Copy(expanded, LowBankMirrorSource, expanded, LowBankMirrorOffset, LowBankMirrorLength);
-
+            // Patch the header BEFORE mirroring. Order is load-bearing: the mirror copies
+            // $00:8000-FFFF, and the header sits at the top of that window, so mirroring first
+            // leaves a *stale* header at 0x40FFC0 -- still reading map mode 0x31 / size 0x0C /
+            // the pre-expansion checksum.
+            //
+            // That is not cosmetic. 0x40FFC0 is where ExHiROM-aware cores look for the header,
+            // and bsnes_libretro believed it: it refused to map the extended half and showed a
+            // black screen from power-on, while running the stock ROM on the same core fine.
+            // Patching this copy is what makes it boot; the other five cores are unaffected
+            // either way (they take ExHiROM off the file size).
             if (mapMode is byte mm) expanded[MapModeOffset] = mm;
             expanded[RomSizeOffset] = SizeByteFor(targetSize);
 
-            if (fixChecksum)
-            {
-                // Zero the fields first so the sum does not include a stale pair, then write the
-                // pair the sum implies. (With the fields zeroed the sum is short by 0x1FE, which
-                // is exactly what a consistent complement/checksum pair contributes.)
-                expanded[ComplementOffset] = expanded[ComplementOffset + 1] = 0;
-                expanded[ChecksumOffset] = expanded[ChecksumOffset + 1] = 0;
+            // Put bank $00's upper half where ExHiROM will look for it: vectors, the boot code the
+            // reset vector points at, and -- now -- the corrected header. 32 KB of the 4 MB gained.
+            if (mirrorLowBank)
+                Array.Copy(expanded, LowBankMirrorSource, expanded, LowBankMirrorOffset, LowBankMirrorLength);
 
-                int checksum = (ComputeChecksum(expanded) + 0x1FE) & 0xFFFF;
-                int complement = checksum ^ 0xFFFF;
-
-                expanded[ChecksumOffset] = (byte)(checksum & 0xFF);
-                expanded[ChecksumOffset + 1] = (byte)(checksum >> 8);
-                expanded[ComplementOffset] = (byte)(complement & 0xFF);
-                expanded[ComplementOffset + 1] = (byte)(complement >> 8);
-            }
+            if (fixChecksum) WriteChecksum(expanded, mirroredHeader: mirrorLowBank);
 
             return expanded;
+        }
+
+        /// <summary>
+        /// Writes the checksum/complement pair, to <em>both</em> header copies when the image
+        /// carries a mirrored ExHiROM header at 0x40FFC0.
+        ///
+        /// Zero the fields first so a stale pair is not counted, then add back what a consistent
+        /// pair contributes: complement + checksum always sum to 0xFF + 0xFF whatever the value,
+        /// so the correction is 0x1FE <em>per pair present</em>. Getting that count wrong is a
+        /// silent off-by-0x1FE in the stored checksum, which no emulator here validates -- and so
+        /// would not be caught by any gate.
+        /// </summary>
+        public static void WriteChecksum(byte[] rom, bool mirroredHeader)
+        {
+            var bases = mirroredHeader ? new[] { 0, LowBankMirrorBase } : new[] { 0 };
+
+            foreach (int b in bases)
+            {
+                rom[b + ComplementOffset] = rom[b + ComplementOffset + 1] = 0;
+                rom[b + ChecksumOffset] = rom[b + ChecksumOffset + 1] = 0;
+            }
+
+            int checksum = (ComputeChecksum(rom) + bases.Length * 0x1FE) & 0xFFFF;
+            int complement = checksum ^ 0xFFFF;
+
+            foreach (int b in bases)
+            {
+                rom[b + ChecksumOffset] = (byte)(checksum & 0xFF);
+                rom[b + ChecksumOffset + 1] = (byte)(checksum >> 8);
+                rom[b + ComplementOffset] = (byte)(complement & 0xFF);
+                rom[b + ComplementOffset + 1] = (byte)(complement >> 8);
+            }
+        }
+
+        /// <summary>True if this image carries the mirrored ExHiROM header -- i.e. the 21-byte
+        /// title at 0x40FFC0 matches the one at 0xFFC0.</summary>
+        public static bool HasMirroredHeader(byte[] rom)
+        {
+            if (rom.Length <= LowBankMirrorBase + HeaderBase + 21) return false;
+            for (int i = 0; i < 21; i++)
+                if (rom[HeaderBase + i] != rom[LowBankMirrorBase + HeaderBase + i]) return false;
+            return true;
         }
 
         public static int Run(Rom rom)

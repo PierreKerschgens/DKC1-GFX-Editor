@@ -73,6 +73,23 @@ namespace DkcTool.Core.Emulator
                 try
                 {
                     using var frame = StateCapture.CaptureFromState(corePath, romBytes, state, settleFrames, walk);
+
+                    // A core that comes up with a different framebuffer geometry cannot be
+                    // pixel-compared -- but that is only a problem for the expectations that need
+                    // to look at content. "differs" does not: a 512x224 frame is definitively not
+                    // the baseline's 256x224 one, which is the whole claim. X1 (the deliberately
+                    // unbootable control) hits this on bsnes_libretro, where dying changes the
+                    // resolution; treating it as an error failed the gate for the one experiment
+                    // that was behaving exactly as designed.
+                    if (frame.Width != baseline.Width || frame.Height != baseline.Height)
+                    {
+                        string geom = $"frame is {frame.Width}x{frame.Height}, baseline is " +
+                                      $"{baseline.Width}x{baseline.Height}";
+                        return expect == "differs"
+                            ? (true, geom + " -- different geometry, so not the baseline frame")
+                            : (false, geom + " -- cannot compare content across a resolution change");
+                    }
+
                     var diff = FrameCapture.Compare(baseline, frame);
                     string summary = diff.Identical ? "identical" : diff.ToString();
 
@@ -198,7 +215,11 @@ namespace DkcTool.Core.Emulator
             // The checksum changed the moment sprites were written; recompute it, so a core that
             // validates it is testing ExHiROM rather than rejecting a stale header.
             var bytes = expanded.Snapshot();
-            return Expansion.Build(new Rom(bytes), ExpandedSize, Expansion.MapModeExHiRom, mirrorLowBank: false);
+            // Re-stamp the checksum only -- the image is already built and already carries the
+            // mirrored header, so both copies have to be updated. Calling Build() again here would
+            // recompute as if there were a single header and store a checksum short by 0x1FE.
+            Expansion.WriteChecksum(bytes, mirroredHeader: Expansion.HasMirroredHeader(bytes));
+            return bytes;
         }
     }
 }
