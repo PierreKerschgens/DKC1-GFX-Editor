@@ -94,6 +94,12 @@ So a human names ~45 strips instead of ~533 poses. The captions themselves are r
 not metadata, so the *names* cannot be read out of the file — but the *structure* can, and that is
 what makes an authored manifest tractable rather than a 533-line chore.
 
+> **Qualified by A.11: a strip is not always an animation.** 17 of the DK sheet's 46 strips carry no
+> caption and continue the preceding captioned one — 12 as a deliberate new row, 5 as a genuine
+> horizontal-gap fragment. The authorable unit is the *captioned run*, not the strip, which makes it
+> 29 units for DK rather than 46. The claim above is right that the structure is derivable and the
+> names are not; it is wrong that strip and animation coincide.
+
 > The band figure came first and was wrong to build on. A.7 is what exposed it: the longest band
 > held 34 poses and **no animation in the ROM has 34 frames**, which is not a thing that can be
 > true if bands are animations. The two-axis split brings the maximum to 24–25, where the ROM has
@@ -281,11 +287,43 @@ all 46 off three images.
 | 14 | 13 | Hit / Death | 29 | 14 | Minecart Up and Down | | | |
 | 15 | 25 | Barrel Pick Up | | | | | | |
 
-**17 strips carry no caption:** 5, 9, 11, 13, 21, 25, 27, 32, 35–41, 43, 45. They sit immediately
-after a captioned strip in every case, so the working hypothesis is that they are continuations of
-the preceding animation that the horizontal-gap split (A.4) cut in two — which would mean **a strip
-is not always an animation**, and A.4's "the manifest's natural unit is the strip" needs qualifying.
-Not yet confirmed.
+**17 strips carry no caption:** 5, 9, 11, 13, 21, 25, 27, 32, 35–41, 43, 45.
+
+### A.11 Why those 17 are uncaptioned — checked, and it is two mechanisms, not one
+
+The first guess was "the horizontal-gap split (A.4) cut one captioned animation in two". Checking
+strip geometry against band membership falsified it as a *general* explanation and split the group:
+
+| group | strips | shape | mechanism |
+|---|---|---|---|
+| A | 5, 9, 11, 13, 21, 32, 35, 36, 38, 41, 43, 45 | own band, `firstX` 27–41 (left margin) | a deliberate **new row**, not a split |
+| B | 25, 27, 37, 39, 40 | share a band with a captioned strip, `firstX` 300–1019 | the horizontal-gap split, as originally guessed |
+
+Only group B matches the original hypothesis. Group A occupies a full row of its own, so nothing was
+cut — and it is not a *space-driven* wrap either: the captioned row above each one stops well short
+of the 1236 px margin ("Roll" ends at 713, "Start Crawl" at 273, "Bang Chest" at 757). The author
+simply started a new row.
+
+**They carry no caption anywhere, not just at the left.** Widening the search to the full sheet
+width above each group-A strip turns up no animation name — only the sheet's attribution line,
+"Sprites by Michael Ropple (spacepig22)", sitting to the right of the Roll row. (A.2 says black
+appears "only in the rendered row captions"; the credit is a second black-text element. It changes
+nothing — both are excluded as annotation — but the claim as written is incomplete.)
+
+**So the substance of the hypothesis holds even though the mechanism did not.** Each group-A strip
+directly follows a captioned one and continues it visually: strip 8 "Roll" → strip 9, still curled
+and tumbling; strip 10 "Jump" → strip 11, upright landing; strip 12 "Start Crawl" → strip 13,
+crawling. They belong to the preceding named animation.
+
+**One distinction the sheet cannot settle.** "Continuation of the same animation" and "a distinct,
+unnamed follow-on animation" look identical here, and strip 12→13 is the case that shows it: a
+4-pose "Start Crawl" followed by 14 poses of crawling reads at least as naturally as *Start Crawl*
+then an unnamed *Crawl* loop — which the ROM would hold as two animations, not one.
+
+**Consequence for A.4.** "The manifest's natural unit is the strip" does not hold: 17 of 46 strips
+are not animations, by either mechanism. A manifest entry per strip would address fragments. The
+unit is the **captioned run** — a captioned strip plus any uncaptioned strips following it — which
+brings the DK sheet to **29 authorable units, not 46**.
 
 **A.9, confirmed from the other direction.** Strip 20 is captioned **"Ground Slap"** — and anim 74,
 the animation count-matching selected for the 19-pose *Jump* strip, is the one that keeps DK grounded
