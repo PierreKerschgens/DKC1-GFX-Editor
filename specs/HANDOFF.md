@@ -110,9 +110,26 @@ The sheet side is done; the ROM side is ~20 % done. `m4-batch-spec.md` A.10–A.
 `0x2E4..0x32C`, Swim → `0x3A4..0x3DC`, Death → anim 16. Treat as unverified — **three** pairings in
 this tier have now been falsified, including Roll.
 
-**Known wrong:** `0x330..0x37C` is Run, not Roll (A.20). `0x188..0x1FC` is not Roll either — booted
-and falsified (A.21), despite being an unmistakable somersault on the contact sheet. **Roll is
-unidentified.** Static identification is **0 for 4**; use `--poison-index`, not more montages.
+**Localised by the A.22 paint survey** (one boot, ~15 animations — chunk-level, not exact yet):
+
+| chunk | actions seen |
+|---|---|
+| `0x380..0x4FC` | **roll**, getting hit, enemy bounce, barrel flight, narrow crouch |
+| `0x180..0x32C` | turn, idle(?), walk+throw barrel |
+| `0x500..0x67C` | duck, rhino, rope swing (left half) |
+| `0x680..0x7FC` | banana cave, carry barrel, Diddy swap, rope climb, rope swing (right half), **life HUD** |
+
+**Known wrong:** `0x330..0x37C` is Run, not Roll (A.20). `0x188..0x1FC` is not Roll either (A.21),
+despite being an unmistakable somersault. Static identification is **0 for 4** — use `--paint`, not
+montages.
+
+**Open conflicts, do not treat as settled:**
+- *Idle* paints white (`0x180..0x32C`) but was confirmed in play at `0x8C..0xDC` (A.16). Possibly two
+  idle animations; possibly A.16 was coarse.
+- *Jump* was **unchanged** under paint, so it comes from an already-characterised range.
+  `0x130..0x17C` (called "a climb") fits a jump better than a climb — windup, hold, recovery.
+- `0x680..0x7FC` paints the **life/balloon HUD**, so it is not purely DK. A.8's ownership claim has
+  another shared island in it besides `0x858..0x8A8`.
 `0x130..0x17C` is a climb/hang, not the Run — its height swells 40→72→36, a one-shot, and DK is
 upright with both arms overhead.
 

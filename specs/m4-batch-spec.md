@@ -904,6 +904,65 @@ oranges are what DK already is. Five chunks per boot against ~430 unknown indice
 Verified before shipping: `0x200..0x214` renders as clean white silhouettes, `0x500..0x514` as clean
 red ones.
 
+### A.22 The paint survey — ~15 animations localised in one boot
+
+One boot of `dk-paint-hunt.sfc`, an operator playing normally and naming a colour per action. This
+is more mapping progress than A.9–A.21 combined, and it cost one boot.
+
+| action | colour | chunk |
+|---|---|---|
+| **roll** | black | **`0x380..0x4FC`** |
+| getting hit | black | `0x380..0x4FC` |
+| jumping on an enemy | black | `0x380..0x4FC` |
+| shot out of a barrel (flight) | black | `0x380..0x4FC` |
+| crouching in a narrow place | black *(or dark brown — reported uncertain)* | `0x380..0x4FC` |
+| turning left↔right | white | `0x180..0x32C` |
+| idle | white | `0x180..0x32C` |
+| walking + throwing a barrel | white | `0x180..0x32C` |
+| ducking | red | `0x500..0x67C` |
+| sitting on the rhino | red | `0x500..0x67C` |
+| rope swing, left→middle | red | `0x500..0x67C` |
+| entering the banana cave | pink | `0x680..0x7FC` |
+| carrying a barrel, standing | pink | `0x680..0x7FC` |
+| swapping to Diddy | pink | `0x680..0x7FC` |
+| climbing a rope | pink | `0x680..0x7FC` |
+| rope swing, middle→right | pink | `0x680..0x7FC` |
+| life/balloon HUD indicator | pink | `0x680..0x7FC` |
+| swimming | alternates red / black | spans two chunks |
+| **jump** | **unchanged** | one of the *unpainted* ranges |
+
+**Four things fall out of this that no amount of montage-reading would have produced.**
+
+1. **Roll is in `0x380..0x4FC`** — and so are hit, enemy-bounce, barrel flight and the narrow
+   crouch. Bisecting that one chunk separates *five* animations at once, which is why the next round
+   is worth more than a single answer.
+
+2. **`0x680..0x7FC` is not purely DK.** The life/balloon HUD indicator paints from it. That may be
+   legitimate reuse — DKC1's life icon *is* a Kong head — but it means A.8's "DK owns `0x8C..0x950`"
+   has at least one more foreign or shared island in it besides `0x858..0x8A8` (A.13). Do not build a
+   DK manifest over that range without checking.
+
+3. **A rope swing crosses a chunk boundary mid-animation** (red left→middle, pink middle→right), and
+   **swimming alternates red/black**. Animations are not confined to one contiguous block, which is
+   the same lesson as gotcha 2 arriving from a new direction: an index *range* is not an animation.
+
+4. **Jump is unchanged, and that is a real clue.** Every unmapped range was painted, so jump is drawn
+   from something already confirmed or characterised: `0x8C..0xDC` (Idle), `0xE0..0x12C` (Walk),
+   `0x130..0x17C`, `0x188..0x1FC` (the somersault), or `0x330..0x37C` (Run). `0x130..0x17C` — whose
+   height swells 40→72→36 with arms overhead, a windup/hold/recovery one-shot (A.20) — fits a jump
+   far better than it fits the climb this spec guessed. **Treat "the climb" as unresolved.**
+
+**One conflict to resolve, recorded rather than smoothed over.** The operator reports *idle* as
+white, i.e. `0x180..0x32C` — but Idle was confirmed in play at `0x8C..0xDC` (A.16). Both can hold if
+DK has more than one idle animation (DKC1 gives him standing and after-a-while fidget behaviours),
+and `0x180..0x32C` is a 108-sprite chunk with room for several. It is equally possible A.16's
+confirmation was coarse. **Do not treat either as settled until a paint round separates them.**
+
+**The methodological result.** Every previous round asked one yes/no question and mostly got "no".
+This round asked an operator to *play the game and report colours*, and returned ~15 localisations,
+two structural corrections and a falsifiable lead on jump. The change was not a better hypothesis —
+it was making the instrument report which of several buckets fired, and then getting out of the way.
+
 ### A.13 `0x858..0x8A8` is **not** DK — it is a foreign island (corrected)
 
 > **This section previously concluded "DK at reduced scale". That was wrong**, and it was wrong in
