@@ -823,7 +823,16 @@ animation's) and *no* horizontal motion at all. There is no third option availab
 A.17's original reasoning about page layout is why. For a cycle whose horizontal travel is driven by
 the game moving the sprite — which a run is — zero is the right answer.
 
-`port/dk-run-flatx.sfc` is built and unbooted. V4 stays 7/7 (the flag defaults off).
+**Confirmed in play.** `port/dk-run-flatx.sfc` was booted and the run reads correctly; the sideways
+snap is gone. V4 stays 7/7 (the flag defaults off).
+
+Unlike A.19's 2 px correction, this one *is* a claim play can settle: the defect was visible before
+and is absent after, at a magnitude (9 px over two frames) well above what the screen can resolve.
+Gotcha 8 cuts both ways — the question is not whether to trust the boot, it is whether the effect is
+large enough for the boot to see. Here it was.
+
+**The DK run is now complete**: mapping confirmed in motion, placement confirmed in motion, both
+axes measured against stock.
 
 ### A.13 `0x858..0x8A8` is **not** DK — it is a foreign island (corrected)
 

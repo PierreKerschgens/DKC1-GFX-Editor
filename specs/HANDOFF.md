@@ -104,7 +104,7 @@ The sheet side is done; the ROM side is ~20 % done. `m4-batch-spec.md` A.10–A.
 |---|---|---|
 | 0 "Idle" | `0x8C..0xDC` | anim 4/108 |
 | 6 "Walk" | `0xE0..0x12C` | anim 3 |
-| 7 "Run" | `0x330..0x37C` | anims 2/14/20 (A.20) |
+| 7 "Run" | `0x330..0x37C` | anims 2/14/20, needs `--flat-x` (A.20) |
 
 **Provisional** (identified from draw-order montages, *never observed in motion*): Ground Slap →
 `0x2E4..0x32C`, Swim → `0x3A4..0x3DC`, Death → anim 16. Treat as unverified — **three** pairings in
@@ -183,8 +183,10 @@ Writing: `--import`, `--batch` (both take `--dry-run`; `--batch` also `--no-alig
 `--flat-x`), `--expand`, `--revert`.
 
 `--flat-x` anchors a run to one horizontal centre instead of matching each replaced frame's. Use it
-when the imported art does not lunge and the replaced animation does (A.20). It **cannot** become
-the default — it breaks V4d's identity by construction — so it is a per-run judgement call.
+when the imported art does not lunge and the replaced animation does (A.20) — confirmed in play on
+the DK run. It **cannot** become the default: it breaks V4d's identity by construction, so it is a
+per-run judgement call. **Check it per run** — the walk wants it off, the run wants it on, and
+`--baseline`'s centre-X column on the *stock* range tells you which before you import.
 `--revert` undoes imports **and** expansion, byte-exactly, across a chain of runs (V4g).
 
 Test ROMs in `port/` (gitignored): `dk-walk-test.sfc` (walk art in idle slots),
