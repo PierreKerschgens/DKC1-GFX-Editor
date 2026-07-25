@@ -590,6 +590,19 @@ static int RunEmuBoot(string romPath, string[] args)
     Console.WriteLine($"Pitch        : {emu.LastPitch} bytes/row; width*bpp = {emu.FrameWidth * bpp} " +
                       $"({(emu.LastPitch == emu.FrameWidth * bpp ? "match" : "MISMATCH -> core renders wider than it reports")})");
 
+    int bppLog = emu.CorePixelFormat == DkcTool.Core.Emulator.LibretroCore.PixelFormat.Xrgb8888 ? 4 : 2;
+    if (emu.CoreOptions.Count > 0)
+        Console.WriteLine($"Core options : {emu.CoreOptions.Count} declared -> " +
+            string.Join(", ", emu.CoreOptions.Take(6).Select(kv => $"{kv.Key}={kv.Value}")) +
+            (emu.CoreOptions.Count > 6 ? ", ..." : ""));
+    if (emu.UnhandledEnvironment.Count > 0)
+        Console.WriteLine("Unhandled env: " + string.Join(", ",
+            emu.UnhandledEnvironment.OrderByDescending(kv => kv.Value).Select(kv => $"cmd {kv.Key} x{kv.Value}")));
+    Console.WriteLine("Geometry log :");
+    foreach (var (gw, gh, gp) in emu.GeometryLog)
+        Console.WriteLine($"   {gw}x{gh} pitch {gp}  -> pitch/width = {(double)gp / gw:F2} bytes/px " +
+                          $"(announced {bppLog})");
+
     DkcTool.Core.Emulator.FrameCapture.Save(emu, outPath);
     Console.WriteLine($"Wrote        : {outPath}");
     return 0;
@@ -615,12 +628,20 @@ static int RunEmuExplore(string romPath, string[] args)
     using var emu = new DkcTool.Core.Emulator.LibretroCore(core);
     emu.LoadGame(File.ReadAllBytes(romPath), romPath);
 
+    bool noInput = Array.IndexOf(args, "--no-input") >= 0;
     for (int f = 0; f < total; f += every)
     {
-        // A Start tap every interval: enough to walk intro -> title -> file select.
-        emu.RunFrames(every - 8);
-        emu.HoldFor(4, DkcTool.Core.Emulator.Joypad.Start);
-        emu.RunFrames(4);
+        if (noInput || f >= DkcTool.Core.Emulator.BootScript.TapWindow)
+        {
+            emu.RunFrames(every);
+        }
+        else
+        {
+            // A Start tap every interval: enough to walk intro -> title -> file select.
+            emu.RunFrames(every - 8);
+            emu.HoldFor(4, DkcTool.Core.Emulator.Joypad.Start);
+            emu.RunFrames(4);
+        }
 
         string path = Path.Combine(outDir, $"f{f + every:D5}.png");
         DkcTool.Core.Emulator.FrameCapture.Save(emu, path);
@@ -642,8 +663,9 @@ static int RunEmuDiff(string romA, string[] args)
     Console.WriteLine($"Core         : {core}");
     Console.WriteLine($"Capture frame: {frames}");
 
-    using var a = DkcTool.Core.Emulator.BootScript.CaptureAt(core, File.ReadAllBytes(romA), frames);
-    using var b = DkcTool.Core.Emulator.BootScript.CaptureAt(core, File.ReadAllBytes(romB), frames);
+    bool tap = frames >= DkcTool.Core.Emulator.BootScript.FileSelectFrame;
+    using var a = DkcTool.Core.Emulator.BootScript.CaptureAt(core, File.ReadAllBytes(romA), frames, tap);
+    using var b = DkcTool.Core.Emulator.BootScript.CaptureAt(core, File.ReadAllBytes(romB), frames, tap);
 
     string pathA = Path.Combine(outDir, "emu-a.png"), pathB = Path.Combine(outDir, "emu-b.png");
     SaveBitmap(a, pathA); SaveBitmap(b, pathB);
@@ -747,7 +769,8 @@ static int RunEmuGolden(string romPath, string[] args)
     string path = DkcTool.Core.Emulator.V3Verification.GoldenPath(core, frame);
     Directory.CreateDirectory(Path.GetDirectoryName(path)!);
 
-    using var bmp = DkcTool.Core.Emulator.BootScript.CaptureAt(core, File.ReadAllBytes(romPath), frame);
+    using var bmp = DkcTool.Core.Emulator.BootScript.CaptureAt(core, File.ReadAllBytes(romPath), frame,
+        pressStart: frame >= DkcTool.Core.Emulator.BootScript.FileSelectFrame);
     SaveBitmap(bmp, path);
 
     Console.WriteLine($"Wrote golden : {path} ({bmp.Width}x{bmp.Height})");

@@ -65,9 +65,11 @@ namespace DkcTool.Core.Emulator
             var vandalised = BuildControlRom(baseRom, indexCount, flattenTo: 5, out _);
             result.IndicesImported = imported;
 
-            using var baselineFrame = BootScript.CaptureAt(corePath, baselineBytes, captureFrame);
-            using var relocatedFrame = BootScript.CaptureAt(corePath, relocated, captureFrame);
-            using var vandalFrame = BootScript.CaptureAt(corePath, vandalised, captureFrame);
+            // pressStart: the in-game capture point is only reachable with the tap script.
+            bool tap = captureFrame >= BootScript.FileSelectFrame;
+            using var baselineFrame = BootScript.CaptureAt(corePath, baselineBytes, captureFrame, tap);
+            using var relocatedFrame = BootScript.CaptureAt(corePath, relocated, captureFrame, tap);
+            using var vandalFrame = BootScript.CaptureAt(corePath, vandalised, captureFrame, tap);
 
             // Gate 0 -- the baseline must match a human-inspected reference frame for THIS core.
             //

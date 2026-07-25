@@ -86,6 +86,7 @@ namespace DkcTool.Core.Emulator
         private const uint EnvSetPixelFormat = 10;
         private const uint EnvGetSystemDirectory = 9;
         private const uint EnvGetVariable = 15;
+        private const uint EnvSetVariables = 16;
         private const uint EnvGetVariableUpdate = 17;
         private const uint EnvGetLibretroPath = 19;
         private const uint EnvGetCoreAssetsDirectory = 30;
@@ -103,6 +104,10 @@ namespace DkcTool.Core.Emulator
         // Delegates must be rooted: the core keeps raw function pointers to them, and a
         // collected delegate is a crash the GC schedules for you at an arbitrary later frame.
         private readonly List<Delegate> _rooted = new List<Delegate>();
+
+        /// <summary>Native copies of option values handed to the core; they must stay alive for
+        /// as long as the core might read them, so they are freed only on Dispose.</summary>
+        private readonly Dictionary<string, IntPtr> _optionStrings = new Dictionary<string, IntPtr>();
 
         private readonly VoidFn _retroInit, _retroDeinit, _retroRun;
         private readonly LoadGameFn _retroLoadGame;
@@ -136,6 +141,22 @@ namespace DkcTool.Core.Emulator
         /// mismatches (a pitch wider than width * bytes-per-pixel means the core is rendering
         /// into a larger buffer than it reports).</summary>
         public int LastPitch { get; private set; }
+
+        /// <summary>Every distinct (width, height, pitch) the core has reported, in first-seen
+        /// order. A core that changes geometry mid-run (hi-res intro -> normal gameplay) is the
+        /// case most likely to break framebuffer conversion, so it is recorded rather than guessed.</summary>
+        public List<(int Width, int Height, int Pitch)> GeometryLog { get; } =
+            new List<(int, int, int)>();
+
+        /// <summary>Environment commands this host answered "false" to, with hit counts. A core
+        /// asking repeatedly for something unimplemented is the first place to look when it boots
+        /// but renders wrongly.</summary>
+        public Dictionary<uint, int> UnhandledEnvironment { get; } = new Dictionary<uint, int>();
+
+        /// <summary>Core options declared via SET_VARIABLES, mapped to their default (first) value.
+        /// A frontend that answers GET_VARIABLE with nothing leaves some cores running on
+        /// uninitialised option state, so the declared defaults are served back.</summary>
+        public Dictionary<string, string> CoreOptions { get; } = new Dictionary<string, string>();
 
         /// <summary>Buttons held for the next <see cref="RunFrame"/>, keyed by RETRO_DEVICE_ID_JOYPAD_*.</summary>
         public HashSet<int> HeldButtons { get; } = new HashSet<int>();
@@ -223,10 +244,48 @@ namespace DkcTool.Core.Emulator
                     if (data != IntPtr.Zero) Marshal.WriteIntPtr(data, _corePathPtr);
                     return true;
 
+                case EnvSetVariables:
+                {
+                    // Array of { const char *key; const char *value; } terminated by a null key.
+                    // `value` is "Description; default|other|other" -- the first option is the
+                    // default, which is what a frontend is expected to serve back.
+                    if (data == IntPtr.Zero) return false;
+                    int entry = 0;
+                    while (true)
+                    {
+                        IntPtr keyPtr = Marshal.ReadIntPtr(data, entry * IntPtr.Size * 2);
+                        if (keyPtr == IntPtr.Zero) break;
+                        IntPtr valPtr = Marshal.ReadIntPtr(data, entry * IntPtr.Size * 2 + IntPtr.Size);
+                        string? key = Marshal.PtrToStringAnsi(keyPtr);
+                        string? spec = Marshal.PtrToStringAnsi(valPtr);
+                        if (key != null && spec != null)
+                        {
+                            int semi = spec.IndexOf(';');
+                            string values = semi >= 0 ? spec[(semi + 1)..].Trim() : spec;
+                            int bar = values.IndexOf('|');
+                            CoreOptions[key] = (bar >= 0 ? values[..bar] : values).Trim();
+                        }
+                        entry++;
+                        if (entry > 512) break; // malformed list guard
+                    }
+                    return true;
+                }
+
                 case EnvGetVariable:
-                    // No core options are overridden: every variable reads back as unset, so
-                    // the core keeps its own defaults. Deterministic, which is what matters.
-                    return false;
+                {
+                    // struct retro_variable { const char *key; const char *value; }
+                    if (data == IntPtr.Zero) return false;
+                    string? key = Marshal.PtrToStringAnsi(Marshal.ReadIntPtr(data));
+                    if (key == null || !CoreOptions.TryGetValue(key, out string? value)) return false;
+
+                    if (!_optionStrings.TryGetValue(key, out IntPtr valuePtr))
+                    {
+                        valuePtr = Marshal.StringToHGlobalAnsi(value);
+                        _optionStrings[key] = valuePtr; // must outlive the call
+                    }
+                    Marshal.WriteIntPtr(data, IntPtr.Size, valuePtr);
+                    return true;
+                }
 
                 case EnvGetVariableUpdate:
                     if (data != IntPtr.Zero) Marshal.WriteByte(data, 0);
@@ -236,6 +295,8 @@ namespace DkcTool.Core.Emulator
                     return true;
 
                 default:
+                    UnhandledEnvironment.TryGetValue(cmd, out int hits);
+                    UnhandledEnvironment[cmd] = hits + 1;
                     return false;
             }
         }
@@ -247,6 +308,7 @@ namespace DkcTool.Core.Emulator
 
             int w = (int)width, h = (int)height, stride = (int)pitch;
             LastPitch = stride;
+            if (!GeometryLog.Contains((w, h, stride))) GeometryLog.Add((w, h, stride));
             var target = new byte[w * h * 4];
 
             for (int y = 0; y < h; y++)
@@ -389,6 +451,9 @@ namespace DkcTool.Core.Emulator
                 try { File.Delete(_tempRomPath); } catch { /* best effort */ }
                 _tempRomPath = null;
             }
+
+            foreach (IntPtr p in _optionStrings.Values) Marshal.FreeHGlobal(p);
+            _optionStrings.Clear();
 
             if (_systemDirPtr != IntPtr.Zero) { Marshal.FreeHGlobal(_systemDirPtr); _systemDirPtr = IntPtr.Zero; }
             if (_corePathPtr != IntPtr.Zero) { Marshal.FreeHGlobal(_corePathPtr); _corePathPtr = IntPtr.Zero; }

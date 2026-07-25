@@ -1,9 +1,9 @@
 # V3 Spec: headless emulator harness
 
 **Status:** ✅ gate wired and passing on snes9x (2026-07-25) — `--verify-v3`.
-**Accuracy cross-check: unresolved** — see Part D.2; no accurate core renders DKC1
-correctly in this harness yet, and the gate now *fails closed* on them rather than
-passing.
+**Accuracy cross-check: partially resolved** — bsnes-mercury was **wrongly accused**:
+it renders DKC1 correctly (Part D.2). What is actually unportable is the *capture
+point*, not the core. `bsnes 115` / `bsnes2014` remain unexplained.
 **Depends on:** M2b (`--import` writes + repoints).
 **Answers:** the two questions no headless gate can reach — is the "free" space we
 write into genuinely unused, and does an imported sprite actually render in play?
@@ -115,44 +115,73 @@ Two implementation details that are load-bearing:
 
 ```
 --emu-boot     [--core P] [--frames N] [--out shot.png]      boot + dump a frame
---emu-explore  --outdir D [--frames N] [--every N]           filmstrip; finds capture points
+--emu-explore  --outdir D [--frames N] [--every N] [--no-input] filmstrip; finds capture points
 --emu-diff     <romB> [--frames N] [--outdir D]              two ROMs, same script, diff
 --emu-vandal   --out <rom.sfc> [--count N] [--colour I]      positive-control ROM
 --emu-golden   [--core P] [--frames N]                       capture gate 0's reference frame
 --verify-v3    [--core P] [--count N] [--frames N]           the gate
 ```
 
-Frame landmarks are **core-specific**: the same script lands on different game state on
-different cores (bsnes-mercury at frame 2,700 is elsewhere than snes9x). Gate 0's
-per-core golden makes that visible instead of silently comparing unrelated scenes.
+Frame landmarks are **core-specific**, with or without input (D.2). Gate 0's per-core
+golden makes that visible instead of silently comparing unrelated scenes.
+
+The host also serves **core options**: `SET_VARIABLES` is parsed and `GET_VARIABLE`
+answers with each option's declared default. Previously it answered "unset" for
+everything, leaving cores on whatever their uninitialised option state happened to be.
+(This turned out not to be mercury's problem, but a frontend that ignores core options
+is wrong regardless.) `--emu-boot` prints the declared options, the geometry log, and
+any environment command the host refused — the diagnostics that made D.2 solvable.
 
 ---
 
 ## Part D — Remaining work
 
 1. ~~Wire `--verify-v3`~~ ✅ done — gates 0-2 in `Core/Emulator/V3Verification.cs`.
-2. **Accuracy cross-check — attempted, unresolved.** Four cores tried on arm64 macOS:
+2. **Accuracy cross-check — mercury cleared, capture point is the real problem.**
 
-   | Core | `need_fullpath` | Result |
-   |---|---|---|
-   | `snes9x 1.63` | false | ✅ renders correctly; the gate's reference core |
-   | `bsnes-mercury v094 (Balanced)` | false | ⚠️ intro renders **perfectly**, in-game is garbled (wrong palette + vertical striping) |
-   | `bsnes 115` | **true** | ❌ black screen in-game |
-   | `bsnes2014 v094 (Balanced)` | false | ❌ black screen in-game |
+   The earlier claim in this spec that `bsnes_mercury_balanced` "garbles in-game" was
+   **wrong, and the method that produced it was wrong**: every comparison was between
+   frames captured at the same *frame number* on different cores, which is not the same
+   *game state*.
 
-   Ruled out by measurement, not assumption: **pixel format** (mercury negotiates
-   XRGB8888, snes9x RGB565; both handled, and mercury's intro is pixel-perfect, so the
-   conversion path is right); **pitch/geometry** (snes9x renders into a 512-wide buffer
-   and reports 256 — the row-stride handling is already correct for both); and
-   **`need_fullpath`** (now honoured — `bsnes 115` requires a real file on disk, which
-   the harness writes to a temp path — but it stays black anyway, so that was not the
-   cause).
+   Run with **no input at all**, mercury and snes9x render the same scene at frame 900
+   (Cranky's cabin) — visually identical, 11% of pixels differing, consistent with
+   dithered transparency and a one-frame animation offset. **mercury renders DKC1
+   correctly.** The garbled screens were the game genuinely being somewhere else.
 
-   Remaining suspects, untested: core options answered as "unset" via `GET_VARIABLE`
-   (mercury exposes PPU/renderer options), an unhandled environment command these cores
-   require, or missing `SET_SYSTEM_AV_INFO` handling on a mid-run resolution change.
-   **Until this is resolved, "accurate-core verified" is not a claim this project can
-   make** — snes9x is permissive, and V3 currently only proves things about snes9x.
+   The measurement that explains it — cross-core pixel difference with **no input**:
+
+   | Frame | snes9x vs mercury |
+   |---|---|
+   | 900 | 11.1% differ (same scene) |
+   | 1,200 | 11.1% differ (same scene) |
+   | 1,800 | **81.7% differ (different scene)** |
+
+   Cores drift apart in timing as a run goes on, *even with no input*. So a frame number
+   is not a portable capture point, and scripted input makes it worse: a Start tap lands
+   on whatever is on screen at that instant, and one core's tap skips a level card while
+   another's opens a pause menu.
+
+   Consequences, all measured rather than assumed:
+   - The tap window is **snes9x-specific**. At `TapWindow = 2100` snes9x never reaches
+     the level (black at 2,700) — the taps at ~2,192 and ~2,492 are what get past the
+     file select and level card. At 2,600 (shipped) snes9x works; mercury is still on
+     the file select and needs longer.
+   - No-input capture points are stable across cores but showed **no sprite from the
+     first 60 GFX indices** — the gate correctly *failed* at both Cranky's cabin and the
+     title screen (frame 5,200), refusing to let gate 1's "identical" mean anything.
+     Attract mode never draws the sprites the importer controls.
+
+   **The fix, not yet built: save states.** `retro_serialize` is already bound; adding
+   `retro_unserialize` lets a per-core state be captured once at a verified scene and
+   reloaded thereafter, removing input timing and drift from the gate entirely. Caveat
+   to test: a state restores VRAM too, so an imported sprite only appears once the game
+   re-DMAs that frame — which DKC does per animation frame, but it must be verified, not
+   assumed.
+
+   `bsnes 115` (needs `need_fullpath`, now honoured) and `bsnes2014` still render black
+   in this harness. Unexplained, and separate from the mercury question.
+
 3. **Broaden free-space coverage** (Part B): more capture points across more levels, so
    more banks are exercised.
 4. **Save states.** `retro_serialize` is bound but unused — replaying 45 s of script
@@ -176,7 +205,8 @@ signal, and it is a report, not a check.
 | Risk | Mitigation |
 |---|---|
 | Frame size differs between capture points (512×224 vs 256×224) | `Compare` throws on size mismatch rather than silently rescaling; capture points are fixed constants |
-| snes9x accepts something real hardware wouldn't | **Open** — no accurate core works in this harness yet (D.2). Current V3 results are snes9x-only |
+| snes9x accepts something real hardware wouldn't | **Open** — mercury is known-good (D.2) but has no gameplay capture point yet, so V3 results are still snes9x-only |
+| Comparing frames across cores by frame number | Invalid: cores drift (11% → 82% by frame 1,800 with no input). Compare within one core; goldens are per-core |
 | A broken/garbled core silently "passes" the gate | Gate 0 golden-frame check, failing closed on any core without an inspected reference (Part B) |
 | Core nondeterminism breaks A/B comparison | Verified deterministic; no core options overridden, so defaults are used on every run |
 | Downloaded cores drift (nightly builds) | `fetch-cores.sh` pins the platform path; cores are gitignored, so a rebuild is explicit |

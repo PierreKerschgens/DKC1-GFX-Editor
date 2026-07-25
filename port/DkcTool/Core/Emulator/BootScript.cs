@@ -10,6 +10,21 @@ namespace DkcTool.Core.Emulator
     /// </summary>
     public static class BootScript
     {
+        /// <summary>
+        /// Cranky Kong's cabin in the attract-mode demo, reached with **no input at all**.
+        /// This is the preferred capture point.
+        ///
+        /// Scripted input turned out to be the wrong foundation for a cross-core gate: button
+        /// presses land on whatever the game is doing at that instant, and cores drift apart in
+        /// timing as a run goes on (snes9x vs bsnes-mercury agree to ~11% of pixels at frame 900
+        /// but 82% by frame 1,800). A tap that lands mid-transition on one core lands after it on
+        /// another, so "the same frame number" stops meaning "the same game state" -- which is
+        /// what made bsnes-mercury look like it had a rendering bug when it does not.
+        ///
+        /// With no input there is nothing to mistime: every core runs the same attract sequence.
+        /// </summary>
+        public const int AttractFrame = 900;
+
         /// <summary>Intro -> "SELECT A GAME".</summary>
         public const int FileSelectFrame = 1500;
 
@@ -21,17 +36,46 @@ namespace DkcTool.Core.Emulator
         /// file select -> level without needing to know each screen's exact timing.</summary>
         public const int TapInterval = 300;
 
-        /// <summary>Runs the standard power-on script for <paramref name="frames"/> frames.
-        /// The core must already have a game loaded.</summary>
-        public static void RunTo(LibretroCore core, int frames)
+        /// <summary>
+        /// Tapping stops after this many frames, so a capture taken well after level entry is not
+        /// disturbed by a Start press (which pauses, in-game).
+        ///
+        /// Tuned, not guessed: at 2,100 snes9x never reaches the level at all (black frame at
+        /// 2,700) -- the taps at ~2,192 and ~2,492 are what get past the file select and the
+        /// level card. 2,600 keeps exactly the taps the working snes9x path needs.
+        /// **This value is snes9x-specific**; bsnes-mercury is still on the file select at that
+        /// point and needs a longer window. See the spec's capture-point discussion.
+        /// </summary>
+        public const int TapWindow = 2600;
+
+        /// <summary>Runs <paramref name="frames"/> frames from power-on. With
+        /// <paramref name="pressStart"/> false (the default for the gate) no input is sent at
+        /// all, which is what keeps different cores in the same state -- see
+        /// <see cref="AttractFrame"/>.</summary>
+        public static void RunTo(LibretroCore core, int frames, bool pressStart)
+        {
+            if (!pressStart)
+            {
+                core.RunFrames(frames);
+                return;
+            }
+
+            RunToWithStartTaps(core, frames);
+        }
+
+        /// <summary>Start-tap script that walks intro -> title -> file select -> level. Needed to
+        /// reach gameplay, but see <see cref="AttractFrame"/> for why the gate avoids it.</summary>
+        public static void RunToWithStartTaps(LibretroCore core, int frames)
         {
             for (int f = 0; f < frames; f += TapInterval)
             {
                 int chunk = System.Math.Min(TapInterval, frames - f);
-                if (chunk <= 8)
+
+                // Past the tap window the level is loaded; further Start presses would pause it.
+                if (f >= TapWindow || chunk <= 8)
                 {
                     core.RunFrames(chunk);
-                    break;
+                    continue;
                 }
 
                 core.RunFrames(chunk - 8);
@@ -42,11 +86,12 @@ namespace DkcTool.Core.Emulator
 
         /// <summary>Boots <paramref name="romBytes"/> and runs the script to
         /// <paramref name="frames"/>, returning the final frame.</summary>
-        public static SkiaSharp.SKBitmap CaptureAt(string corePath, byte[] romBytes, int frames)
+        public static SkiaSharp.SKBitmap CaptureAt(string corePath, byte[] romBytes, int frames,
+                                                  bool pressStart = false)
         {
             using var core = new LibretroCore(corePath);
             core.LoadGame(romBytes);
-            RunTo(core, frames);
+            RunTo(core, frames, pressStart);
             return FrameCapture.ToBitmap(core);
         }
     }
