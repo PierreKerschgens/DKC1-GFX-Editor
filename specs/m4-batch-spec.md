@@ -1,8 +1,13 @@
 # M4 — Batch import (research spec)
 
-**Status:** research complete, **not implemented**. The research passes are in the tree
-(`--stats-m4` with `--overlay`, and `--stats-anim`); the slicer, manifest and batch path are not.
-Amended after M3 shipped — see the amendment note below.
+**Status:** implemented, V4a–V4f green. V4d runs V3's original two cores by default (2/2) and the
+full six under `--verify-m4 --all-cores` (6/6); both verified. `Core/SheetSlicer.cs` (`--slice`),
+`Core/Manifest.cs`, `Core/BatchImporter.cs` (`--batch`) and `Core/M4Verification.cs`
+(`--verify-m4`) are in the tree, alongside the original research passes (`--stats-m4` with
+`--overlay`, and `--stats-anim`). V4d builds its two controls from the pristine ROM rather than
+chaining `V3Verification.Run` off the batch output — the latter re-scans an already-modified ROM
+internally and hits the same re-scan trap `ImportOptions.FreeRuns` warns about, caught live while
+building this gate. Amended after M3 shipped — see the amendment note below.
 **Predecessors:** `m2b-writer-spec.md` (single import), `m2c-free-space-spec.md` (92 KB pool /
 99 poses), `m3-expansion-spec.md` (ExHiROM, **implemented, 6/6 cores green**).
 

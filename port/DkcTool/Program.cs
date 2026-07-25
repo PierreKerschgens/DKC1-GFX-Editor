@@ -29,6 +29,15 @@ using DkcTool.Core;
 //   dotnet run -- <rom> --import <pose.png> --index <hex> --out <rom.sfc>
 //                       [--palette <name>] [--dry-run] [--force]
 //   dotnet run -- <rom> --verify-m2b
+//
+// --slice (specs/m4-batch-spec.md C.1/C.5): sheet -> numbered (strip, position) poses, no writes.
+//   dotnet run -- <rom> --slice <sheet.png> [--overlay out.png]
+//
+// --batch (specs/m4-batch-spec.md C.3/C.5): one manifest, one pristine scan, one ledger.
+//   dotnet run -- <rom> --batch <manifest.json> --out <rom.sfc> [--dry-run] [--overlay out.png]
+//
+// --verify-m4 (specs/m4-batch-spec.md Part D): V4a-V4f, the blocking gate for M4.
+//   dotnet run -- <rom> --verify-m4 [--all-cores]
 
 if (args.Length < 1)
 {
@@ -89,6 +98,18 @@ if (args.Length >= 2 && args[1] == "--stats-m4")
 if (args.Length >= 2 && args[1] == "--stats-anim")
 {
     return AnimationTable.Run(rom);
+}
+
+if (args.Length >= 2 && args[1] == "--slice")
+{
+    // dotnet run -- <rom> --slice <sheet.png> [--overlay out.png]
+    string? slicePath = args.Length >= 3 && !args[2].StartsWith("--") ? args[2] : null;
+    if (slicePath == null)
+    {
+        Console.Error.WriteLine("--slice needs a sheet PNG.");
+        return 1;
+    }
+    return SheetSlicer.Run(slicePath, ArgValue(args, "--overlay"));
 }
 
 if (args.Length >= 2 && args[1] == "--stats-m3")
@@ -210,6 +231,16 @@ if (args.Length >= 2 && args[1] == "--verify-m2b")
 if (args.Length >= 2 && args[1] == "--import")
 {
     return RunImportCli(rom, args[0], args);
+}
+
+if (args.Length >= 2 && args[1] == "--batch")
+{
+    return RunBatchCli(rom, args);
+}
+
+if (args.Length >= 2 && args[1] == "--verify-m4")
+{
+    return M4Verification.Run(rom, args);
 }
 
 if (args.Length >= 3 && args[1] == "--inspect")
@@ -670,6 +701,132 @@ static void PrintImportPlan(ImportResult r)
                        $"(pointer 0x{r.Hitbox.PointerAddress:X} -> 0x{r.Hitbox.RecordAddress:X})");
 }
 
+
+// --batch (specs/m4-batch-spec.md C.3): sheet + manifest -> N imports against one pristine scan
+// and one ledger. Never expands implicitly (Part B): a manifest that plainly cannot fit refuses
+// up front, naming --expand, rather than grinding through hundreds of NoFreeSpace refusals.
+static int RunBatchCli(Rom rom, string[] args)
+{
+    if (args.Length < 3)
+    {
+        Console.Error.WriteLine("usage: dotnet run -- <rom> --batch <manifest.json> --out <rom.sfc> [--dry-run] [--overlay out.png]");
+        return 1;
+    }
+
+    string manifestPath = args[2];
+    string? outPath = ArgValue(args, "--out");
+    string? overlayPath = ArgValue(args, "--overlay");
+    bool dryRun = Array.IndexOf(args, "--dry-run") >= 0;
+    bool force = Array.IndexOf(args, "--force") >= 0;
+
+    if (!dryRun)
+    {
+        if (outPath == null)
+        {
+            Console.Error.WriteLine("--out is required for any write (use --dry-run to preview without writing)");
+            return 1;
+        }
+        // args[0] is the raw ROM path passed on the command line; rom is already loaded from it.
+        if (Path.GetFullPath(outPath) == Path.GetFullPath(args[0]) && !force)
+        {
+            Console.Error.WriteLine("--out resolves to the input ROM path; pass --force to overwrite the input, or choose a different --out.");
+            return 1;
+        }
+    }
+
+    Manifest manifest;
+    try { manifest = Manifest.Load(manifestPath); }
+    catch (Exception ex) { Console.Error.WriteLine($"could not load manifest '{manifestPath}': {ex.Message}"); return 1; }
+
+    string sheetPath = Path.IsPathRooted(manifest.Sheet)
+        ? manifest.Sheet
+        : Path.Combine(Path.GetDirectoryName(Path.GetFullPath(manifestPath))!, manifest.Sheet);
+    if (!File.Exists(sheetPath))
+    {
+        Console.Error.WriteLine($"manifest sheet '{manifest.Sheet}' not found at '{sheetPath}'.");
+        return 1;
+    }
+
+    if (!PalettePointers.Table.TryGetValue(manifest.Palette, out int palAddr))
+    {
+        Console.Error.WriteLine($"Unknown palette '{manifest.Palette}' (from manifest).");
+        return 1;
+    }
+    var palette = Palette.Read(rom, palAddr);
+
+    var sheet = SheetSlicer.Slice(sheetPath);
+    using var sheetBitmap = SKBitmap.Decode(sheetPath);
+    Console.WriteLine($"Sheet                : {sheetPath} ({sheet.Strips.Count} strips, {sheet.Poses.Count()} poses)");
+
+    List<PlannedPose> plan;
+    try { plan = manifest.Resolve(rom, sheet, sheetBitmap); }
+    catch (ManifestException ex) { Console.Error.WriteLine($"[{ex.Code}] {ex.Message}"); return 1; }
+    Console.WriteLine($"Manifest             : {manifest.Strips.Count} strip(s) -> {plan.Count} planned pose(s)");
+
+    // Expansion.FreeRunsFor (specs/m3-expansion-spec.md C.4), scanned once from the pristine ROM
+    // and shared by every import below (ImportOptions.FreeRuns) -- the re-scan trap this class's
+    // doc comment warns about.
+    var freeRuns = Expansion.FreeRunsFor(rom);
+    long pool = freeRuns.Sum(r => (long)r.Length);
+    long needed = BatchImporter.EstimateBytes(rom, plan, sheetBitmap, palette);
+    Console.WriteLine($"Capacity             : need ~{needed:N0} bytes, pool has {pool:N0} bytes " +
+                      $"({(rom.Length > Expansion.StockSize ? "expanded" : "stock")})");
+    if (needed > pool)
+    {
+        Console.Error.WriteLine(
+            $"manifest needs ~{needed:N0} bytes but the pool only has {pool:N0} -- refusing rather " +
+            "than grinding through per-pose NoFreeSpace refusals. Run --expand first.");
+        return 1;
+    }
+
+    var working = rom.Clone();
+    string sha = ImportLedger.ComputeSha256(rom.Snapshot());
+    string ledgerPath = ImportLedger.SidecarPath(outPath ?? manifestPath);
+    ImportLedger ledger;
+    try { ledger = ImportLedger.LoadOrCreate(ledgerPath, sha); }
+    catch (ImportException ex) { Console.Error.WriteLine($"[{ex.Code}] {ex.Message}"); return 1; }
+
+    var report = BatchImporter.Run(working, plan, sheetBitmap, palette, ledger, freeRuns, dryRun,
+        sourceTag: Path.GetFileName(manifestPath));
+
+    Console.WriteLine();
+    Console.WriteLine($"Imported             : {report.Imported.Count()}/{plan.Count}, " +
+                      $"{report.BytesWritten:N0} bytes, pool remaining ~{pool - report.BytesWritten:N0}");
+    var byReason = report.Refused.GroupBy(o => o.RefusalCode).OrderByDescending(g => g.Count());
+    foreach (var g in byReason)
+        Console.WriteLine($"  refused [{g.Key}]: {g.Count()}");
+    foreach (var o in report.Refused.Take(20))
+        Console.WriteLine($"    strip {o.Planned.Strip}:{o.Planned.Position} -> 0x{o.Planned.ImageIndex:X}: {o.RefusalMessage}");
+
+    foreach (var o in report.Imported)
+    {
+        var r = o.Result!;
+        Console.WriteLine($"  strip {o.Planned.Strip}:{o.Planned.Position} -> 0x{r.ImageIndex:X}: " +
+                          $"{r.CharCount}ch/{r.OamEntries}oam, 0x{r.Serialized.Length:X}B @ 0x{r.AllocatedOffset:X}" +
+                          (r.Drift.ExceedsThreshold ? "  [DRIFT > 4px]" : ""));
+    }
+
+    if (overlayPath != null)
+    {
+        BatchImporter.DumpOverlay(sheetPath, report, overlayPath);
+        Console.WriteLine();
+        Console.WriteLine($"overlay -> {overlayPath}");
+    }
+
+    if (dryRun)
+    {
+        Console.WriteLine();
+        Console.WriteLine("Dry run: no bytes written.");
+        return report.Refused.Any() ? 1 : 0;
+    }
+
+    working.Save(outPath!);
+    ledger.Save(ledgerPath);
+    Console.WriteLine();
+    Console.WriteLine($"Wrote {outPath}");
+    Console.WriteLine($"Ledger {ledgerPath}");
+    return report.Refused.Any() ? 1 : 0;
+}
 
 // V3 spike: boot a ROM in a libretro core, run N frames, dump the framebuffer.
 //   dotnet run -- <rom> --emu-boot [--core <path>] [--frames N] [--out shot.png]

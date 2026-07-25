@@ -145,8 +145,10 @@ namespace DkcTool.Core
         }
 
         /// <summary>Gate 5: ledger integrity -- no two allocations overlap, all fall within a
-        /// free run drawn from <paramref name="freeRuns"/>, none crosses a bank boundary.</summary>
-        private static List<string> ValidateLedger(ImportLedger ledger, List<FreeSpace.Run> freeRuns)
+        /// free run drawn from <paramref name="freeRuns"/>, none crosses a bank boundary. Internal
+        /// (not private): specs/m4-batch-spec.md V4c reuses this verbatim for the batch ledger --
+        /// the invariant doesn't change between one import and five hundred.</summary>
+        internal static List<string> ValidateLedger(ImportLedger ledger, List<FreeSpace.Run> freeRuns)
         {
             var failures = new List<string>();
             var scanned = freeRuns;

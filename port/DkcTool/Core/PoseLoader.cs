@@ -45,11 +45,24 @@ namespace DkcTool.Core
             if (bitmap == null)
                 throw new InvalidOperationException($"could not decode '{path}' as an image.");
 
-            if (bitmap.Width > MaxCanvas || bitmap.Height > MaxCanvas)
-                throw new ImportException(ImportErrorCode.PoseTooLarge,
-                    $"pose is {bitmap.Width}x{bitmap.Height}, exceeds the {MaxCanvas}x{MaxCanvas} canvas limit.");
+            return LoadRegion(bitmap, 0, 0, bitmap.Width, bitmap.Height, palette);
+        }
 
-            int width = bitmap.Width, height = bitmap.Height;
+        /// <summary>
+        /// Same load, palette-map and crop as <see cref="Load"/>, over an already-decoded bitmap
+        /// instead of a path (specs/m4-batch-spec.md C.3). The batch importer needs this: with
+        /// hundreds of poses cut from one sheet, re-decoding and re-encoding a temp PNG per pose
+        /// would be pure overhead, and the two paths must refuse identically (same
+        /// <see cref="ImportErrorCode.UnmappedColor"/> behaviour) since that is the error an
+        /// operator will actually hit. <see cref="Load"/> is now the single-file wrapper over
+        /// this; M2b's <c>--import</c> path is unchanged.
+        /// </summary>
+        public static PoseResult LoadRegion(SKBitmap bitmap, int regionX, int regionY, int width, int height, SKColor[] palette)
+        {
+            if (width > MaxCanvas || height > MaxCanvas)
+                throw new ImportException(ImportErrorCode.PoseTooLarge,
+                    $"pose is {width}x{height}, exceeds the {MaxCanvas}x{MaxCanvas} canvas limit.");
+
             var indices = new int[height, width];
             var forcedTransparent = new Dictionary<uint, UnmappedColor>();
             var unmatched = new Dictionary<uint, UnmappedColor>();
@@ -59,7 +72,7 @@ namespace DkcTool.Core
             {
                 for (int x = 0; x < width; x++)
                 {
-                    SKColor px = bitmap.GetPixel(x, y);
+                    SKColor px = bitmap.GetPixel(regionX + x, regionY + y);
                     if (px.Alpha == 0)
                     {
                         indices[y, x] = 0;
