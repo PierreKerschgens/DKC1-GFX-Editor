@@ -493,6 +493,50 @@ namespace DkcTool.Core
             return 0;
         }
 
+        /// <summary>
+        /// Prints each sprite's opaque bounding box *in canvas coordinates* over an index range,
+        /// with the spread of the top and bottom edges.
+        ///
+        /// This is the measurement that decides whether a cycle's vertical movement is the artist's
+        /// intent or an import artefact (spec A.17). Comparing the same range between the stock ROM
+        /// and an imported one answers it directly: if the stock walk's lowest-pixel line moves by
+        /// N px and the import moves by roughly N, the motion is the animation, not the tool.
+        ///
+        /// The bottom edge is the lowest opaque pixel, which in a knuckle-walk is sometimes a hand
+        /// rather than a foot -- so read the spread, not any single frame.
+        /// </summary>
+        public static int RunBaseline(Rom rom, int low, int high, SKColor[] palette)
+        {
+            var valid = GfxTable.EnumerateImageIndices(rom).ToHashSet();
+            var rows = new List<(int Index, int Top, int Bottom, int Height)>();
+
+            for (int i = low; i <= high; i += 4)
+            {
+                if (!valid.Contains(i)) continue;
+                int address = GfxTable.ResolveSpriteAddress(rom, i);
+                if (address == 0) continue;
+                using var sprite = SpriteDecoder.Decode(rom, address, palette);
+                var b = OpaqueBounds(sprite);
+                if (b.Width <= 0 || b.Height <= 0) continue;
+                rows.Add((i, b.Top, b.Bottom - 1, b.Height));
+            }
+
+            Console.WriteLine($"=== opaque bbox over 0x{low:X}..0x{high:X} ({rows.Count} sprite(s)) ===");
+            foreach (var r in rows)
+                Console.WriteLine($"  idx 0x{r.Index:X4}  top {r.Top,3}  bottom {r.Bottom,3}  height {r.Height,3}");
+
+            if (rows.Count > 0)
+            {
+                int topSpread = rows.Max(r => r.Top) - rows.Min(r => r.Top);
+                int botSpread = rows.Max(r => r.Bottom) - rows.Min(r => r.Bottom);
+                Console.WriteLine();
+                Console.WriteLine($"  top edge    : {rows.Min(r => r.Top)}..{rows.Max(r => r.Top)}  spread {topSpread} px");
+                Console.WriteLine($"  BOTTOM edge : {rows.Min(r => r.Bottom)}..{rows.Max(r => r.Bottom)}  spread {botSpread} px" +
+                                  "   <- the foot line; this is the bob");
+            }
+            return 0;
+        }
+
         /// <summary>Groups a sorted index set into maximal runs of consecutive stride-4 indices.</summary>
         public static IEnumerable<(int Low, int High, int Count)> Runs(IEnumerable<int> indices)
         {

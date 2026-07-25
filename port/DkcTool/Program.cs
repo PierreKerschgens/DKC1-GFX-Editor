@@ -151,6 +151,18 @@ if (args.Length >= 3 && args[1] == "--near")
                                   ArgValue(args, "--contact"), Palette.Read(rom, nearAddr));
 }
 
+if (args.Length >= 3 && args[1] == "--baseline")
+{
+    // dotnet run -- <rom> --baseline <lo>..<hi> [--palette name]
+    string[] blB = args[2].Split("..");
+    if (blB.Length != 2) { Console.Error.WriteLine("--baseline needs <loHex>..<hiHex>"); return 1; }
+    string blPal = ArgValue(args, "--palette") ?? "Donkey Kong 1P";
+    if (!PalettePointers.Table.TryGetValue(blPal, out int blAddr))
+    { Console.Error.WriteLine($"Unknown palette '{blPal}'."); return 1; }
+    return IndexOwnership.RunBaseline(rom, Convert.ToInt32(blB[0], 16), Convert.ToInt32(blB[1], 16),
+                                      Palette.Read(rom, blAddr));
+}
+
 if (args.Length >= 3 && args[1] == "--palette-sweep")
 {
     // dotnet run -- <rom> --palette-sweep <indexHex> --out sweep.png

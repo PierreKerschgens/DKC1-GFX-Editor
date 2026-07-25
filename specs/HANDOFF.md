@@ -26,29 +26,36 @@ dotnet run --project port/DkcTool -- "port/Donkey Kong Country (USA) (Rev 2).sfc
 
 ---
 
-## The one active bug
+## The bob bug — resolved
 
-**DK bobs vertically through an imported walk cycle.** Reported from play; invisible in every still
-image. Full analysis in `m4-batch-spec.md` A.17.
+**DK bobbed vertically through an imported walk cycle.** Reported from play; invisible in every
+still. Full analysis in `m4-batch-spec.md` A.17. **Fixed by `--batch --align-strip`.**
 
-- **Not** fixed by `--anchor-bottom`. That was my first attempt; tested in-game and it failed.
-- **Correct diagnosis:** the anchor was applied at the wrong *level*. The sheet's poses are already
-  aligned to each other (strip 6 bottoms span 300..303). The importer cropped each pose to its own
-  bbox and re-anchored it to *its own* target slot's bbox, which varies independently — and a slot's
-  bbox bottom is not a ground line anyway, since a knuckle-walk's lowest point is sometimes a hand.
-- **Fix implemented:** `--batch --align-strip` (strip-level placement in `BatchImporter`). Aligned
-  placement now spans 3 px, mirroring the sheet's own baseline, against 7 px before.
-- **Status: awaiting an in-game check.** `port/dk-move-aligned.sfc`. The numbers are right; A.16 is
-  the standing reminder that right numbers are not right behaviour. Two prior fixes to this exact
-  bug looked correct on paper and failed in play.
-- **Known residual risk:** absolute run height is tied to the *first* pose's slot bottom. If that
-  frame's lowest pixel is a knuckle, the whole cycle sits a few px off — consistently, not bobbing.
-  If so, the reference should be chosen by eye per run rather than derived.
+Measured with `--baseline 0xE0..0x12C` (foot-line spread):
 
-**Related, and a prerequisite before any 533-pose run:** M2b's drift check fires `[DRIFT > 4px]` on
-*100 % of* imported poses, which trained me to read it as noise for an entire session while it was
-describing this exact visible fault. It needs a severity split — feet-line movement is a defect,
-extent change is a hitbox note.
+| ROM | spread |
+|---|---|
+| stock DKC walk | 2 px |
+| top-anchored (original behaviour) | 10 px |
+| `--anchor-bottom` (failed attempt) | 8 px |
+| `--align-strip` | **3 px** |
+
+The sheet's poses carry a 3 px baseline spread of their own, so 3 px is the faithful result — the
+remaining motion is the artist's, not the tool's.
+
+Root cause, for the record: the anchor was applied at the wrong *level*. Each pose was cropped to
+its own bbox and re-anchored to *its own* target slot's bbox, substituting the replaced animation's
+per-frame variation for the sheet's. A slot's bbox bottom is not a ground line either — in a
+knuckle-walk the lowest pixel is sometimes a hand. `--align-strip` places a whole run against one
+reference and carries the sheet's relative offsets through.
+
+`--align-strip` is **off by default** (gates unchanged). It should probably become the default for
+any ground-contact animation; that decision is open.
+
+**Still outstanding, and a prerequisite before any 533-pose run:** M2b's drift check fires
+`[DRIFT > 4px]` on *100 % of* imported poses, which trained me to read it as noise for an entire
+session while it was describing this exact visible fault. It needs a severity split — feet-line
+movement is a defect, extent change is a hitbox note.
 
 ---
 
@@ -111,6 +118,7 @@ Research/inspection, all read-only:
 --anims-in <lo>..<hi> [--frames N]   in-block animations, and the prop-drawing ones it excludes
 --palette-sweep <idx> --out f        one sprite under all 79 palettes
 --near <idx> [--count N]             neighbours in ROM *data* order, not table order
+--baseline <lo>..<hi>                opaque bbox per sprite + foot-line spread (bob measurement)
 ```
 
 Writing: `--import`, `--batch` (both take `--dry-run`; `--batch` also `--align-strip`),
@@ -119,7 +127,7 @@ Writing: `--import`, `--batch` (both take `--dry-run`; `--batch` also `--align-s
 
 Test ROMs in `port/` (gitignored): `dk-walk-test.sfc` (walk art in idle slots),
 `dk-move-test.sfc` (walk art in walk slots), `dk-move-anchored.sfc` (`--anchor-bottom`, failed),
-**`dk-move-aligned.sfc` (`--align-strip`, the current candidate fix — needs a boot)**.
+**`dk-move-aligned.sfc` (`--align-strip`, the fix — confirmed in play and by measurement)**.
 
 ---
 

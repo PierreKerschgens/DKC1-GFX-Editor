@@ -556,10 +556,23 @@ Measured on the DK walk, the placement now tracks the sheet instead of the slots
 | `0x118` | 50 | 302 | 127 | 139 |
 | `0x12C` | 49 | 300 | 125 | — |
 
-**3 px of spread, mirroring the sheet's 300..303 exactly** — the artist's bob and nothing else,
-against 7 px of slot-derived noise before. Default off; V4 7/7 unchanged. `port/dk-move-aligned.sfc`
-is the walk built this way, **awaiting an in-game check** — the placement numbers are right, and
-A.16 is the standing reminder that correct numbers are not the same as correct behaviour.
+**Resolved, and measured rather than eyeballed.** `--baseline <lo>..<hi>` prints each sprite's
+opaque bbox in canvas coordinates and the spread of its bottom edge — the foot line. Run over
+`0xE0..0x12C` on each build:
+
+| ROM | foot-line spread |
+|---|---|
+| **stock DKC walk** | **2 px** |
+| top-anchored (first import) | 10 px |
+| bottom-anchored (`--anchor-bottom`) | 8 px |
+| **`--align-strip`** | **3 px** |
+
+The sheet's own poses carry a 3 px baseline spread, so a faithful import *should* bob by 3 px. It
+does. The residual motion the operator noticed is **the artist's, not the tool's** — 1 px livelier
+than stock. Matching stock exactly would mean editing the artwork, not the importer.
+
+The measurement also explains why the second attempt read as "the same if not worse": 10 → 8 px is
+within noticing distance of no change at all. Default off; V4 7/7 unchanged.
 
 **One residual risk, untested.** The run's *absolute* height is now tied to the first pose's slot
 bottom. If that particular frame's lowest pixel is a knuckle rather than a foot, the whole cycle
