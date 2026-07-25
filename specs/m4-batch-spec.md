@@ -352,6 +352,13 @@ animation would repeat the same pictures 16 times over.
 cell alone does nothing, because the montage inherits the contact sheet's deliberate no-upscale
 rule; `--zoom 2` is what makes the difference between "probably a jump" and knowing.
 
+**Every row being the same character is the expected result, and has a negative control.** A sheet
+of 53 rows that all look like stock DK is a reasonable thing to be suspicious of — it is equally
+consistent with the montage ignoring its input. Running the same command on `0x954..0xF00` with
+`Diddy Kong 1P` produces unmistakable Diddy (red cap, red shirt, tail, cartwheel), so the tool
+renders what the indices actually hold. It also re-confirms A.8's boundary from the far side: the
+first Diddy group begins at `0x964`, with nothing DK-shaped above `0x950`.
+
 **Established pairings** — each from an action match against a caption, never a frame count:
 
 | sheet run | ROM animation | indices | frames vs poses |
