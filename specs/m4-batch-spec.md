@@ -203,7 +203,7 @@ two renders:
 | range | contents |
 |---|---|
 | `0x8C..0x854` | DK, continuous |
-| `0x858..0x8AC` | small DK-proportioned sprites (distant/scaled DK) — **the one block worth a second look** |
+| `0x858..0x8A8` | **DK at reduced scale** — see A.13; resolved, it is DK |
 | `0x8B0..0x950` | DK, continuous |
 | `0x954..` | Diddy Kong — the character boundary, **confirmed by palette flip** (below) |
 
@@ -379,9 +379,35 @@ automatable.
 
 **Palette as the identity test, not a caveat.** A survey rendered in one palette locates boundaries
 by silhouette but cannot prove *identity* — so the palette-flip check above does that job instead,
-and it is strictly better evidence than a silhouette. `0x858..0x8AC` (small DK-proportioned sprites)
-is still flagged rather than claimed: it reads as DK in DK's palette, but nobody has run the flip
-against a plausible alternative for it.
+and it is strictly better evidence than a silhouette.
+
+### A.13 `0x858..0x8A8` resolved: DK at reduced scale
+
+The one block A.8 flagged rather than claimed. Three checks agree, and the first two were nearly
+misread:
+
+1. **Palette flip.** Rendered against `Diddy Kong 1P`, `Krusha, blue`, `Klump`, `Kritter, green`
+   and `Rambi, tire`, every alternative comes out speckled or wrongly coloured; only
+   `Donkey Kong 1P` produces a coherent figure — brown fur, pink hands, a red tie mark at the neck.
+2. **Posture.** At 8× the sprites are a hunched quadruped, and they match DK's *known* crawl at
+   `0xE0..0x12C` (A.12) pose for pose: same stance, same light extremities, same tie.
+3. **Scale, from the headers rather than the eye.** `0x858` is `b0=1, b1=3` → **7 chars**; `0x8A8`
+   is 6; DK's crawl frame `0xE0` is `b0=4, b1=5` → **21**. About a third the size.
+
+> **Both visual checks failed at first and were nearly recorded as negative.** In a 12-column sheet
+> at zoom 4 the block reads as muddy and "not DK", which is what kept it flagged; at 8× in a
+> 6-column sheet it is unmistakable. The contact sheet's cell size caps the zoom
+> (`scale = min(zoom, cell/w, cell/h)`), so raising `--zoom` alone does nothing — `--cell` has to
+> rise with it. A "this doesn't look like anything" result at small scale is not evidence.
+
+**No animation reaches it.** All seven sampled indices across the block are referenced by 0 of the
+440 scripts — it belongs to the 32.7 % of the GFX table A.7 measured as animation-unreachable. A
+small, script-unreachable DK is consistent with something drawn by special-case code (a map or
+cutscene figure) rather than the animation table, but that explanation is inferred, not shown.
+
+**Consequence:** A.8's block stands as **all DK, `0x8C..0x950`, with no foreign island**. Nothing in
+it needs excluding from a manifest — though these 6–7 char frames are reduced-scale DK, so mapping
+full-size sheet poses onto them would be wrong on size grounds even though the ownership is right.
 
 ---
 
@@ -557,9 +583,10 @@ original sha256 rather than the intermediate one.
 
 - ~~**Which image indices does DK actually own?**~~ **Answered (A.8): `0x8C..0x950`, 562 indices;
   Diddy begins at `0x954`, confirmed by palette flip and read off the render by the project
-  owner.** Located from M0's `0x8C` seed with `--whose` + `--contact-range`. One small follow-up
-  remains: `0x858..0x8AC` (small DK-proportioned sprites) is flagged but unconfirmed. It does not
-  block authoring a manifest for any strip well inside the block.
+  owner.** Located from M0's `0x8C` seed with `--whose` + `--contact-range`. The one flagged block,
+  `0x858..0x8A8`, is resolved in A.13: reduced-scale DK, so the range is all DK with no foreign
+  island. Those frames are 6–7 chars against a normal ~21, so they take reduced-scale art, not
+  full-size sheet poses.
 - **Assigning sheet strips to index runs.** A.8 gives the index *block*; it does not say which
   strip maps to which run within it, and A.9 shows frame count cannot decide it. The remaining step
   is a per-strip caption-read plus action match against `--contact-range` renders — mechanical, but

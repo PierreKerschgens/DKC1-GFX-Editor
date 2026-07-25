@@ -185,7 +185,9 @@ if (args.Length >= 3 && args[1] == "--contact-range")
                             .Where(cpValid.Contains)
                             .Where((_, i) => i % cpStride == 0).ToList();
     float cpZoom = float.Parse(ArgValue(args, "--zoom") ?? "1");
-    IndexOwnership.WriteContactSheet(rom, cpRange, cpPalette, contactOut, cpZoom);
+    IndexOwnership.WriteContactSheet(rom, cpRange, cpPalette, contactOut, cpZoom,
+                                     int.Parse(ArgValue(args, "--cell") ?? "72"),
+                                     int.Parse(ArgValue(args, "--cols") ?? "12"));
     Console.WriteLine($"Wrote {contactOut}: 0x{lo:X}..0x{hi:X}, {cpRange.Count} populated index(es), palette '{contactPal}'.");
     return 0;
 }

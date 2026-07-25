@@ -213,9 +213,9 @@ namespace DkcTool.Core
         /// nothing is recognisable.
         /// </summary>
         public static void WriteContactSheet(Rom rom, IEnumerable<int> indices, SKColor[] palette, string outPath,
-                                             float maxScale = 1f)
+                                             float maxScale = 1f, int cell = 72, int cols = 12)
         {
-            const int cell = 72, pad = 14, cols = 12;
+            const int pad = 14;
             var list = indices.ToList();
             int rows = (list.Count + cols - 1) / cols;
 
