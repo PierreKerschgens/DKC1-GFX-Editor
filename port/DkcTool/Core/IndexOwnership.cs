@@ -295,6 +295,83 @@ namespace DkcTool.Core
             return 0;
         }
 
+        /// <summary>
+        /// Renders one row per *distinct index set* among the animations drawing entirely inside a
+        /// range, each row labelled with the animation ids that share it — the ROM-side counterpart
+        /// of the caption montage (A.10), and the tool the strip→animation match needs.
+        ///
+        /// Grouping by index set rather than by animation is what makes this tractable: DK's block
+        /// holds 69 animations but far fewer distinct sets, because several scripts play the same
+        /// frames at different speeds or from different entry points (anims 2/14/20 all draw
+        /// 0x330..0x37C). Rendering per animation would repeat the same pictures many times over.
+        ///
+        /// Frames are drawn in the script's own draw order, so a row reads as the animation plays
+        /// rather than as an ascending index dump — which is what makes an action recognisable.
+        /// </summary>
+        public static int RunAnimSheet(Rom rom, int low, int high, string outPath, SKColor[] palette,
+                                       int fromGroup, int toGroup, int maxFrames = 24, int cell = 46,
+                                       float maxScale = 1f)
+        {
+            var scripts = AnimationTable.ParseAll(rom).Where(s => s.Ok && s.FrameCount > 0).ToList();
+            var inside = scripts.Where(s => s.ImageIndices.All(i => i >= low && i <= high)).ToList();
+
+            var groups = inside
+                .GroupBy(s => string.Join(",", s.Distinct.OrderBy(x => x)))
+                .Select(g => new
+                {
+                    Anims = g.Select(s => s.Animation).OrderBy(a => a).ToList(),
+                    // Draw order from the longest script in the group: the one that visits the most
+                    // frames is the least likely to be a truncated entry point into the sequence.
+                    Order = g.OrderByDescending(s => s.FrameCount).First().ImageIndices
+                             .Distinct().ToList(),
+                })
+                .OrderBy(g => g.Order.Min())
+                .ToList();
+
+            var page = groups.Skip(fromGroup).Take(Math.Max(0, toGroup - fromGroup + 1)).ToList();
+            Console.WriteLine($"=== animation sheet 0x{low:X}..0x{high:X} ===");
+            Console.WriteLine($"{inside.Count} in-block animation(s) -> {groups.Count} distinct index set(s); " +
+                              $"rendering {fromGroup}..{Math.Min(toGroup, groups.Count - 1)}");
+
+            const int labelW = 168, pad = 4;
+            int rowH = cell + pad;
+            using var sheet = new SKBitmap(labelW + maxFrames * cell, Math.Max(1, page.Count * rowH));
+            using (var canvas = new SKCanvas(sheet))
+            {
+                canvas.Clear(new SKColor(24, 24, 28));
+                using var text = new SKPaint { Color = new SKColor(255, 255, 0, 230), TextSize = 11, IsAntialias = true };
+
+                for (int i = 0; i < page.Count; i++)
+                {
+                    var g = page[i];
+                    int y = i * rowH;
+                    string ids = string.Join(",", g.Anims.Take(3)) + (g.Anims.Count > 3 ? "…" : "");
+                    canvas.DrawText($"anim {ids}", 4, y + cell / 2 - 2, text);
+                    canvas.DrawText($"{g.Order.Count}f 0x{g.Order.Min():X}", 4, y + cell / 2 + 11, text);
+
+                    for (int f = 0; f < Math.Min(maxFrames, g.Order.Count); f++)
+                    {
+                        int address = GfxTable.ResolveSpriteAddress(rom, g.Order[f]);
+                        if (address == 0) continue;
+                        using var sprite = SpriteDecoder.Decode(rom, address, palette);
+                        var b = OpaqueBounds(sprite);
+                        if (b.Width <= 0 || b.Height <= 0) continue;
+                        float scale = Math.Min(maxScale, Math.Min((float)cell / b.Width, (float)cell / b.Height));
+                        float w = b.Width * scale, h = b.Height * scale;
+                        canvas.DrawBitmap(sprite, b,
+                            SKRect.Create(labelW + f * cell + (cell - w) / 2, y + (cell - h) / 2, w, h));
+                    }
+                }
+            }
+
+            using var img = SKImage.FromBitmap(sheet);
+            using var data = img.Encode(SKEncodedImageFormat.Png, 100);
+            using var fs = System.IO.File.OpenWrite(outPath);
+            data.SaveTo(fs);
+            Console.WriteLine($"Wrote {outPath}");
+            return 0;
+        }
+
         /// <summary>Groups a sorted index set into maximal runs of consecutive stride-4 indices.</summary>
         public static IEnumerable<(int Low, int High, int Count)> Runs(IEnumerable<int> indices)
         {

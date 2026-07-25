@@ -138,6 +138,26 @@ if (args.Length >= 3 && args[1] == "--anims-in")
                                      aiFrames < 0 ? (int?)null : aiFrames);
 }
 
+if (args.Length >= 3 && args[1] == "--anim-sheet")
+{
+    // dotnet run -- <rom> --anim-sheet <lo>..<hi> --out s.png [--from N] [--to N] [--palette name]
+    string[] asB = args[2].Split("..");
+    if (asB.Length != 2) { Console.Error.WriteLine("--anim-sheet needs <loHex>..<hiHex>"); return 1; }
+    string asPal = ArgValue(args, "--palette") ?? "Donkey Kong 1P";
+    if (!PalettePointers.Table.TryGetValue(asPal, out int asAddr))
+    {
+        Console.Error.WriteLine($"Unknown palette '{asPal}'."); return 1;
+    }
+    return IndexOwnership.RunAnimSheet(rom,
+        Convert.ToInt32(asB[0], 16), Convert.ToInt32(asB[1], 16),
+        ArgValue(args, "--out") ?? "anim-sheet.png", Palette.Read(rom, asAddr),
+        int.Parse(ArgValue(args, "--from") ?? "0"),
+        int.Parse(ArgValue(args, "--to") ?? "999"),
+        int.Parse(ArgValue(args, "--frames") ?? "24"),
+        int.Parse(ArgValue(args, "--cell") ?? "46"),
+        float.Parse(ArgValue(args, "--zoom") ?? "1"));
+}
+
 if (args.Length >= 3 && args[1] == "--contact-range")
 {
     // dotnet run -- <rom> --contact-range <loHex>..<hiHex> --contact out.png [--palette <name>]

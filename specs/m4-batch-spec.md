@@ -336,6 +336,40 @@ animations. Two pairings are established — Walk ↔ anim 4/108 (`0x8C..0xDC`, 
 Ground Slap ↔ anim 74 (`0x2E4..0x32C`, by action) — leaving the rest to a `--contact-range` pass per
 animation.
 
+### A.12 The ROM side: 69 animations are 53 distinct index sets
+
+`--anim-sheet <lo>..<hi>` is the ROM-side counterpart of A.10's caption montage: one row per
+**distinct index set** among the in-block animations, labelled with the animation ids sharing it,
+frames drawn in the script's own order so a row reads as the animation plays.
+
+**Grouping by index set is what makes the pass tractable.** DK's block holds 69 animations but only
+**53 distinct sets** — several scripts play the same frames at different speeds or from different
+entry points (anims 2/14/20 all draw `0x330..0x37C`; 4/108 both draw `0x8C..0xDC`). Rendering per
+animation would repeat the same pictures 16 times over.
+
+**Render at `--zoom 2`.** DK's sprites are ~40 px, so at 1:1 an action is not reliably identifiable
+— the first pass at cell 46 produced plausible-looking guesses and no defensible ones. Raising the
+cell alone does nothing, because the montage inherits the contact sheet's deliberate no-upscale
+rule; `--zoom 2` is what makes the difference between "probably a jump" and knowing.
+
+**Established pairings** — each from an action match against a caption, never a frame count:
+
+| sheet run | ROM animation | indices | frames vs poses |
+|---|---|---|---|
+| strip 6 "Walk" | anim 4 / 108 | `0x8C..0xDC` | 21 vs 20 |
+| strip 8 "Roll" (+ 9) | anim 2 / 14 / 20 | `0x330..0x37C` | 20 vs 14 (+15) |
+| strip 12 "Start Crawl" (+ 13) | anim 3 | `0xE0..0x12C` | 20 vs 4 (+14) |
+| strip 20 "Ground Slap" | anim 74 | `0x2E4..0x32C` | 19 vs 7 |
+
+Not one pair has matching counts, which is A.9 holding across every case checked so far.
+
+**Deliberately not asserted: the other ~25.** Identifying an action from a montage row is exactly
+the judgement that has been wrong twice in this spec (A.9's two count-matches), and a wrong pairing
+here puts the right artwork on the wrong frame — the PRD's own top risk. The remaining runs need a
+side-by-side of the sheet strip against candidate rows, and that is a human pass with game knowledge,
+not an inference from sprite silhouettes. The tooling for it is complete; the judgement is not
+automatable.
+
 **Palette as the identity test, not a caveat.** A survey rendered in one palette locates boundaries
 by silhouette but cannot prove *identity* — so the palette-flip check above does that job instead,
 and it is strictly better evidence than a silhouette. `0x858..0x8AC` (small DK-proportioned sprites)
@@ -473,6 +507,8 @@ dotnet run -- <rom> --whose [seedHex] [--contact out.png]          # index owner
 dotnet run -- <rom> --captions <sheet.png> --out c.png \
                     [--from N] [--to N] [--scale N] [--capheight N] # read strip captions (A.10)
 dotnet run -- <rom> --anims-in <lo>..<hi> [--frames N]             # in-block animations (A.9)
+dotnet run -- <rom> --anim-sheet <lo>..<hi> --out s.png \
+                    [--from N] [--to N] [--zoom 2] [--cell N]      # animations as pictures (A.12)
 dotnet run -- <rom> --contact-range <lo>..<hi> --contact out.png \
                     [--stride N] [--zoom N] [--palette <name>]     # decode-and-look sheet (A.8)
 dotnet run -- <rom> --batch <manifest.json> --out <rom.sfc> [--dry-run]
