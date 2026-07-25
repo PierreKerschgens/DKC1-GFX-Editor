@@ -456,6 +456,79 @@ if (args.Length >= 3 && args[1] == "--poison-index")
     return 0;
 }
 
+if (args.Length >= 2 && args[1] == "--paint")
+{
+    // dotnet run -- <rom> --paint <lo>..<hi>:<colour> [--paint ...] --out <rom.sfc>
+    //
+    // --poison-index's discriminating sibling. Poisoning answers "is the roll in here?" one
+    // range per boot, which costs log2(N) boots. Painting fills each range's char data with a
+    // *constant* palette index instead of noise, so DK renders as a flat silhouette in a colour
+    // that names the range he came from -- and one boot can separate as many ranges as there
+    // are distinguishable colours.
+    //
+    // Same contract as --poison-index: header, placements, size and pointer untouched, so every
+    // animation plays exactly as before.
+    string ptOut = ArgValue(args, "--out") ?? throw new ArgumentException("--paint needs --out");
+    var ptSpecs = new List<(int Lo, int Hi, int Colour)>();
+    for (int i = 1; i < args.Length - 1; i++)
+    {
+        if (args[i] != "--paint") continue;
+        string[] halves = args[i + 1].Split(':');
+        if (halves.Length != 2) { Console.Error.WriteLine($"--paint needs <lo>..<hi>:<colour>, got '{args[i + 1]}'"); return 1; }
+        string[] bounds = halves[0].Split("..");
+        if (bounds.Length != 2) { Console.Error.WriteLine($"--paint needs <lo>..<hi>:<colour>, got '{args[i + 1]}'"); return 1; }
+        int colour = int.Parse(halves[1]);
+        if (colour < 1 || colour > 15) { Console.Error.WriteLine("--paint colour must be 1..15 (0 is transparent)."); return 1; }
+        ptSpecs.Add((Convert.ToInt32(bounds[0], 16), Convert.ToInt32(bounds[1], 16), colour));
+    }
+    if (ptSpecs.Count == 0) { Console.Error.WriteLine("--paint needs at least one <lo>..<hi>:<colour>."); return 1; }
+
+    // SNES 4bpp planar, per CharDecoder: row i reads chr[2i]/chr[2i+1] for bitplanes 0/1 and
+    // chr[2i+16]/chr[2i+17] for bitplanes 2/3. A constant colour means each bitplane is
+    // uniformly on or off, so every byte is 0xFF or 0x00 by whether that bit of the index is set.
+    static byte[] SolidChar(int colour)
+    {
+        var chr = new byte[0x20];
+        for (int i = 0; i < 8; i++)
+        {
+            chr[2 * i] = (byte)(((colour >> 0) & 1) != 0 ? 0xFF : 0x00);
+            chr[2 * i + 1] = (byte)(((colour >> 1) & 1) != 0 ? 0xFF : 0x00);
+            chr[2 * i + 16] = (byte)(((colour >> 2) & 1) != 0 ? 0xFF : 0x00);
+            chr[2 * i + 17] = (byte)(((colour >> 3) & 1) != 0 ? 0xFF : 0x00);
+        }
+        return chr;
+    }
+
+    var ptDone = new HashSet<int>();
+    foreach (var (lo, hi, colour) in ptSpecs)
+    {
+        byte[] solid = SolidChar(colour);
+        int painted = 0;
+        foreach (int index in DkcTool.Core.GfxTable.EnumerateImageIndices(rom))
+        {
+            if (index < lo || index > hi) continue;
+            int addr = DkcTool.Core.GfxTable.ResolveSpriteAddress(rom, index);
+            if (!ptDone.Add(addr)) continue;   // aliased sprites, and earlier --paint ranges, win
+
+            byte[] head = rom.ReadBytes(addr, 8);
+            int charStart = addr + 8 + 2 * (head[0] + head[1] + head[3]);
+            int charLen = (head[5] << 5) + head[7] * 0x20;
+            if (charLen <= 0) continue;
+
+            var fill = new byte[charLen];
+            for (int off = 0; off < charLen; off += 0x20)
+                Array.Copy(solid, 0, fill, off, Math.Min(0x20, charLen - off));
+            rom.WriteBytes(charStart, fill);
+            painted++;
+        }
+        Console.WriteLine($"  0x{lo:X}..0x{hi:X} -> colour {colour,2}: {painted} sprite(s)");
+    }
+
+    rom.Save(ptOut);
+    Console.WriteLine($"Wrote {ptOut}");
+    return 0;
+}
+
 if (args.Length >= 3 && args[1] == "--coords")
 {
     // dotnet run -- <rom> --coords <lo>..<hi>

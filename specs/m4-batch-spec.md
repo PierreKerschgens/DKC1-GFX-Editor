@@ -874,6 +874,36 @@ looked cheap — one manifest, one boot — so building an instrument never won 
 next candidate. Four failures in, the guesses have cost far more than the tool did. **When a search
 is producing repeated negative results, stop improving the guesses and start improving the test.**
 
+**Both halves fired, and the negative is now worth something.** `dk-poison-run.sfc`: DK turns to
+red-and-white static while running, movement otherwise normal — the method works on this ROM and
+level, and Run is independently re-confirmed. `dk-poison-roll.sfc`: entirely normal, including the
+roll. So `0x188..0x1FC` is genuinely not drawn during a roll. **First trustworthy negative in the
+whole search.**
+
+#### `--paint` — the discriminating version, and why one boot now maps many actions
+
+Poisoning bisects at one range per boot: ~430 unmapped DK indices is ~7 boots for *one* animation,
+and there are ~19 left. `--paint <lo>..<hi>:<colour>` fills a range's char data with a **constant
+palette index** instead of noise, so DK renders as a flat silhouette *in a colour that names the
+range*. Same contract — header, placements, size and pointer untouched.
+
+Two properties matter more than the colour trick itself:
+
+1. **Confirmed ranges are left unpainted**, so idle, walk and run look completely normal. The game
+   is playable and only *unmapped* actions light up. That makes the test non-disruptive enough to
+   explore with, rather than a single scripted check.
+2. **Every action tested in one boot is a separate data point.** Roll, jump, climb, swim, hit,
+   victory — each reports which chunk drew it. The search stops being one-hypothesis-per-boot and
+   becomes a survey.
+
+DK's palette limits this to about five silhouette colours that cannot be confused with each other or
+with normal DK (white 15, near-black 1, bright red 8, light pink 12, dark brown 3) — the browns and
+oranges are what DK already is. Five chunks per boot against ~430 unknown indices is two rounds to a
+~20-index answer, for every remaining animation at once.
+
+Verified before shipping: `0x200..0x214` renders as clean white silhouettes, `0x500..0x514` as clean
+red ones.
+
 ### A.13 `0x858..0x8A8` is **not** DK — it is a foreign island (corrected)
 
 > **This section previously concluded "DK at reduced scale". That was wrong**, and it was wrong in

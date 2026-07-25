@@ -186,11 +186,19 @@ Research/inspection, all read-only:
 --coords <lo>..<hi>                  placement bbox vs opaque bbox per slot, and their slack
 ```
 
-**The mapping oracle** (writes an output ROM, but only garbage — never use it as a base for real work):
+**The mapping oracles** (write output ROMs, but only garbage — never use one as a base for real work):
 
 ```
 --poison-index <lo>..<hi> --out <rom.sfc>
+--paint <lo>..<hi>:<colour> [--paint ...] --out <rom.sfc>
 ```
+
+`--paint` is the one to reach for. It fills each range with a *constant* palette index, so DK
+renders as a flat silhouette whose colour names the range — and **leaving confirmed ranges unpainted
+keeps idle/walk/run normal**, so the game stays playable and only unmapped actions light up. Test
+many actions in one boot; each is a separate data point. About five colours are usable on DK
+(white 15, near-black 1, red 8, light pink 12, dark brown 3) — the browns and oranges are what he
+already is.
 
 Overwrites a range's char data with noise; headers, placements and pointers untouched, so every
 animation plays as before and only the pixels turn to static. Boot it and whichever action turns DK
