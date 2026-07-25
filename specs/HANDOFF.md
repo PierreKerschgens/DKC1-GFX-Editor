@@ -26,7 +26,7 @@ dotnet run --project port/DkcTool -- "port/Donkey Kong Country (USA) (Rev 2).sfc
 
 ---
 
-## The bob bug — resolved
+## The placement bugs — resolved and confirmed in play
 
 **DK bobbed vertically through an imported walk cycle.** Reported from play; invisible in every
 still. Full analysis in `m4-batch-spec.md` A.17. **Fixed by `--batch --align-strip`.**
@@ -56,8 +56,12 @@ reference and carries the sheet's relative offsets through; X matches each repla
 and centre-X spread against the same range in the stock ROM. Both placement defects were invisible
 in stills and found only by that comparison.
 
-`--align-strip` is **off by default** (gates unchanged). It should probably become the default for
-any ground-contact animation; that decision is open.
+**Confirmed in play**: the two-axis build reads as smooth as a stock animation. Three attempts —
+two measured plausibly and failed in the emulator; the third matched stock on both axes and held.
+
+`--align-strip` is still **off by default** (gates unchanged). **Open decision:** it is measurably
+correct and the current default is measurably wrong for any multi-pose run, but flipping it changes
+behaviour for every future import including one run by someone who never reads the flag list.
 
 **Still outstanding, and a prerequisite before any 533-pose run:** M2b's drift check fires
 `[DRIFT > 4px]` on *100 % of* imported poses, which trained me to read it as noise for an entire

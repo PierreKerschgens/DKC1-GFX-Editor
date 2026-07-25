@@ -591,10 +591,19 @@ handled per pose instead: match the replaced frame's **centre**, which reproduce
 horizontal travel that frame actually had. Both axes now sit at stock's numbers, the residual 3-vs-2
 vertical being the sheet's own drawn bob.
 
+**Confirmed in play** — the two-axis build was booted and the cycle reads as smooth as a stock
+animation. That closes the bug: three attempts, two of which measured plausibly and failed in the
+emulator, and one that matched stock on both axes and held.
+
 **The general lesson.** Two separate placement defects hid behind one symptom, and neither was
 visible in a still image; both were found only by measuring the imported cycle against the stock one
 on the same axis. `--baseline` is that instrument, and it should be run on every imported run before
-the run is called done. Default off; V4 7/7 unchanged.
+the run is called done. V4 7/7 unchanged.
+
+**Open decision: should `--align-strip` be the default for `--batch`?** It is measurably correct and
+the current default is measurably wrong for any multi-pose run — but flipping it changes behaviour
+for every future import, including one run by someone who never reads the flag list. Left off
+pending a call.
 
 **One residual risk, untested.** The run's *absolute* height is now tied to the first pose's slot
 bottom. If that particular frame's lowest pixel is a knuckle rather than a foot, the whole cycle
