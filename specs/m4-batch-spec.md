@@ -952,11 +952,31 @@ is more mapping progress than A.9–A.21 combined, and it cost one boot.
    height swells 40→72→36 with arms overhead, a windup/hold/recovery one-shot (A.20) — fits a jump
    far better than it fits the climb this spec guessed. **Treat "the climb" as unresolved.**
 
-**One conflict to resolve, recorded rather than smoothed over.** The operator reports *idle* as
-white, i.e. `0x180..0x32C` — but Idle was confirmed in play at `0x8C..0xDC` (A.16). Both can hold if
-DK has more than one idle animation (DKC1 gives him standing and after-a-while fidget behaviours),
-and `0x180..0x32C` is a 108-sprite chunk with room for several. It is equally possible A.16's
-confirmation was coarse. **Do not treat either as settled until a paint round separates them.**
+**The idle conflict resolved itself: there are two idle animations.** The operator confirms DK has a
+standing idle and, after several seconds, one where he screams and beats his chest. So `0x8C..0xDC`
+(A.16, confirmed in play) and the white `0x180..0x32C` sighting are different animations, not a
+contradiction. The sheet has a strip for the second one — **strip 3 "Bang Chest", 7 poses** — which
+makes it independently authorable.
+
+#### The colour legend was half unusable — a real limit on this method
+
+The operator also reports that **black and dark brown could not be told apart**, so every "black"
+sighting in the table above is ambiguous between `0x380..0x4FC` (colour 1) and
+`0x800..0x854`/`0x8AC..0x950` (colour 3). Roll included. Rendering the candidates side by side shows
+two independent failures, and only one of them was the one being worried about:
+
+- **Near-black (1) disappears** against DKC1's dark jungle backgrounds.
+- **Dark brown (3) reads as normal DK**, so it is confusable with *unpainted* as well as with black.
+
+**Marker colours must be bright, saturated and unlike the character.** On DK's palette that leaves
+four: **white (15), red (8), light pink (14), amber (7)**. Four buckets per boot, not five — and the
+browns and dark reds that make up most of a 16-colour Kong palette are all unusable. A survey
+instrument's resolution is set by what an operator can *name under motion*, not by what the palette
+technically contains.
+
+Round 2 therefore paints **both** ambiguous regions at once: `0x380..0x4FC` split in thirds
+(white/red/light pink) against the brown region in amber. One boot both resolves the ambiguity and
+bisects — the re-run costs nothing extra because the mistake was caught before the boot, not after.
 
 **The methodological result.** Every previous round asked one yes/no question and mostly got "no".
 This round asked an operator to *play the game and report colours*, and returned ~15 localisations,

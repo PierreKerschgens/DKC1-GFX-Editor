@@ -123,9 +123,15 @@ this tier have now been falsified, including Roll.
 despite being an unmistakable somersault. Static identification is **0 for 4** — use `--paint`, not
 montages.
 
-**Open conflicts, do not treat as settled:**
-- *Idle* paints white (`0x180..0x32C`) but was confirmed in play at `0x8C..0xDC` (A.16). Possibly two
-  idle animations; possibly A.16 was coarse.
+⚠️ **Every "black" answer in that survey is ambiguous** between `0x380..0x4FC` and the brown region
+(`0x800..0x854`/`0x8AC..0x950`) — the two marker colours were not distinguishable in play. Roll
+included. `port/dk-paint-round2.sfc` re-runs both regions with legible colours.
+
+**Resolved:** DK has **two** idle animations — standing, and a chest-beating one after several
+seconds. `0x8C..0xDC` (A.16) and the white `0x180..0x32C` sighting are different animations, not a
+contradiction. The chest-beat has its own sheet strip (3, "Bang Chest", 7 poses).
+
+**Open, do not treat as settled:**
 - *Jump* was **unchanged** under paint, so it comes from an already-characterised range.
   `0x130..0x17C` (called "a climb") fits a jump better than a climb — windup, hold, recovery.
 - `0x680..0x7FC` paints the **life/balloon HUD**, so it is not purely DK. A.8's ownership claim has
@@ -213,9 +219,13 @@ Research/inspection, all read-only:
 `--paint` is the one to reach for. It fills each range with a *constant* palette index, so DK
 renders as a flat silhouette whose colour names the range — and **leaving confirmed ranges unpainted
 keeps idle/walk/run normal**, so the game stays playable and only unmapped actions light up. Test
-many actions in one boot; each is a separate data point. About five colours are usable on DK
-(white 15, near-black 1, red 8, light pink 12, dark brown 3) — the browns and oranges are what he
-already is.
+many actions in one boot; each is a separate data point.
+
+**Use only these four: white 15, red 8, light pink 14, amber 7.** Learned the hard way (A.22):
+near-black (1) vanishes against dark jungle backgrounds, and dark brown (3) reads as *normal DK*, so
+it is confusable with unpainted as well as with black — one survey's worth of "black" answers had to
+be re-run. Four buckets per boot, not five. Most of a 16-colour Kong palette is browns and dark reds
+and none of it is usable as a marker.
 
 Overwrites a range's char data with noise; headers, placements and pointers untouched, so every
 animation plays as before and only the pixels turn to static. Boot it and whichever action turns DK
