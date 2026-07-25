@@ -108,6 +108,21 @@ if (args.Length >= 2 && args[1] == "--whose")
                               ArgValue(args, "--palette") ?? "Donkey Kong 1P");
 }
 
+if (args.Length >= 3 && args[1] == "--captions")
+{
+    // dotnet run -- <rom> --captions <sheet.png> --out c.png [--from N] [--to N] [--scale N]
+    string capSheet = args[2];
+    string capOut = ArgValue(args, "--out") ?? "captions.png";
+    int capFrom = int.Parse(ArgValue(args, "--from") ?? "0");
+    int capTo = int.Parse(ArgValue(args, "--to") ?? int.MaxValue.ToString());
+    int capScale = int.Parse(ArgValue(args, "--scale") ?? "3");
+    int capH = int.Parse(ArgValue(args, "--capheight") ?? "20");
+    int capW = int.Parse(ArgValue(args, "--capwidth") ?? "150");
+    SheetSlicer.WriteCaptionSheet(capSheet, capOut, capFrom, capTo, capScale, capW, capH);
+    Console.WriteLine($"Wrote {capOut} (strips {capFrom}..{capTo}, {capScale}x)");
+    return 0;
+}
+
 if (args.Length >= 3 && args[1] == "--anims-in")
 {
     // dotnet run -- <rom> --anims-in <loHex>..<hiHex> [--frames N]

@@ -329,6 +329,77 @@ namespace DkcTool.Core
             data.SaveTo(fs);
         }
 
+        /// <summary>
+        /// Crops the caption sitting above each strip and stacks them into one montage, upscaled,
+        /// each row labelled with its strip number and pose count.
+        ///
+        /// A.2 established that the captions are *artwork*, not metadata — pure-black pixels the
+        /// slicer deliberately excludes — so nothing can parse them. A.9 then established that they
+        /// are the only reliable way to identify a strip, since frame count actively misleads. That
+        /// makes "render every caption at a readable size, in strip order" the survey's core tool:
+        /// a human reads 46 names off two images instead of cropping 46 regions by hand.
+        ///
+        /// The caption is assumed to sit immediately above the strip's leftmost pose, which is how
+        /// both sheets are laid out. A strip whose row comes out blank simply has no caption there.
+        /// </summary>
+        public static void WriteCaptionSheet(string sheetPath, string outPath, int fromStrip, int toStrip,
+                                             int scale = 3, int captionWidth = 150, int captionHeight = 20)
+        {
+            var sheet = Slice(sheetPath);
+            using var src = SKBitmap.Decode(sheetPath);
+
+            var strips = sheet.Strips.Where(s => s.Index >= fromStrip && s.Index <= toStrip)
+                                     .OrderBy(s => s.Index).ToList();
+            const int labelW = 108, pad = 6;
+            int rowH = captionHeight * scale + pad;
+
+            using var montage = new SKBitmap(labelW + captionWidth * scale, Math.Max(1, strips.Count * rowH));
+            using (var canvas = new SKCanvas(montage))
+            {
+                canvas.Clear(new SKColor(255, 255, 255));
+                using var text = new SKPaint { Color = SKColors.Black, TextSize = 15, IsAntialias = true };
+
+                for (int i = 0; i < strips.Count; i++)
+                {
+                    var strip = strips[i];
+                    int y = i * rowH;
+                    canvas.DrawText($"strip {strip.Index} ({strip.Poses.Count}p)", 4, y + rowH / 2 + 5, text);
+
+                    // Anchor on the *leftmost* pose, not the strip's overall bounding box. A strip
+                    // containing one unusually tall pose (or a mis-merge) has a MinY far above its
+                    // left edge, which puts the caption window above the text entirely -- exactly
+                    // what hid strip 10's "Jump" behind the previous band's sprites.
+                    var anchor = strip.Poses.OrderBy(p => p.MinX).First();
+                    int x0 = anchor.MinX;
+                    int y0 = anchor.MinY;
+                    int cropY = Math.Max(0, y0 - captionHeight);
+                    int cropH = Math.Min(captionHeight, src.Height - cropY);
+                    int cropW = Math.Min(captionWidth, src.Width - x0);
+                    if (cropW <= 0 || cropH <= 0) continue;
+
+                    var srcRect = new SKRectI(x0, cropY, x0 + cropW, cropY + cropH);
+                    var dstRect = SKRect.Create(labelW, y, cropW * scale, cropH * scale);
+                    canvas.DrawBitmap(src, srcRect, dstRect);
+
+                    // Box each crop. Without it a caption drawn near a row boundary reads as
+                    // belonging to either neighbour, which is exactly the ambiguity this montage
+                    // exists to remove.
+                    using var border = new SKPaint
+                    {
+                        Style = SKPaintStyle.Stroke,
+                        StrokeWidth = 1,
+                        Color = new SKColor(200, 0, 0, 160),
+                    };
+                    canvas.DrawRect(dstRect, border);
+                }
+            }
+
+            using var img = SKImage.FromBitmap(montage);
+            using var data = img.Encode(SKEncodedImageFormat.Png, 100);
+            using var fs = System.IO.File.OpenWrite(outPath);
+            data.SaveTo(fs);
+        }
+
         public static int Run(string path, string? overlayPath)
         {
             var sheet = Slice(path);

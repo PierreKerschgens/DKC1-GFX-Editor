@@ -252,6 +252,52 @@ pose count and an animation's frame count carries no information. A.7 read coinc
 The mapping is therefore a per-strip caption-read plus an action match, with both sides now tooled:
 `--slice` for the sheet, `--anims-in` + `--contact-range` for the ROM.
 
+### A.10 The DK sheet's captions, read (survey, sheet side)
+
+A.9 established that the strip→animation mapping has to come from captions and actions. The
+captions are artwork, so no parser can read them — but `--captions` crops the region above each
+strip's **leftmost** pose, upscales it and stacks the results with each crop boxed, so a human reads
+all 46 off three images.
+
+> Anchor on the leftmost pose, not the strip's bounding box. Strip 10's `MinY` is pulled 28 px above
+> its left edge by one tall pose far to the right, which put the window above the text entirely and
+> made "Jump" look like it had no caption at all. Boxing each crop matters for the same reason: an
+> unboxed caption near a row boundary reads as belonging to either neighbour.
+
+**29 of 46 strips are captioned** (30 names — strip 14's box holds both "Hit" and "Death"):
+
+| strip | p | caption | strip | p | caption | strip | p | caption |
+|---|---|---|---|---|---|---|---|---|
+| 0 | 6 | Idle | 16 | 17 | Barrel Throw | 30 | 14 | Swim |
+| 1 | 2 | Turn | 17 | 12 | Steel Keg Ride | 31 | 9 | Victory |
+| 2 | 10 | Swap (Partner) | 18 | 18 | …Ride Look | 33 | 11 | Sad/Failure |
+| 3 | 7 | Bang Chest | 19 | 22 | Ledge | 34 | 24 | Intro Cutscene |
+| 4 | 5 | Swap (Leader) | 20 | 7 | **Ground Slap** | 42 | 15 | End Credits |
+| 6 | 20 | Walk | 22 | 4 | Rope Idle | 44 | 16 | End Credits Part 2 |
+| 7 | 20 | Run | 23 | 6 | Rope Climb | | | |
+| 8 | 14 | Roll | 24 | 2 | Rope Turn | | | |
+| 10 | 19 | Jump | 26 | 2 | Swing | | | |
+| 12 | 4 | Start Crawl | 28 | 2 | Minecart Idle | | | |
+| 14 | 13 | Hit / Death | 29 | 14 | Minecart Up and Down | | | |
+| 15 | 25 | Barrel Pick Up | | | | | | |
+
+**17 strips carry no caption:** 5, 9, 11, 13, 21, 25, 27, 32, 35–41, 43, 45. They sit immediately
+after a captioned strip in every case, so the working hypothesis is that they are continuations of
+the preceding animation that the horizontal-gap split (A.4) cut in two — which would mean **a strip
+is not always an animation**, and A.4's "the manifest's natural unit is the strip" needs qualifying.
+Not yet confirmed.
+
+**A.9, confirmed from the other direction.** Strip 20 is captioned **"Ground Slap"** — and anim 74,
+the animation count-matching selected for the 19-pose *Jump* strip, is the one that keeps DK grounded
+with arms forward. By action it belongs to strip 20. Its counts are 19 frames against 7 poses, so the
+correct pairing is one that count-matching could never produce, while the pairing it *did* produce
+was wrong. That is A.9's claim demonstrated in a single pair.
+
+**Still open: the ROM side.** Naming the sheet's 46 strips does not name the ROM's 69 in-block
+animations. Two pairings are established — Walk ↔ anim 4/108 (`0x8C..0xDC`, confirmed visually) and
+Ground Slap ↔ anim 74 (`0x2E4..0x32C`, by action) — leaving the rest to a `--contact-range` pass per
+animation.
+
 **Palette as the identity test, not a caveat.** A survey rendered in one palette locates boundaries
 by silhouette but cannot prove *identity* — so the palette-flip check above does that job instead,
 and it is strictly better evidence than a silhouette. `0x858..0x8AC` (small DK-proportioned sprites)
@@ -386,6 +432,9 @@ diagnostic. Gated by **V4g**.
 dotnet run -- <rom> --slice <sheet.png> [--overlay out.png]        # strip/pose numbering, no writes
 dotnet run -- <rom> --stats-anim                                   # animation id -> indices (A.7)
 dotnet run -- <rom> --whose [seedHex] [--contact out.png]          # index ownership from a seed (A.8)
+dotnet run -- <rom> --captions <sheet.png> --out c.png \
+                    [--from N] [--to N] [--scale N] [--capheight N] # read strip captions (A.10)
+dotnet run -- <rom> --anims-in <lo>..<hi> [--frames N]             # in-block animations (A.9)
 dotnet run -- <rom> --contact-range <lo>..<hi> --contact out.png \
                     [--stride N] [--zoom N] [--palette <name>]     # decode-and-look sheet (A.8)
 dotnet run -- <rom> --batch <manifest.json> --out <rom.sfc> [--dry-run]
