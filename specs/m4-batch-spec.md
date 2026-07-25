@@ -203,7 +203,7 @@ two renders:
 | range | contents |
 |---|---|
 | `0x8C..0x854` | DK, continuous |
-| `0x858..0x8A8` | **DK at reduced scale** — see A.13; resolved, it is DK |
+| `0x858..0x8A8` | **not DK** — a foreign island, most likely Manky Kong (A.13). Must be excluded from a DK manifest |
 | `0x8B0..0x950` | DK, continuous |
 | `0x954..` | Diddy Kong — the character boundary, **confirmed by palette flip** (below) |
 
@@ -381,33 +381,62 @@ automatable.
 by silhouette but cannot prove *identity* — so the palette-flip check above does that job instead,
 and it is strictly better evidence than a silhouette.
 
-### A.13 `0x858..0x8A8` resolved: DK at reduced scale
+### A.13 `0x858..0x8A8` is **not** DK — it is a foreign island (corrected)
 
-The one block A.8 flagged rather than claimed. Three checks agree, and the first two were nearly
-misread:
+> **This section previously concluded "DK at reduced scale". That was wrong**, and it was wrong in
+> the way this spec keeps finding: a confident visual call made without a control. The error was
+> caught by the project owner noticing the colours were off in the very render offered as proof.
+> The original reasoning is kept below the correction, because the way it failed is the useful part.
 
-1. **Palette flip.** Rendered against `Diddy Kong 1P`, `Krusha, blue`, `Klump`, `Kritter, green`
-   and `Rambi, tire`, every alternative comes out speckled or wrongly coloured; only
-   `Donkey Kong 1P` produces a coherent figure — brown fur, pink hands, a red tie mark at the neck.
-2. **Posture.** At 8× the sprites are a hunched quadruped, and they match DK's *known* crawl at
-   `0xE0..0x12C` (A.12) pose for pose: same stance, same light extremities, same tie.
-3. **Scale, from the headers rather than the eye.** `0x858` is `b0=1, b1=3` → **7 chars**; `0x8A8`
-   is 6; DK's crawl frame `0xE0` is `b0=4, b1=5` → **21**. About a third the size.
+**What the block actually is.** `0x858..0x8A8` is two ROM-contiguous groups, and neither is stored
+anywhere near DK:
 
-> **Both visual checks failed at first and were nearly recorded as negative.** In a 12-column sheet
-> at zoom 4 the block reads as muddy and "not DK", which is what kept it flagged; at 8× in a
-> 6-column sheet it is unmistakable. The contact sheet's cell size caps the zoom
-> (`scale = min(zoom, cell/w, cell/h)`), so raising `--zoom` alone does nothing — `--cell` has to
-> rise with it. A "this doesn't look like anything" result at small scale is not evidence.
+| indices | ROM data | ROM-adjacent to | content |
+|---|---|---|---|
+| `0x858..0x87C` | `0x1AF580…` | `0x12AC..0x12CC` (identical creature) | orange ape, on all fours |
+| `0x880..0x8A8` | `0x2C09A6…` | `0x1094..0x109C` | same creature, arm raised — throwing |
 
-**No animation reaches it.** All seven sampled indices across the block are referenced by 0 of the
-440 scripts — it belongs to the 32.7 % of the GFX table A.7 measured as animation-unreachable. A
-small, script-unreachable DK is consistent with something drawn by special-case code (a map or
-cutscene figure) rather than the animation table, but that explanation is inferred, not shown.
+Rendered in `Manky` both groups are coherent — orange-rust fur, pale face and hands — where
+`Donkey Kong 1P` gives muddy brown with red speckle. The sprite immediately after the first group in
+ROM order is **a barrel** (`0x16F0`). An orange ape with a walk set, a throwing set and a barrel
+stored beside it is **Manky Kong**, DKC1's barrel-throwing orangutan.
 
-**Consequence:** A.8's block stands as **all DK, `0x8C..0x950`, with no foreign island**. Nothing in
-it needs excluding from a manifest — though these 6–7 char frames are reduced-scale DK, so mapping
-full-size sheet poses onto them would be wrong on size grounds even though the ownership is right.
+**Stated as the best candidate, not as proven.** Nothing in the 440 scripts reaches any of these
+indices — `--anims-in 0x1200..0x1400` returns 0 animations for the whole neighbouring region — so
+there is no script-level confirmation, and the palette evidence here is far softer than the
+unmistakable DK/Diddy flip at `0x954`. What *is* established beyond doubt is the negative: these
+sprites are not DK.
+
+**Consequence, and it matters for the manifest.** A.8's "all DK, no foreign island" is **false**.
+About 21 indices inside `0x8C..0x950` belong to another entity, and importing DK artwork over them
+would replace that entity's sprites. **A DK manifest must exclude `0x858..0x8A8`.**
+
+<details><summary>The original (wrong) reasoning, kept as a worked failure</summary>
+
+Three checks were said to agree: that only `Donkey Kong 1P` rendered coherently; that the posture
+matched DK's crawl at `0xE0`; and that the headers gave 6–7 chars against DK's 21, read as "DK at a
+third scale". The third was a real measurement and is still true — it is simply evidence of *a small
+sprite*, not of a small **DK**. The first two were the failure:
+
+- **"Only DK's palette is coherent" was judged against four hand-picked alternatives**, all of them
+  wrong ones (Diddy, Krusha, Klump, Kritter, Rambi). Manky was never tried. Picking the least-bad of
+  five guesses and calling it a match is not a palette flip; the DK/Diddy check at `0x954` worked
+  because the *correct* palette was in the comparison and inverted cleanly.
+- **"The posture matches DK's crawl" was pattern-matching a hunched quadruped silhouette**, which an
+  ape on all fours has whoever it is.
+
+`--palette-sweep` exists because of this: it renders one sprite under all 79 known palettes at once,
+so the right one can be seen next to the wrong ones instead of judged in isolation. `--near` exists
+for the same reason from the other side — it lists indices by *ROM data* order rather than table
+order, and it was ROM adjacency, not colour, that broke this open by showing the block sitting next
+to `0x12AC..0x12CC` and a barrel, nowhere near DK.
+
+**The transferable lesson:** "this looks right in palette X" is worthless without the alternatives
+on screen, and "this looks wrong" at small scale is worthless too (that reading is what kept the
+block flagged for two sessions). Identity claims need either a clean inversion against the true
+alternative, a script-level link, or ROM adjacency to something already identified.
+
+</details>
 
 ---
 
@@ -542,6 +571,8 @@ dotnet run -- <rom> --captions <sheet.png> --out c.png \
 dotnet run -- <rom> --anims-in <lo>..<hi> [--frames N]             # in-block animations (A.9)
 dotnet run -- <rom> --anim-sheet <lo>..<hi> --out s.png \
                     [--from N] [--to N] [--zoom 2] [--cell N]      # animations as pictures (A.12)
+dotnet run -- <rom> --palette-sweep <idx> --out sweep.png          # one sprite, all 79 palettes (A.13)
+dotnet run -- <rom> --near <idx> [--count N] [--contact out.png]   # neighbours in ROM data order (A.13)
 dotnet run -- <rom> --contact-range <lo>..<hi> --contact out.png \
                     [--stride N] [--zoom N] [--palette <name>]     # decode-and-look sheet (A.8)
 dotnet run -- <rom> --batch <manifest.json> --out <rom.sfc> [--dry-run]
@@ -584,9 +615,8 @@ original sha256 rather than the intermediate one.
 - ~~**Which image indices does DK actually own?**~~ **Answered (A.8): `0x8C..0x950`, 562 indices;
   Diddy begins at `0x954`, confirmed by palette flip and read off the render by the project
   owner.** Located from M0's `0x8C` seed with `--whose` + `--contact-range`. The one flagged block,
-  `0x858..0x8A8`, is resolved in A.13: reduced-scale DK, so the range is all DK with no foreign
-  island. Those frames are 6–7 chars against a normal ~21, so they take reduced-scale art, not
-  full-size sheet poses.
+  `0x858..0x8A8`, is resolved in A.13 — and resolved *against* the original guess: it is **not**
+  DK but a foreign island of ~21 indices, most likely Manky Kong. A DK manifest must exclude it.
 - **Assigning sheet strips to index runs.** A.8 gives the index *block*; it does not say which
   strip maps to which run within it, and A.9 shows frame count cannot decide it. The remaining step
   is a per-strip caption-read plus action match against `--contact-range` renders — mechanical, but
@@ -618,3 +648,4 @@ original sha256 rather than the intermediate one.
 | Derived indices drift silently if the walk breaks | V4f: 440/440 parse asserted |
 | Strip assigned the wrong animation id | Length mismatch refuses (C.2); QA overlay annotates each pose with its resolved index |
 | **Strip assigned by frame count** | **A.9: does not work — 0 for 2, including a unique match. Match by caption + action, never by count** |
+| **Foreign sprites inside a character's index range** | **A.13: `0x858..0x8A8` is not DK. Verify a block with `--palette-sweep` (all palettes at once) and `--near` (ROM adjacency), never against hand-picked alternatives** |

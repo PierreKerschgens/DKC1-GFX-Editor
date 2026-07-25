@@ -138,6 +138,27 @@ if (args.Length >= 3 && args[1] == "--anims-in")
                                      aiFrames < 0 ? (int?)null : aiFrames);
 }
 
+if (args.Length >= 3 && args[1] == "--near")
+{
+    // dotnet run -- <rom> --near <indexHex> [--count N] [--contact out.png] [--palette name]
+    string nearPal = ArgValue(args, "--palette") ?? "Donkey Kong 1P";
+    if (!PalettePointers.Table.TryGetValue(nearPal, out int nearAddr))
+    {
+        Console.Error.WriteLine($"Unknown palette '{nearPal}'."); return 1;
+    }
+    return IndexOwnership.RunNear(rom, Convert.ToInt32(args[2], 16),
+                                  int.Parse(ArgValue(args, "--count") ?? "16"),
+                                  ArgValue(args, "--contact"), Palette.Read(rom, nearAddr));
+}
+
+if (args.Length >= 3 && args[1] == "--palette-sweep")
+{
+    // dotnet run -- <rom> --palette-sweep <indexHex> --out sweep.png
+    return IndexOwnership.RunPaletteSweep(rom, Convert.ToInt32(args[2], 16),
+                                          ArgValue(args, "--out") ?? "sweep.png",
+                                          int.Parse(ArgValue(args, "--cell") ?? "108"));
+}
+
 if (args.Length >= 3 && args[1] == "--anim-sheet")
 {
     // dotnet run -- <rom> --anim-sheet <lo>..<hi> --out s.png [--from N] [--to N] [--palette name]

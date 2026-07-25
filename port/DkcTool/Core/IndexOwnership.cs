@@ -372,6 +372,100 @@ namespace DkcTool.Core
             return 0;
         }
 
+        /// <summary>
+        /// Renders one sprite under *every* known palette, labelled, in a grid — so the question
+        /// "whose sprite is this?" is answered by looking at all the candidates at once instead of
+        /// guessing them one at a time.
+        ///
+        /// A.13 got resolved the slow way: five palettes tried by hand, the least-bad one declared
+        /// a match, and the identification was wrong. The failure mode is that "muddy" is hard to
+        /// judge in isolation — a palette only looks wrong once a *right* one is on screen beside
+        /// it. Sweeping every palette makes the correct one obvious and costs one render.
+        /// </summary>
+        public static int RunPaletteSweep(Rom rom, int imageIndex, string outPath, int cell = 108, int cols = 7)
+        {
+            int address = GfxTable.ResolveSpriteAddress(rom, imageIndex);
+            if (address == 0)
+            {
+                Console.Error.WriteLine($"image index 0x{imageIndex:X} has no pointer.");
+                return 1;
+            }
+
+            var names = PalettePointers.Table.Keys.OrderBy(k => k).ToList();
+            int rows = (names.Count + cols - 1) / cols;
+            const int label = 13;
+
+            using var sheet = new SKBitmap(cols * cell, rows * (cell + label));
+            using (var canvas = new SKCanvas(sheet))
+            {
+                canvas.Clear(new SKColor(24, 24, 28));
+                using var text = new SKPaint { Color = new SKColor(255, 255, 0, 230), TextSize = 9, IsAntialias = true };
+
+                for (int i = 0; i < names.Count; i++)
+                {
+                    int cx = (i % cols) * cell, cy = (i / cols) * (cell + label);
+                    string name = names[i];
+                    canvas.DrawText(name.Length > 22 ? name[..22] : name, cx + 2, cy + cell + 10, text);
+
+                    var palette = Palette.Read(rom, PalettePointers.Table[name]);
+                    using var sprite = SpriteDecoder.Decode(rom, address, palette);
+                    var b = OpaqueBounds(sprite);
+                    if (b.Width <= 0 || b.Height <= 0) continue;
+
+                    float scale = Math.Min((float)cell / b.Width, (float)cell / b.Height);
+                    float w = b.Width * scale, h = b.Height * scale;
+                    canvas.DrawBitmap(sprite, b,
+                        SKRect.Create(cx + (cell - w) / 2, cy + (cell - h) / 2, w, h));
+                }
+            }
+
+            using var img = SKImage.FromBitmap(sheet);
+            using var data = img.Encode(SKEncodedImageFormat.Png, 100);
+            using var fs = System.IO.File.OpenWrite(outPath);
+            data.SaveTo(fs);
+            Console.WriteLine($"Wrote {outPath}: index 0x{imageIndex:X} under {names.Count} palette(s).");
+            return 0;
+        }
+
+        /// <summary>
+        /// Lists the image indices whose sprite *data* sits nearest a given index's, in ROM order.
+        ///
+        /// A different axis of evidence from everything else here. Index order is the GFX table's
+        /// order; this is the order the bytes were laid down, and sprites belonging to one entity
+        /// are usually stored together regardless of where their table entries landed. When a block
+        /// is animation-unreachable (so A.8's closure says nothing) and too small to identify by
+        /// palette, its ROM neighbours can still be recognisable, and they carry the identification
+        /// by association.
+        /// </summary>
+        public static int RunNear(Rom rom, int imageIndex, int count, string? contactPath, SKColor[] palette)
+        {
+            var byAddress = GfxTable.EnumerateImageIndices(rom)
+                .Select(i => (Index: i, Address: Rom.Mask(GfxTable.ResolveSpriteAddress(rom, i))))
+                .Where(x => x.Address != 0)
+                .OrderBy(x => x.Address)
+                .ToList();
+
+            int at = byAddress.FindIndex(x => x.Index == imageIndex);
+            if (at < 0)
+            {
+                Console.Error.WriteLine($"index 0x{imageIndex:X} not found in the GFX table.");
+                return 1;
+            }
+
+            int from = Math.Max(0, at - count / 2);
+            var window = byAddress.Skip(from).Take(count).ToList();
+
+            Console.WriteLine($"=== indices nearest 0x{imageIndex:X} in ROM data order ===");
+            Console.WriteLine($"0x{imageIndex:X} lives at 0x{byAddress[at].Address:X}");
+            foreach (var w in window)
+                Console.WriteLine($"  {(w.Index == imageIndex ? "->" : "  ")} idx 0x{w.Index:X}".PadRight(20) +
+                                  $"@ 0x{w.Address:X}");
+
+            if (contactPath != null)
+                WriteContactSheet(rom, window.Select(w => w.Index), palette, contactPath, 4f, 130, 8);
+            return 0;
+        }
+
         /// <summary>Groups a sorted index set into maximal runs of consecutive stride-4 indices.</summary>
         public static IEnumerable<(int Low, int High, int Count)> Runs(IEnumerable<int> indices)
         {
