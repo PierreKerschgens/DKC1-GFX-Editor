@@ -1077,6 +1077,26 @@ it were not.**
 Roll is down to 24 indices. Round 5 bisects white-only: `0x380..0x3AC` painted, `0x3B0..0x3DC` left
 alone.
 
+#### Rounds 5–6: white-only bisection works, and it is boring, which is the point
+
+Round 5: **everything normal**, including the cliff teeter — which is *consistent*, since round 5
+left `0x3E0..0x3FC` (the teeter) unpainted. Two independent checks agreeing on a null is what a
+working instrument looks like.
+
+⇒ **roll is in `0x3B0..0x3DC`** — 12 indices.
+
+The operator also pinned the teeter's opening frames precisely: **DK's eyes stretch downward as he
+looks over the edge**. That is a description of art, from play, and it is worth more than any
+contact-sheet reading in this spec — it identifies the animation *and* its phase.
+
+**`0x3A4..0x3DC` was the provisional Swim** (A.14). It overlaps roll's remaining range, so that
+pairing is at best partly wrong — the fourth provisional to fall. The provisional tier is now 0 for 4
+whenever it has been tested.
+
+**Note how the last three rounds have gone.** No cleverness, no predictions, one colour, one
+question, one bit. Roll went 430 → 96 → 32 → 24 → 12 without a single wrong turn, after five rounds
+of clever methods produced five wrong answers. Round 6 paints `0x3B0..0x3C4`, leaving `0x3C8..0x3DC`.
+
 **The methodological result.** Every previous round asked one yes/no question and mostly got "no".
 This round asked an operator to *play the game and report colours*, and returned ~15 localisations,
 two structural corrections and a falsifiable lead on jump. The change was not a better hypothesis —

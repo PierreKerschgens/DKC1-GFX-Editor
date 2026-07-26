@@ -123,9 +123,10 @@ this tier have now been falsified, including Roll.
 despite being an unmistakable somersault. Static identification is **0 for 4** — use `--paint`, not
 montages.
 
-**Round 4/control (A.22):** **Roll is `0x380..0x3DC`** — 24 indices. Established by elimination:
-the control painted all of `0x380..0x3FC` white and roll turned white; round 4 painted only
-`0x3E0..0x3FC` white and roll did not. `0x3E0..0x3FC` is the **cliff-teeter start**.
+**Roll is `0x3B0..0x3DC`** — 12 indices, from ~430, by white-only bisection (A.22). `0x3E0..0x3FC`
+is the **cliff-teeter start** (its opening frames are DK's eyes stretching downward as he looks over
+the edge). `0x3A4..0x3DC` was the provisional *Swim* and overlaps roll's range, so that pairing is
+at best partly wrong — the provisional tier is 0 for 4 whenever tested.
 
 **Round 2 (A.22):** Roll localised to `0x380..0x3FC` — 32 indices, from ~430, in two boots. Also: narrow
 crouch → `0x380..0x3FC`; getting hit → `0x400..0x47C`; enemy bounce and cliff teeter span *both*
