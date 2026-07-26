@@ -1758,6 +1758,68 @@ The stock pool is down to **7.6 KB** after 92 poses. `0x200..0x25C` alone is 24 
 every remaining animation needs `--expand` (M3, built and gated at 6/6 but **never yet used for real
 work**). Coverage from here is an expanded-ROM exercise, not another one-off strip.
 
+### A.29 The secondary captions, read — the sheet documents its own timing
+
+A.28 spotted one structural annotation. A full sweep of the DK sheet finds a small, consistent
+**vocabulary**, and it answers questions this spec has been paying boots to answer.
+
+⚠️ **Reading them at all requires compositing over white.** The captions are pure black
+(`AnnotationRgb`) on transparency, so anything that flattens alpha to black — `sips -z`, and the
+`--captions` render at default settings — makes them *invisible* rather than obviously missing. A
+whole class of information was on the sheet, in plain text, and every previous look flattened it to
+black-on-black. `port/flatten-region.py` composites properly.
+
+#### The vocabulary
+
+| annotation | meaning | ROM counterpart |
+|---|---|---|
+| **(Loop and Reverse)** / **(Reverse and Loop)** | play forward, then backward, repeat | anim 9's `0x218..0x23C` forward-then-back ×3 |
+| **(Reverse to return to idle)** | this segment is played backwards to exit | anim 9 plays the idle indices reversed in, forward out |
+| **(Loop)** | segment repeats (on *Death*) | — |
+| **(Hold)** | hold this frame | a long frame duration |
+| **(Also used in Bonus Games)** | **the same art serves two contexts** | the ROM's aliasing / "one action, two animations" |
+| **vertical rule** | a segment boundary — *within* a captioned run as well as between runs | the sub-motions a script switches between |
+
+**`--slice` cannot see any of this.** Vertical rules are thin black marks the slicer drops as
+caption dust, and the annotations are separated from their strip by whitespace. Every one of them
+has to be read by eye — but they only have to be read *once*.
+
+#### The captions, in sheet order
+
+Idle | Turn | Swap (Partner) · **Bang Chest** [(Reverse to return to idle), 2 rules] | Swap (Leader) ·
+**[(Loop and Reverse)]** · Walk · Run · Roll · Flip · Jump · Duck [rule] · Start Crawl · Crawl ·
+Hit | Death [(Loop)] · Barrel Pick Up | Barrel Idle | Barrel Walk · Barrel Throw · Steel Keg Ride ·
+Ride Look | Ride Attack | Ride Idle · Ledge [rule] · Ground Slap ·
+Rope Idle | Rope Climb | Rope Turn · Map Stuff · **Swing** · Minecart Idle | Minecart Up and Down ·
+Swim · **Victory** · Sad/Failure · **Intro Cutscene** [(Reverse and Loop) ×2] ·
+**End Credits** [(Also used in Bonus Games), (Reverse and Loop) ×2, (Hold)] ·
+**End Credits Part 2** [(Reverse and Loop) ×2]
+
+#### Two structural facts that change earlier conclusions
+
+**1. Long runs wrap onto the next row.** *Swing*, *Victory*, *Intro Cutscene*, *End Credits* and
+*Map Stuff* each continue on a second (or third) row, and **Bang Chest's loop is on the row below its
+name**. That is the answer to the band question A.25 left open and could not resolve from geometry:
+the two-row strips are **not** two animations stacked, they are *one run wrapping*. The slicer's band
+grouping is wrong there in a specific, now-known way, and the fix is not "split the rows" but "join
+them in reading order".
+
+It also means **A.28's reading of strip 3 was incomplete**: "(Loop and Reverse)" belongs to the row
+*below* Bang Chest, so the chest-beat is strip 3 **plus** strip 5 — 15 + 19 poses across two rows,
+matching anim 9's wind-up / loop / recovery structure far better than 15 poses alone.
+
+**2. Frame counts were never going to match, and now we know the mechanism.** A.9 blamed the author's
+taste ("removed frames that were the same played in reverse"). The sheet says so *explicitly*, in
+writing, on the strips where it happens: a run marked **(Loop and Reverse)** stores N poses for an
+animation that plays 2N−2 frames. That is not a mismatch to be resolved by script editing — it is a
+**compression the sheet documents**, and the importer should expand it the way A.27 expands a held
+pose.
+
+**The lesson.** Six sections reconstructed timing, looping and direction from boots, paint rounds and
+poison bisections. The artist had written it down. **Before building an instrument to recover
+information, check whether the source already states it** — and check that "the source doesn't say"
+isn't really "our renderer drew black on black".
+
 ### A.13 `0x858..0x8A8` is **not** DK — it is a foreign island (corrected)
 
 > **This section previously concluded "DK at reduced scale". That was wrong**, and it was wrong in

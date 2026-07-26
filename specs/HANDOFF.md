@@ -214,11 +214,20 @@ Look in `0x538..0x594`, which is DK's mounted/riding pose set.
 22/23/24 are captioned "Rope Idle", "Rope Climb", "Rope Turn" (A.28). Matching them to index ranges
 still needs a paint round or someone who knows the game.
 
-⚠️ **Read every strip's *secondary* caption before mapping anything by hand** (A.28). Strip 3 carries
-"(Loop and Reverse)" and "(Reverse to return to idle)" beside its name, plus a drawn rule splitting
-its poses 10 | 5 — and those annotations turn out to *be* the pose→frame mapping for anim 9. The
-caption survey (A.10/A.11) read names only. Timing, looping and direction were on the sheet the whole
-time, while six sections reconstructed them from boots and paint rounds.
+**The secondary captions are read — A.29 has the full sweep and the vocabulary.** The sheet
+documents its own timing: **(Loop and Reverse)**, **(Reverse to return to idle)**, **(Loop)**,
+**(Hold)**, **(Also used in Bonus Games)**, plus vertical rules marking segment boundaries *inside*
+a run. Read A.29 before mapping another animation by hand — it is cheaper than a boot and it is
+information no instrument in this repo can recover.
+
+⚠️ **They are black-on-transparent, so anything that flattens alpha to black hides them** — `sips -z`
+and `--captions` both do. Use `port/flatten-region.py`, which composites over white. This is why six
+sections reconstructed by boot what the artist had written down.
+
+⚠️ **Long runs wrap onto the next row** — Swing, Victory, Intro Cutscene, End Credits, Map Stuff, and
+Bang Chest's loop. That answers the band question A.25 left open: the two-row strips are **one run
+wrapping**, not two animations stacked, so the slicer fix is to *join* them in reading order, not
+split them. It also means the chest-beat is strips 3 **and** 5.
 
 ---
 
