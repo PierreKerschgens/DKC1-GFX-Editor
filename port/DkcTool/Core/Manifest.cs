@@ -53,6 +53,18 @@ namespace DkcTool.Core
         public string? Name;
         public string? Animation;
         public List<string>? Indices;
+
+        /// <summary>
+        /// Per-strip override for horizontal placement (spec A.20/A.22). Null = follow the
+        /// command line's `--flat-x`.
+        ///
+        /// This belongs to the *strip*, not the run, because two animations in one batch can want
+        /// opposite answers: DK's walk matches stock exactly with per-pose centring (4px of
+        /// inherited travel, which is real), while his run and roll inherit 9px and 15px of the
+        /// replaced animation's lunge and need it flattened. A single command-line flag silently
+        /// regresses whichever strip disagrees with it.
+        /// </summary>
+        public bool? FlatX;
     }
 
     /// <summary>One resolved (sheet rect -> target image index) instruction, ready for
@@ -64,6 +76,9 @@ namespace DkcTool.Core
         public int Position;
         public int ImageIndex;
         public int RectX, RectY, RectW, RectH;
+
+        /// <summary>Per-strip horizontal-placement override; null = use the batch default.</summary>
+        public bool? FlatX;
     }
 
     /// <summary>
@@ -100,6 +115,7 @@ namespace DkcTool.Core
                     Name = s.name,
                     Animation = s.animation,
                     Indices = s.indices,
+                    FlatX = s.flatX,
                 });
             }
             foreach (var o in doc.overrides ?? new List<OverrideJson>())
@@ -215,6 +231,7 @@ namespace DkcTool.Core
                         RectY = rect.Y,
                         RectW = rect.W,
                         RectH = rect.H,
+                        FlatX = entry.FlatX,
                     });
                 }
             }
@@ -257,6 +274,7 @@ namespace DkcTool.Core
             public string? name { get; set; }
             public string? animation { get; set; }
             public List<string>? indices { get; set; }
+            public bool? flatX { get; set; }
         }
 
         private sealed class OverrideJson

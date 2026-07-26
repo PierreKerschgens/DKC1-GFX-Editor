@@ -128,10 +128,15 @@ namespace DkcTool.Core
                     int baseline = refPose.RectY + refPose.RectH - 1;
                     int reference = slots[refPose.Position].OpaqueMaxY;
 
+                    // A strip may override the batch-wide choice, because two animations in one
+                    // manifest can want opposite answers -- the walk matches stock with per-pose
+                    // centring while the run and roll need it flattened (A.20/A.22).
+                    bool stripFlatX = strip.First().FlatX ?? flatX;
+
                     // The mean of the replaced frames' centres, not the reference pose's own:
                     // a run's first frame is as likely as any to be a horizontal extreme, and
                     // averaging cannot be thrown off by one outlier the way picking can.
-                    int flatCentre = flatX
+                    int flatCentre = stripFlatX
                         ? (int)Math.Round(slots.Values.Average(s => (s.OpaqueMinX + s.OpaqueMaxX) / 2.0))
                         : 0;
 
@@ -141,7 +146,7 @@ namespace DkcTool.Core
                         originY[(p.Strip, p.Position)] = reference + belowBaseline - (p.RectH - 1);
 
                         var slot = slots[p.Position];
-                        int centreX = flatX ? flatCentre : (slot.OpaqueMinX + slot.OpaqueMaxX) / 2;
+                        int centreX = stripFlatX ? flatCentre : (slot.OpaqueMinX + slot.OpaqueMaxX) / 2;
                         originX[(p.Strip, p.Position)] = centreX - (p.RectW - 1) / 2;
                     }
                 }

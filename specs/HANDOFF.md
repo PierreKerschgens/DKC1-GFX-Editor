@@ -322,6 +322,17 @@ per-run judgement call. **Check it per run** — the walk wants it off, the run 
 `--baseline`'s centre-X column on the *stock* range tells you which before you import.
 `--revert` undoes imports **and** expansion, byte-exactly, across a chain of runs (V4g).
 
+⚠️ **`--flat-x` is per *strip*, not per run.** Set `"flatX": true|false` on a manifest strip entry;
+the command-line flag is only the default for strips that don't say. Two animations in one batch can
+want opposite answers — DK's walk matches stock exactly *with* per-pose centring (4 px of real
+inherited travel) while his run and roll inherit 9 px and 15 px of the replaced animation's lunge
+and need it flattened. A single global flag silently regresses whichever strip disagrees.
+
+⚠️ **`--batch` chains onto an existing ledger sidecar.** Re-running with the same `--out` does *not*
+start fresh: the allocator reads `<out>.dkctool.json` and treats its allocations as already spent,
+so a rebuild silently imports fewer poses (54/54 became 37/54 this way). Delete the output and its
+sidecar, or use a new name. `--dry-run` does not show this, because it never consults the ledger.
+
 ⚠️ **Name test ROMs so they cannot be confused at a glance.** `dk-run-flatx.sfc` and
 `dk-roll-flatx.sfc` differ by one letter and hold different animations; a boot of the wrong one
 produced a confusing report that took a ledger dump and a contact render to unpick. Prefer distinct
