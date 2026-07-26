@@ -1193,6 +1193,39 @@ boot. Garbage during a roll means the region is real and only the fine-grained p
 a clean roll means the region was never right and the search restarts across DK's whole block with
 poison, which is the only instrument here with an unbroken record.
 
+#### Resolved: roll is `0x400..0x4FC`, and every observation now agrees
+
+`dk-poison-wide.sfc`: **DK garbles when rolling.** So the region is real, and with the three holes
+clearing `0x380..0x3FC`, roll is in **`0x400..0x4FC`** — 64 indices — by subtraction.
+
+Every result in the sequence is now consistent, including the ones that looked contradictory:
+
+| observation | verdict |
+|---|---|
+| round 1: roll "black" = `0x380..0x4FC` | **correct** |
+| round 2: roll "white" = `0x380..0x3FC` | **false positive** — DK's own pale muzzle/hands |
+| control: roll white in `0x380..0x3FC` | **false positive**, same cause |
+| holes a/b/c: roll not in `0x380..0x3FC` | **correct** |
+| poison-wide: roll in `0x380..0x4FC` | **correct** |
+
+**The false positives are precisely explained rather than waved at.** Roll lives in `0x400..0x47C`,
+which round 2 painted **red** — a colour later shown unreadable on DK. So during the roll the paint
+was invisible, DK looked normal, and his naturally near-white hands and muzzle were reported as the
+white marker. One unreadable colour plus one colour that collides with the character's own palette
+produced three consecutive wrong answers that all pointed at the same wrong range.
+
+**What actually held up across the whole search: the coarsest test.** Round 1 — five buckets, whole
+chunks, the crudest possible resolution — was right. Everything that went wrong came from trying to
+*refine* it. The refinements changed two variables at once (smaller ranges *and* new colours) and
+the instrument's failure mode tracked the change, not the target.
+
+**Rule for the next search, and the one this section exists to transmit:** *change one variable per
+round.* Shrink the range or change the marker, never both. Had the fine rounds kept round 1's
+colours, the red-unreadable problem would have surfaced immediately instead of after six boots.
+
+Next: `dk-poison-{d,e}.sfc` split `0x400..0x4FC` in half with the instrument that has never been
+wrong here.
+
 **The methodological result.** Every previous round asked one yes/no question and mostly got "no".
 This round asked an operator to *play the game and report colours*, and returned ~15 localisations,
 two structural corrections and a falsifiable lead on jump. The change was not a better hypothesis —
