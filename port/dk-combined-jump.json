@@ -60,24 +60,10 @@
     },
     {
       "strip": 8,
-      "name": "Roll -> anim 24. flatX ON: stock's roll jitters 15px. Measured strongly, weakly corroborated in play (A.22).",
-      "indices": [
-        "0x4B8",
-        "0x4BC",
-        "0x4C0",
-        "0x4C4",
-        "0x4C8",
-        "0x4CC",
-        "0x4D0",
-        "0x4D4",
-        "0x4D8",
-        "0x4DC",
-        "0x4E0",
-        "0x4E4",
-        "0x4E8",
-        "0x4EC"
-      ],
-      "flatX": true
+      "name": "Roll -> anim 24 (0x18), which draws 11 of the range 0x4B8..0x4EC and skips 0x4BC/0x4E4/0x4E8 -- nothing in the 438-script table draws those three. Sheet poses 0..10 are the tumble; 11..13 are DK standing up, which is anim 25 landing on 0xB4 and needs the idle imported (A.26).",
+      "flatX": true,
+      "animation": "0x18",
+      "poses": "0..10"
     },
     {
       "strip": 10,

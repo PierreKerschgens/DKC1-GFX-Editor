@@ -1589,6 +1589,39 @@ run: **21 indices against sheet strip 0's 11 poses.** That is an M5 case, and a 
 argument for M5 than the strip-count survey (A.25) — a specific artifact an operator saw, traced to
 a specific animation, blocked on a specific missing capability.
 
+#### Fixed, and the fix restores the check rather than working around it
+
+`0x4BC`, `0x4E4` and `0x4E8` are drawn by **no animation in the 438-script table** — dead slots.
+(Verified with a positive control: the same probe on `0x4B8`, `0x4E0` and `0xB4` names the animations
+that draw them, so the negative is a real absence, not a broken probe.) Importing into them was pure
+waste: three poses paying for ROM space that nothing can display.
+
+The obvious fix — list anim 24's 11 indices under `indices` — would have re-committed the original
+sin, since `indices` is what disabled the length check. Instead the manifest gained **`poses`**, an
+inclusive `"lo..hi"` of slicer pose positions, so `animation` stays usable when a sheet strip covers
+*more* than its animation does:
+
+```json
+{ "strip": 8, "animation": "0x18", "poses": "0..10", "flatX": true }
+```
+
+11 selected poses against 11 derived indices — the check is live again, and a wrong range still
+refuses. The Roll now maps onto anim 24's actual draw order, and the whole build drops 74 → **71**
+poses with the freed space returned to the pool.
+
+**Which 11 was not an arbitrary art call.** The sheet's Roll strip runs 45, 37, 32, 32, 33, 39, 32,
+34, 40, 43, 41, **44, 46, 47** — the last three climb steadily, DK standing back up. Anim 24 stays
+curled throughout (29–40 across all 11 frames), and the standing-up is a *different* animation: anim
+25, which is precisely the one ending on `0xB4`. The strip covers the tumble **and** the recovery;
+the ROM splits them across two scripts. So poses 0..10 are the tumble and 11..13 are the recovery
+that has nowhere to go until the idle is imported.
+
+⚠️ **`animation` is parsed as hex, and everything else in this project says decimal.** `--anims-in`
+prints "anim 24"; the correct manifest value is `"0x18"`. A bare `"24"` silently selects anim 36.
+This was hit while writing the entry above, one section after a gotcha about ranges silently meaning
+the wrong thing. `animation` now **refuses** any value without a `0x` prefix and its message does the
+conversion for you.
+
 #### Method note
 
 The operator could not answer the question that was asked — whether the jump floats — because the

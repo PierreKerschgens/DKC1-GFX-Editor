@@ -32,6 +32,8 @@ namespace DkcTool.Core
         DuplicateIndexDiffers,
         /// <summary>An `overrides` entry targets a strip the slicer did not produce.</summary>
         OverrideTargetsUnknownStrip,
+        /// <summary>`poses` is malformed, inverted, or names a position the strip does not have.</summary>
+        BadPoseRange,
     }
 
     public sealed class ManifestException : Exception
@@ -81,6 +83,20 @@ namespace DkcTool.Core
         /// in play as DK's head snapping left. `--baseline`'s HEAD X column is how you size it.
         /// </summary>
         public int? OffsetX;
+
+        /// <summary>
+        /// Which of the strip's poses take part, as an inclusive `"lo..hi"` of slicer pose
+        /// positions. Null = all of them.
+        ///
+        /// <para>Exists so `animation` stays usable when a sheet strip covers <i>more</i> than the
+        /// animation does. The sheet's Roll strip has 14 poses, of which the first 11 are the
+        /// tumble and the last three are DK standing back up; anim 24 is only the tumble, 11
+        /// frames. Without this the strip could only be imported via explicit `indices`, which
+        /// zips blind and disables the length check — the exact hole that let the Roll ship
+        /// mis-mapped (A.26). With it, `animation` + `poses` keeps the check: 11 selected poses
+        /// against 11 derived indices, and a wrong range still refuses.</para>
+        /// </summary>
+        public (int Lo, int Hi)? Poses;
     }
 
     /// <summary>One resolved (sheet rect -> target image index) instruction, ready for
@@ -142,6 +158,24 @@ namespace DkcTool.Core
             return Convert.ToInt32(raw.Trim(), 16);
         }
 
+        /// <summary>Parses a `poses` field: an inclusive `"lo..hi"` of decimal pose positions.
+        /// Decimal, not hex, because that is how the slicer and `--slice` number poses.</summary>
+        private static (int Lo, int Hi)? ParsePoseRange(int strip, string? raw)
+        {
+            if (string.IsNullOrWhiteSpace(raw)) return null;
+
+            string[] halves = raw.Split("..");
+            if (halves.Length != 2
+                || !int.TryParse(halves[0].Trim(), out int lo)
+                || !int.TryParse(halves[1].Trim(), out int hi))
+                throw new ManifestException(ManifestErrorCode.BadPoseRange,
+                    $"strip {strip}: 'poses' must be \"lo..hi\" of decimal pose positions, got '{raw}'.");
+            if (lo < 0 || hi < lo)
+                throw new ManifestException(ManifestErrorCode.BadPoseRange,
+                    $"strip {strip}: 'poses' range {lo}..{hi} is empty or negative.");
+            return (lo, hi);
+        }
+
         public static Manifest Load(string path)
         {
             var doc = JsonSerializer.Deserialize<ManifestJson>(File.ReadAllText(path),
@@ -166,6 +200,7 @@ namespace DkcTool.Core
                     FlatX = s.flatX,
                     GroundRef = ParseGroundRef(s.groundRef),
                     OffsetX = s.offsetX,
+                    Poses = ParsePoseRange(s.strip, s.poses),
                 });
             }
             foreach (var o in doc.overrides ?? new List<OverrideJson>())
@@ -224,7 +259,18 @@ namespace DkcTool.Core
                 List<int> targetIndices;
                 if (hasAnimation)
                 {
-                    int animId = Convert.ToInt32(entry.Animation, 16);
+                    // Hex, and the "0x" must be written. Every other surface in this project names
+                    // animations in decimal -- `--anims-in` prints "anim 24", the specs say
+                    // "anim 24" -- while this field has always parsed as hex. A bare "24" here
+                    // silently means anim 36. Refuse rather than guess: it is one character to
+                    // add and a wrong animation is a wrong sprite replaced.
+                    string animRaw = entry.Animation!.Trim();
+                    if (!animRaw.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+                        throw new ManifestException(ManifestErrorCode.AnimationNotFound,
+                            $"strip {entry.Strip}: 'animation' is hex and must be written with a 0x " +
+                            $"prefix, got '{animRaw}'. Tool output and the specs name animations in " +
+                            $"decimal, so decimal {animRaw} is \"0x{Convert.ToInt32(animRaw, 10):X}\" here.");
+                    int animId = Convert.ToInt32(animRaw, 16);
                     if (animId < 0 || animId >= AnimationTable.Count)
                         throw new ManifestException(ManifestErrorCode.AnimationNotFound,
                             $"strip {entry.Strip}: animation 0x{animId:X} is outside the table " +
@@ -240,10 +286,21 @@ namespace DkcTool.Core
                     targetIndices = entry.Indices!.Select(h => Convert.ToInt32(h, 16)).ToList();
                 }
 
-                if (targetIndices.Count != stripPoses.Poses.Count)
+                // Which of the strip's poses take part. Without `poses` this is all of them, so
+                // selected[i] == i and everything below behaves exactly as it did.
+                int selLo = entry.Poses?.Lo ?? 0;
+                int selHi = entry.Poses?.Hi ?? stripPoses.Poses.Count - 1;
+                if (selHi >= stripPoses.Poses.Count)
+                    throw new ManifestException(ManifestErrorCode.BadPoseRange,
+                        $"strip {entry.Strip}: 'poses' names {selLo}..{selHi} but the strip has " +
+                        $"{stripPoses.Poses.Count} pose(s) (0..{stripPoses.Poses.Count - 1}).");
+                var selected = Enumerable.Range(selLo, selHi - selLo + 1).ToList();
+
+                if (targetIndices.Count != selected.Count)
                     throw new ManifestException(ManifestErrorCode.LengthMismatch,
-                        $"strip {entry.Strip} has {stripPoses.Poses.Count} pose(s) but resolved to " +
-                        $"{targetIndices.Count} target index(es) " +
+                        $"strip {entry.Strip} has {selected.Count} pose(s)" +
+                        (entry.Poses is null ? "" : $" selected ({selLo}..{selHi}, of {stripPoses.Poses.Count})") +
+                        $" but resolved to {targetIndices.Count} target index(es) " +
                         (hasAnimation ? $"(animation 0x{entry.Animation})." : "(explicit indices)."));
 
                 // Duplicate index within one strip: two poses would target the same slot, and the
@@ -258,10 +315,10 @@ namespace DkcTool.Core
                 }
                 foreach (var kv in positionsByIndex.Where(kv => kv.Value.Count > 1))
                 {
-                    var first = RectFor(stripPoses, kv.Value[0], overridesByTarget);
+                    var first = RectFor(stripPoses, selected[kv.Value[0]], overridesByTarget);
                     for (int n = 1; n < kv.Value.Count; n++)
                     {
-                        var other = RectFor(stripPoses, kv.Value[n], overridesByTarget);
+                        var other = RectFor(stripPoses, selected[kv.Value[n]], overridesByTarget);
                         if (!SameRegion(sheetBitmap, first, other))
                             throw new ManifestException(ManifestErrorCode.DuplicateIndexDiffers,
                                 $"strip {entry.Strip}: poses {kv.Value[0]} and {kv.Value[n]} both target " +
@@ -271,11 +328,14 @@ namespace DkcTool.Core
 
                 for (int i = 0; i < targetIndices.Count; i++)
                 {
-                    var rect = RectFor(stripPoses, i, overridesByTarget);
+                    // Position is the *sheet* pose position, not the zip index, so reports and
+                    // overrides keep naming the pose the slicer numbered. Identical when the
+                    // whole strip is selected.
+                    var rect = RectFor(stripPoses, selected[i], overridesByTarget);
                     plan.Add(new PlannedPose
                     {
                         Strip = entry.Strip,
-                        Position = i,
+                        Position = selected[i],
                         ImageIndex = targetIndices[i],
                         RectX = rect.X,
                         RectY = rect.Y,
@@ -330,6 +390,7 @@ namespace DkcTool.Core
             public bool? flatX { get; set; }
             public string? groundRef { get; set; }
             public int? offsetX { get; set; }
+            public string? poses { get; set; }
         }
 
         private sealed class OverrideJson

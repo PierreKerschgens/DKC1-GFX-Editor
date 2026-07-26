@@ -107,7 +107,7 @@ The sheet side is done; the ROM side is ~20 % done. `m4-batch-spec.md` A.10–A.
 | 7 "Run" | `0x330..0x37C` | anims 2/14/20, needs `--flat-x` (A.20) |
 | 10 "Jump" | `0x130..0x17C` | anims 5/7/21/81/8/102/82 — **a shared arc** (A.23) |
 | — (enemy bounce) | `0x478..0x4B4` | anims 23/101 (A.22) — no sheet strip claimed yet |
-| 8 "Roll" | `0x4B8..0x4EC` | anim 24, wants `--flat-x` (A.22). ⚠️ **mis-mapped — see A.26** |
+| 8 "Roll" | `0x4B8..0x4EC` | anim 24 draws **11** of these; poses 0..10 (A.26). `--flat-x` |
 
 **Provisional** (identified from draw-order montages, *never observed in motion*): Ground Slap →
 `0x2E4..0x32C`, Swim → `0x3A4..0x3DC`, Death → anim 16. Treat as unverified — **three** pairings in
@@ -135,7 +135,8 @@ jumping on an enemy. It is *not* the roll; that prediction was falsified by the 
 ⚠️ **"14 contiguous indices, exactly the sheet's 14 Roll poses" was wrong** (A.26). The *range* holds
 14, but **anim 24 draws only 11 of them**, skipping `0x4BC`, `0x4E4`, `0x4E8`. So three imported roll
 poses are never displayed and the rest sit at a different offset in the cycle than the sheet drew
-them — a live defect in a build this file calls confirmed. The coincidence of 14 and 14 was the
+them. **Fixed** — poses 0..10 now map onto anim 24's real draw order, and `0x4BC`/`0x4E4`/`0x4E8`
+are written by nothing (no animation in the table draws them). The coincidence of 14 and 14 was the
 frame-count trap again, arriving through a *range* rather than a count and getting past a reader who
 knew to distrust counts.
 
@@ -259,7 +260,9 @@ distinguish them by silhouette. Needs someone who knows the game.
     only 11 of those indices (A.26). Written as `"animation": 24` it would have derived 11 and
     refused. **Prefer `animation` over `indices` wherever the animation is known**; an `indices`
     list is an assertion no tool is checking. `--batch` now prints STALE FRAMES for animations that
-    straddle imported and stock art, on `--dry-run` too.
+    straddle imported and stock art, on `--dry-run` too. A strip that covers *more* than its
+    animation uses `"poses": "lo..hi"` to select a sub-run, which keeps `animation` and its length
+    check. ⚠️ `animation` is **hex**: "anim 24" is `"0x18"`. Bare values now refuse.
 13. **When you flag an assumption as needing a check, check the *inputs* too.** A.23 correctly
     flagged one assumption in the drop-`0x130` escape and named it. The escape died anyway — from
     the pose count underneath it, which nobody had thought to doubt because it came from a tool
@@ -567,10 +570,10 @@ Two candidates, both surfaced by M4 rather than planned:
    one specific missing capability, and a visible defect to verify the fix against, which is a much
    better place to start than a list of nine strips.
 
-2. **The roll is mis-mapped and it is not blocked on M5** (A.26). Anim 24 draws 11 of the range's 14
-   indices; the manifest lists all 14, so three poses are never displayed and the rest are offset in
-   the cycle. Re-mapping needs an art call about which sheet poses to drop — or M5 to lengthen the
-   script to 14. Worth deciding before more strips are imported the same way.
+2. ~~**The roll is mis-mapped.**~~ **Fixed** (A.26). No art call was needed: the sheet's last three
+   Roll poses are DK *standing up*, which is anim 25's job, not anim 24's. Poses 0..10 are the
+   tumble. `0x4BC`/`0x4E4`/`0x4E8` are drawn by no animation at all — dead slots, no longer written.
+   The build is 74 → 71 poses. **Not yet booted.**
 
 3. **Band membership in the slicer** (A.25) — 6 of 51 DK strips, 1 of 42 DK Jr, all bands 19–20,
    none below strip 25, none used by a manifest. Their rects are right; the grouping is not.
