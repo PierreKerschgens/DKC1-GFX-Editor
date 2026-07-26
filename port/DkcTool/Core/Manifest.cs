@@ -85,8 +85,8 @@ namespace DkcTool.Core
         public int? OffsetX;
 
         /// <summary>
-        /// Which of the strip's poses take part, as an inclusive `"lo..hi"` of slicer pose
-        /// positions. Null = all of them.
+        /// Which of the strip's poses take part, in order — resolved from the `poses` field's
+        /// tokens (`"0..10"`, `"0,0,1,1,2"`). Null = all of them, in order.
         ///
         /// <para>Exists so `animation` stays usable when a sheet strip covers <i>more</i> than the
         /// animation does. The sheet's Roll strip has 14 poses, of which the first 11 are the
@@ -95,8 +95,12 @@ namespace DkcTool.Core
         /// zips blind and disables the length check — the exact hole that let the Roll ship
         /// mis-mapped (A.26). With it, `animation` + `poses` keeps the check: 11 selected poses
         /// against 11 derived indices, and a wrong range still refuses.</para>
+        ///
+        /// <para>It also covers the opposite shape — a strip with <i>fewer</i> poses than its
+        /// animation has frames — by repeating a pose, which is why this is a list and not a
+        /// range. See <c>ParsePoseList</c> for when that is and is not legitimate.</para>
         /// </summary>
-        public (int Lo, int Hi)? Poses;
+        public List<int>? Poses;
     }
 
     /// <summary>One resolved (sheet rect -> target image index) instruction, ready for
@@ -158,22 +162,59 @@ namespace DkcTool.Core
             return Convert.ToInt32(raw.Trim(), 16);
         }
 
-        /// <summary>Parses a `poses` field: an inclusive `"lo..hi"` of decimal pose positions.
-        /// Decimal, not hex, because that is how the slicer and `--slice` number poses.</summary>
-        private static (int Lo, int Hi)? ParsePoseRange(int strip, string? raw)
+        /// <summary>
+        /// Parses a `poses` field into the explicit list of slicer pose positions that take part,
+        /// in order. Comma-separated tokens, each either a single position or an inclusive
+        /// `lo..hi` range: `"0..10"`, `"0,0,1,1,2"`, `"0..4,4,5..10"`.
+        ///
+        /// <para>Decimal, not hex, because that is how the slicer and `--slice` number poses —
+        /// unlike `animation`, which is hex. Yes, that is inconsistent; `animation` refuses
+        /// anything without a `0x` so the two cannot be confused silently.</para>
+        ///
+        /// <para><b>Repeats are allowed and are the point.</b> A sheet strip can hold fewer poses
+        /// than its animation has frames, and repeating one lets N poses cover M &gt; N frames by
+        /// holding each a little longer — which needs no script editing and preserves the ROM's
+        /// own timing exactly. That is not always right (it is wrong when the animation's extra
+        /// frames are a distinct sub-motion rather than a slower version of the same one), so it
+        /// is written out pose by pose in the manifest where a reader can see and argue with
+        /// it.</para>
+        /// </summary>
+        private static List<int>? ParsePoseList(int strip, string? raw)
         {
             if (string.IsNullOrWhiteSpace(raw)) return null;
 
-            string[] halves = raw.Split("..");
-            if (halves.Length != 2
-                || !int.TryParse(halves[0].Trim(), out int lo)
-                || !int.TryParse(halves[1].Trim(), out int hi))
+            var positions = new List<int>();
+            foreach (string token in raw.Split(',', StringSplitOptions.RemoveEmptyEntries))
+            {
+                string t = token.Trim();
+                if (t.Contains(".."))
+                {
+                    string[] halves = t.Split("..");
+                    if (halves.Length != 2
+                        || !int.TryParse(halves[0].Trim(), out int lo)
+                        || !int.TryParse(halves[1].Trim(), out int hi))
+                        throw new ManifestException(ManifestErrorCode.BadPoseRange,
+                            $"strip {strip}: 'poses' range must be \"lo..hi\", got '{t}'.");
+                    if (lo < 0 || hi < lo)
+                        throw new ManifestException(ManifestErrorCode.BadPoseRange,
+                            $"strip {strip}: 'poses' range {lo}..{hi} is empty or negative.");
+                    for (int p = lo; p <= hi; p++) positions.Add(p);
+                }
+                else if (int.TryParse(t, out int single) && single >= 0)
+                {
+                    positions.Add(single);
+                }
+                else
+                {
+                    throw new ManifestException(ManifestErrorCode.BadPoseRange,
+                        $"strip {strip}: 'poses' token '{t}' is not a position or a lo..hi range.");
+                }
+            }
+
+            if (positions.Count == 0)
                 throw new ManifestException(ManifestErrorCode.BadPoseRange,
-                    $"strip {strip}: 'poses' must be \"lo..hi\" of decimal pose positions, got '{raw}'.");
-            if (lo < 0 || hi < lo)
-                throw new ManifestException(ManifestErrorCode.BadPoseRange,
-                    $"strip {strip}: 'poses' range {lo}..{hi} is empty or negative.");
-            return (lo, hi);
+                    $"strip {strip}: 'poses' selected nothing.");
+            return positions;
         }
 
         public static Manifest Load(string path)
@@ -200,7 +241,7 @@ namespace DkcTool.Core
                     FlatX = s.flatX,
                     GroundRef = ParseGroundRef(s.groundRef),
                     OffsetX = s.offsetX,
-                    Poses = ParsePoseRange(s.strip, s.poses),
+                    Poses = ParsePoseList(s.strip, s.poses),
                 });
             }
             foreach (var o in doc.overrides ?? new List<OverrideJson>())
@@ -288,18 +329,17 @@ namespace DkcTool.Core
 
                 // Which of the strip's poses take part. Without `poses` this is all of them, so
                 // selected[i] == i and everything below behaves exactly as it did.
-                int selLo = entry.Poses?.Lo ?? 0;
-                int selHi = entry.Poses?.Hi ?? stripPoses.Poses.Count - 1;
-                if (selHi >= stripPoses.Poses.Count)
-                    throw new ManifestException(ManifestErrorCode.BadPoseRange,
-                        $"strip {entry.Strip}: 'poses' names {selLo}..{selHi} but the strip has " +
-                        $"{stripPoses.Poses.Count} pose(s) (0..{stripPoses.Poses.Count - 1}).");
-                var selected = Enumerable.Range(selLo, selHi - selLo + 1).ToList();
+                var selected = entry.Poses ?? Enumerable.Range(0, stripPoses.Poses.Count).ToList();
+                foreach (int p in selected)
+                    if (p >= stripPoses.Poses.Count)
+                        throw new ManifestException(ManifestErrorCode.BadPoseRange,
+                            $"strip {entry.Strip}: 'poses' names pose {p} but the strip has " +
+                            $"{stripPoses.Poses.Count} pose(s) (0..{stripPoses.Poses.Count - 1}).");
 
                 if (targetIndices.Count != selected.Count)
                     throw new ManifestException(ManifestErrorCode.LengthMismatch,
                         $"strip {entry.Strip} has {selected.Count} pose(s)" +
-                        (entry.Poses is null ? "" : $" selected ({selLo}..{selHi}, of {stripPoses.Poses.Count})") +
+                        (entry.Poses is null ? "" : $" selected (of {stripPoses.Poses.Count})") +
                         $" but resolved to {targetIndices.Count} target index(es) " +
                         (hasAnimation ? $"(animation 0x{entry.Animation})." : "(explicit indices)."));
 

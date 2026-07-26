@@ -124,15 +124,19 @@ namespace DkcTool.Core
             // It cannot be the default -- a single shared centre is not each pose's own centre, so
             // it breaks the V4d identity. The two requirements are genuinely opposed, so this is a
             // per-run choice (`--flat-x`), not a new global rule.
-            var originY = new Dictionary<(int Strip, int Position), int>();
-            var originX = new Dictionary<(int Strip, int Position), int>();
+            // Keyed by the plan entry itself (reference identity), not by (strip, position):
+            // `poses` may repeat a position deliberately, so that pair is not unique. A repeat is
+            // how a strip with fewer poses than its animation has frames covers all of them.
+            var originY = new Dictionary<PlannedPose, int>();
+            var originX = new Dictionary<PlannedPose, int>();
             if (alignStrip)
             {
                 foreach (var strip in plan.GroupBy(p => p.Strip))
                 {
-                    // One read per pose: SpriteSlot.Read decodes the sprite and scans the whole
-                    // pointer table for aliases, so it is far too expensive to call twice.
-                    var slots = strip.ToDictionary(p => p.Position, p => SpriteSlot.Read(rom, p.ImageIndex));
+                    // One read per distinct *index*: SpriteSlot.Read decodes the sprite and scans
+                    // the whole pointer table for aliases, so it is far too expensive to repeat.
+                    var slots = strip.GroupBy(p => p.ImageIndex)
+                                     .ToDictionary(g => g.Key, g => SpriteSlot.Read(rom, g.Key));
 
                     var refPose = strip.OrderBy(p => p.Position).First();
                     int baseline = refPose.RectY + refPose.RectH - 1;
@@ -146,7 +150,7 @@ namespace DkcTool.Core
                     // for runs that are legitimately off the floor (swim, rope).
                     int reference = refPose.GroundRef is int g && g >= 0
                         ? SpriteSlot.Read(rom, g).OpaqueMaxY
-                        : slots[refPose.Position].OpaqueMaxY;
+                        : slots[refPose.ImageIndex].OpaqueMaxY;
 
                     // A strip may override the batch-wide choice, because two animations in one
                     // manifest can want opposite answers -- the walk matches stock with per-pose
@@ -168,11 +172,11 @@ namespace DkcTool.Core
                     foreach (var p in strip)
                     {
                         int belowBaseline = (p.RectY + p.RectH - 1) - baseline;
-                        originY[(p.Strip, p.Position)] = reference + belowBaseline - (p.RectH - 1);
+                        originY[p] = reference + belowBaseline - (p.RectH - 1);
 
-                        var slot = slots[p.Position];
+                        var slot = slots[p.ImageIndex];
                         int centreX = stripFlatX ? flatCentre : (slot.OpaqueMinX + slot.OpaqueMaxX) / 2;
-                        originX[(p.Strip, p.Position)] = centreX - (p.RectW - 1) / 2 + (p.OffsetX ?? 0);
+                        originX[p] = centreX - (p.RectW - 1) / 2 + (p.OffsetX ?? 0);
                     }
                 }
             }
@@ -189,8 +193,8 @@ namespace DkcTool.Core
                         Source = $"{sourceTag} strip{p.Strip}:{p.Position}",
                         FreeRuns = freeRuns,
                         AnchorBottom = anchorBottom,
-                        OriginY = originY.TryGetValue((p.Strip, p.Position), out int oy) ? oy : (int?)null,
-                        OriginX = originX.TryGetValue((p.Strip, p.Position), out int ox) ? ox : (int?)null,
+                        OriginY = originY.TryGetValue(p, out int oy) ? oy : (int?)null,
+                        OriginX = originX.TryGetValue(p, out int ox) ? ox : (int?)null,
                     };
                     outcome.Result = SpriteImporter.Import(rom, p.ImageIndex, pose.Pixels, options, ledger);
                     outcome.Success = true;
