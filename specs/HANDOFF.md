@@ -402,6 +402,26 @@ the hedge was carrying the answer — **bob = vertical, jitter = horizontal**. A
 word sent the search up the wrong axis. When an operator offers two words for a symptom, treat both
 as live rather than picking one.
 
+### The last residual: ~1 px of head height, and it is the artwork
+
+Operator: "check if DK's eyes are lower when walking than running". They are, by ~1 px:
+
+| | walk top | run top |
+|---|---|---|
+| dk-FLATALL | 78..82 | 77..81 |
+
+The sheet's walk poses are 47–52 px tall and its run poses 48–53, so with the feet on a shared
+ground line the heads land ~1 px apart. **When two cycles are drawn at different heights you can
+align the feet or the heads, not both** — feet is right for a character on a floor, and the residual
+goes to the head. Closing it means editing the artwork, not the importer.
+
+Note also that the imported DK's head sits ~10 px above stock's (top ~80 vs ~90) because the sheet
+draws him upright where stock knuckle-walks. Expected, and not a placement error — a reminder that
+`--baseline`'s *top* edge is not comparable across art styles the way the foot line is.
+
+**Measure the top edge too.** Everything in this spec compares foot lines and centre-X; the head was
+never checked until an operator noticed a 1 px step in play that no existing measurement reported.
+
 ## Second roll: the barrel-blast
 
 The roll DK does when **blasted out of the house** is a *different animation* from the ground roll
