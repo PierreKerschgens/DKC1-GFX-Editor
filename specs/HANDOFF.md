@@ -378,6 +378,22 @@ on, instead of each strip anchoring to its own first slot. A strip opts out with
 The run was 2–3 px high and the roll 4 px low; both now sit on the walk's ground line. V4 7/7.
 **Not yet re-booted** — the measurement says the step is gone, play has not confirmed it.
 
+### Residual "jitter" after groundRef — probably the 26 *unimported* animations
+
+Transition confirmed smooth in play after `groundRef`, but the operator still reports "something's
+off". Placement is unlikely to be the cause: walk/run/roll now bob **3/4/3 px** against stock's
+**2/8/7**, i.e. every imported cycle is *steadier* than the one it replaced.
+
+The likelier cause is that **only 3 of ~29 DK animations are imported**. Idle, turn, landing,
+deceleration and everything else still draw stock art, so the *character design itself* changes as
+DK switches animation — which reads as jitter even with perfect placement. This is a coverage
+problem, not a placement problem, and no amount of `--baseline` work will fix it.
+
+**`port/dk-GAPS.sfc` diagnoses it**: `dk-COMBINED.sfc` with every DK range poisoned *except* the
+three imported ones, so anything that garbles in play is an animation still running stock art.
+Chained across five `--poison-index` runs (487 sprites). Whatever garbles during a run→walk
+transition is the next thing worth importing.
+
 ## Second roll: the barrel-blast
 
 The roll DK does when **blasted out of the house** is a *different animation* from the ground roll
