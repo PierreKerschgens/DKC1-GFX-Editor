@@ -23,6 +23,16 @@ namespace DkcTool.Core
         public long BytesWritten => Imported.Sum(o => (long)o.Result!.Serialized.Length);
     }
 
+    /// <summary>One animation that draws both imported and un-imported art, which is what a
+    /// stale frame looks like before it is booted.</summary>
+    public sealed class StraddlingAnimation
+    {
+        public int Animation;
+        public List<int> Imported = new List<int>();
+        public List<int> Stale = new List<int>();
+        public int Frames;
+    }
+
     /// <summary>
     /// M4 batch orchestration (specs/m4-batch-spec.md C.3): resolves M2b's open item verbatim --
     /// "M4's batch mode should import N poses in <b>one</b> invocation against one pristine scan".
@@ -194,6 +204,52 @@ namespace DkcTool.Core
                 report.Outcomes.Add(outcome);
             }
             return report;
+        }
+
+        /// <summary>
+        /// Animations that draw <i>some</i> of the imported indices and some un-imported ones.
+        /// Every such animation shows stock art part-way through an otherwise imported move.
+        ///
+        /// <para>This is the one defect a manifest cannot see. A manifest is written in index
+        /// ranges; an animation is a <b>draw order</b>, and the two do not have to agree — the
+        /// range is neither a superset of the animation (anim 25 rolls out of `0x4B8..0x4EC` and
+        /// lands on `0xB4`, an idle frame, which is exactly the "old DK for one frame at the end
+        /// of the roll" an operator reported) nor a subset (anim 24 plays only 11 of that range's
+        /// 14 indices). The spec has said "verify against draw order, never an index range" since
+        /// A.14; this makes the tool say it instead of the reader having to remember.</para>
+        ///
+        /// <para>A warning, never a refusal: importing one animation of a character at a time is
+        /// the normal workflow, so straddling is expected and only becomes a defect when the
+        /// straddled animation is one you meant to finish. Ordered by fewest stale indices first —
+        /// an animation needing one more index is the cheapest thing to fix.</para>
+        /// </summary>
+        public static List<StraddlingAnimation> FindStaleFrames(Rom rom, IEnumerable<int> importedIndices)
+        {
+            var imported = new HashSet<int>(importedIndices);
+            var straddling = new List<StraddlingAnimation>();
+
+            var scripts = AnimationTable.ParseAll(rom);
+            for (int a = 0; a < scripts.Count; a++)
+            {
+                var drawn = scripts[a].ImageIndices;
+                if (drawn.Count == 0) continue;
+
+                var hit = drawn.Where(imported.Contains).Distinct().OrderBy(i => i).ToList();
+                if (hit.Count == 0) continue;
+
+                var stale = drawn.Where(i => !imported.Contains(i)).Distinct().OrderBy(i => i).ToList();
+                if (stale.Count == 0) continue;
+
+                straddling.Add(new StraddlingAnimation
+                {
+                    Animation = a,
+                    Imported = hit,
+                    Stale = stale,
+                    Frames = drawn.Count,
+                });
+            }
+
+            return straddling.OrderBy(s => s.Stale.Count).ThenBy(s => s.Animation).ToList();
         }
 
         /// <summary>QA overlay (C.4): the source sheet with every planned pose boxed and annotated

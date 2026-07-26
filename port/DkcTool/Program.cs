@@ -1180,6 +1180,23 @@ static int RunBatchCli(Rom rom, string[] args)
                           r.Drift.SeverityLabel);
     }
 
+    // Stale frames: an animation that draws some imported art and some stock art will show the
+    // old character part-way through an otherwise imported move. Printed for --dry-run too --
+    // catching this before a boot is the whole point (BatchImporter.FindStaleFrames).
+    var straddling = BatchImporter.FindStaleFrames(rom, report.Imported.Select(o => o.Result!.ImageIndex));
+    if (straddling.Count > 0)
+    {
+        Console.WriteLine();
+        Console.WriteLine($"STALE FRAMES: {straddling.Count} animation(s) draw both imported and stock art.");
+        Console.WriteLine("  Each will show the old character mid-move. Fewest missing first:");
+        foreach (var s in straddling.Take(12))
+            Console.WriteLine($"    anim {s.Animation,3} ({s.Frames,3}f): {s.Imported.Count} imported, " +
+                              $"needs {string.Join(" ", s.Stale.Take(6).Select(i => $"0x{i:X}"))}" +
+                              (s.Stale.Count > 6 ? $" +{s.Stale.Count - 6} more" : ""));
+        if (straddling.Count > 12)
+            Console.WriteLine($"    ... and {straddling.Count - 12} more");
+    }
+
     if (overlayPath != null)
     {
         BatchImporter.DumpOverlay(sheetPath, report, overlayPath);
