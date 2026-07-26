@@ -146,9 +146,14 @@ namespace DkcTool.Core
                     // The mean of the replaced frames' centres, not the reference pose's own:
                     // a run's first frame is as likely as any to be a horizontal extreme, and
                     // averaging cannot be thrown off by one outlier the way picking can.
-                    int flatCentre = stripFlatX
-                        ? (int)Math.Round(slots.Values.Average(s => (s.OpaqueMinX + s.OpaqueMaxX) / 2.0))
-                        : 0;
+                    // Shared floor implies a shared *centre line* too. Flattening each strip to the
+                    // mean of its own slots put the walk at x=129 and the run at x=127, so DK
+                    // stepped 2 px sideways at the transition -- the horizontal twin of the
+                    // per-strip ground bug. When a groundRef is given it anchors both axes.
+                    int flatCentre = !stripFlatX ? 0
+                        : refPose.GroundRef is int gx && gx >= 0
+                            ? ((Func<SpriteSlot, int>)(gs => (gs.OpaqueMinX + gs.OpaqueMaxX) / 2))(SpriteSlot.Read(rom, gx))
+                            : (int)Math.Round(slots.Values.Average(s => (s.OpaqueMinX + s.OpaqueMaxX) / 2.0));
 
                     foreach (var p in strip)
                     {
