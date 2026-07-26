@@ -1698,6 +1698,66 @@ a repeated pose collides on. Keyed by plan-entry identity now, with slots read o
 index. Worth noting that the feature that exposed it was one line of manifest syntax — the assumption
 "a position appears once per strip" was load-bearing and unwritten.
 
+### A.28 The coverage wall, and the captions were carrying structure all along
+
+Four reports from one boot of the Walk+Run+Roll+Jump+Idle build:
+
+| report | cause |
+|---|---|
+| "bouncing from an enemy is regular DK" | `0x478..0x4B4` (anims 23/101) never imported |
+| "idle flips between both models" | the chest-beat **borrows idle frames**, below |
+| "chest bumping is regular DK all the way" | `0x200..0x25C` never imported |
+| "ducked idling is regular DK all the way" | the duck range never imported |
+
+**None is a defect.** All four are coverage, and two are the same range. That is the expected shape
+once a character is partly imported — and it is why `FindStaleFrames` (A.26) counts *coverage*, not
+bugs.
+
+#### Why the idle "flips": the chest-beat borrows the idle's frames
+
+`anim 9`/`113`, 96 frames, is the chest-beat, and its draw order is three parts:
+
+```
+0xB0 0xAC 0xA8 ... 0x8C     10 idle indices, REVERSED   -- rising out of the hunch
+0x200 ... 0x25C             74 frames of pounding       -- 0x218..0x23C looped and reversed x3
+0x8C 0x90 ... 0xB0          10 idle indices, forward    -- settling back down
+```
+
+The idle indices are imported and `0x200..` is not, so DK rises as the new model, pounds as the old
+one and settles as the new one. **An animation reaching into a *neighbouring* range is now the second
+distinct way a range has failed to be an animation** — A.23 had one arc shared by eight animations,
+A.26 had an animation escaping its range, and this is an animation borrowing another animation's
+range wholesale. The generalisation is simply: **ranges are storage, animations are draw orders, and
+there is no relationship between them worth assuming.**
+
+#### The captions encode structure, not just names
+
+Strip 3 is captioned **"Bang Chest"** — and also, in smaller text the caption survey never used,
+**"(Loop and Reverse)"** and **"(Reverse to return to idle)"**, with a drawn vertical rule splitting
+its 15 poses 10 | 5.
+
+Read against the ROM, those annotations *are* the pose→frame mapping:
+
+| sheet | ROM |
+|---|---|
+| "(Reverse to return to idle)" | anim 9 plays the idle indices reversed on the way in, forward on the way out |
+| "(Loop and Reverse)" | `0x218..0x23C` played forward then backward, three times |
+| the 10 \| 5 rule | wind-up/recovery vs the pounding loop |
+
+**A.10/A.11 read the captions for identity and stopped.** They also carry timing, looping and
+direction — precisely the information the strip→animation mapping has been reconstructing from boots
+and paint rounds for six sections. Worth a systematic re-read of every strip's *secondary* caption
+before mapping another animation by hand.
+
+It also settles the sheet side of a standing blind spot: strips 22/23/24 are captioned "Rope Idle",
+"Rope Climb", "Rope Turn". The ROM side is still unknown.
+
+#### The wall
+
+The stock pool is down to **7.6 KB** after 92 poses. `0x200..0x25C` alone is 24 indices ≈ 24 KB, so
+every remaining animation needs `--expand` (M3, built and gated at 6/6 but **never yet used for real
+work**). Coverage from here is an expanded-ROM exercise, not another one-off strip.
+
 ### A.13 `0x858..0x8A8` is **not** DK — it is a foreign island (corrected)
 
 > **This section previously concluded "DK at reduced scale". That was wrong**, and it was wrong in

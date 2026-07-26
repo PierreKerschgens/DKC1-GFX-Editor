@@ -210,8 +210,15 @@ positive without a bisection.
 table — no script draws both DK and a vehicle (A.15). Their DK poses are composited by game code.
 Look in `0x538..0x594`, which is DK's mounted/riding pose set.
 
-**Where I am blind:** rope / ledge / swing. Several hanging-climbing groups exist and I cannot
-distinguish them by silhouette. Needs someone who knows the game.
+**Where I am blind:** rope / ledge / swing on the **ROM** side. The *sheet* side is settled — strips
+22/23/24 are captioned "Rope Idle", "Rope Climb", "Rope Turn" (A.28). Matching them to index ranges
+still needs a paint round or someone who knows the game.
+
+⚠️ **Read every strip's *secondary* caption before mapping anything by hand** (A.28). Strip 3 carries
+"(Loop and Reverse)" and "(Reverse to return to idle)" beside its name, plus a drawn rule splitting
+its poses 10 | 5 — and those annotations turn out to *be* the pose→frame mapping for anim 9. The
+caption survey (A.10/A.11) read names only. Timing, looping and direction were on the sheet the whole
+time, while six sections reconstructed them from boots and paint rounds.
 
 ---
 
