@@ -1254,6 +1254,40 @@ spec confirmed by *method triangulation* rather than by a single boot — and it
 the red channel: red *was* readable here, which narrows the round-2 failure specifically to the roll
 rather than condemning every coloured sighting.
 
+#### `dk-poison-e` (`0x480..0x4FC`): roll found, and the animation table names it
+
+| action | result |
+|---|---|
+| **roll** | **pixelated** |
+| shot out of the house | pixelated (spans `d` and `e`) |
+| bouncing on an enemy | pixelated |
+| cliff teeter | **normal** — correct, it is `0x3E0..0x47C` |
+
+**Roll is `0x480..0x4FC`**, 32 indices, and the teeter's clean result is a built-in control:
+the instrument distinguished two animations that garble in the neighbouring range.
+
+`--anims-in` then names the candidates exactly, which is the authoritative draw-order route
+(gotcha 2) rather than another guess:
+
+| anim | frames | range |
+|---|---|---|
+| **23 / 101** | 16 | `0x478..0x4B4` |
+| 24 | 11 | `0x4B8..0x4EC` |
+
+**Anims 23/101, on two independent grounds.** They include `0x478`/`0x47C`, which are inside
+`dk-poison-d` — exactly explaining the operator's "maybe some pixels, not sure" on that boot, since
+2 of 16 frames were poisoned. Anim 24 lies wholly inside `e` and would have produced *nothing* in
+`d`. And 23/101 is a **pair of animation entries over one range**, the shape every confirmed DK move
+has (Idle 4/108, Walk 3, Run 2/14/20); anim 24 is unpaired.
+
+**The uncertain report turned out to be the decisive datum.** "Maybe some pixels" looked like noise
+at the time and was worth more than either clean answer — it located a boundary crossing. Worth
+remembering before pushing an operator to resolve an ambiguous observation into a yes or no.
+
+The contact sheet for `0x480..0x4DC` shows unmistakable tumbling — curled, inverted, rotating. That
+reading is *permitted here* under the rule from A.22: the range was established by boot first, and
+the sheet is only describing geometry afterwards.
+
 **The roll's ambiguity does not need resolving directly.** Roll is already known to be in
 `0x400..0x4FC`, and `d ∪ e` partitions it, so `dk-poison-e` decides by elimination whichever way it
 lands. **A clean result there is as informative as a garbled one** — which matters, because it

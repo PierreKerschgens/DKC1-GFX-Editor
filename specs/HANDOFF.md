@@ -123,7 +123,17 @@ this tier have now been falsified, including Roll.
 despite being an unmistakable somersault. Static identification is **0 for 4** — use `--paint`, not
 montages.
 
-**Roll is `0x400..0x4FC`** — 64 indices (A.22). Poison over `0x380..0x4FC` garbles during a roll;
+**Roll is anims 23/101, `0x478..0x4B4`** (16 frames) — located by poison bisection, ~430 indices
+down to 16 (A.22). Runner-up was anim 24 (`0x4B8..0x4EC`); 23/101 wins because it crosses into
+`0x400..0x47C`, which explains the faint-pixel report on `dk-poison-d`, and because a *pair* of
+animation entries over one range is the shape every confirmed DK move has. **Unbooted** —
+`port/dk-roll-real.sfc` imports sheet strip 8 there; `port/dk-poison-g.sfc` poisons anim 24's range
+as the discriminator if the import shows nothing.
+
+**Cliff teeter** is confirmed in two phases by two instruments: start (stretched eyes)
+`0x3E0..0x3FC`, loop `0x400..0x47C`.
+
+**Roll was `0x400..0x4FC`** — 64 indices (A.22). Poison over `0x380..0x4FC` garbles during a roll;
 three inverted "hole" tests clear `0x380..0x3FC`; the remainder is the answer. Every observation in
 the search now agrees.
 
