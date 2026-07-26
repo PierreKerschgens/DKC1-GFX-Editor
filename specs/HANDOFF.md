@@ -239,6 +239,21 @@ renders as a flat silhouette whose colour names the range — and **leaving conf
 keeps idle/walk/run normal**, so the game stays playable and only unmapped actions light up. Test
 many actions in one boot; each is a separate data point.
 
+**Paint the *complement*, not the candidate.** The single most important lesson of A.22. Paint DK's
+whole block white *except* the range under test, and ask **"is any part of him still brown?"** —
+a brown patch on a uniformly white DK. This keeps the marker on 100 % of the character at every
+scale, which is the property that made the early coarse rounds work and every fine round fail. It is
+also self-validating: in any animation not using the candidate, DK must be *entirely* white, so a
+broken premise shows up immediately instead of as a false negative.
+
+```
+--paint 0x8C..<lo-4>:15 --paint <hi+4>..0x854:15 --paint 0x8AC..0x950:15 --out hole.sfc
+```
+
+(Skip `0x858..0x8A8` — not DK, A.13 — so a white Manky can't be mistaken for signal.)
+
+Everything below is the *old* framing, kept because the failure modes are real:
+
 **Paint to localise coarsely; `--poison-index` to confirm finely.** That division is the hard-won
 part (A.22):
 

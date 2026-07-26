@@ -1132,6 +1132,36 @@ which round 4 identified as the cliff teeter. If the operator was near an edge, 
 screenshot may have been a teeter frame rather than a roll frame. The poison rounds settle that as
 well — `dk-poison-c.sfc` covers exactly that range.
 
+#### The fix: invert the test — paint everything *except* the candidate
+
+The operator's observation, and it is the one that repairs the method: *"it worked well when DK went
+all white, black, red — why not do it that way again?"*
+
+Exactly right, and it identifies the real variable. Those rounds worked because the painted range
+covered **every sprite DK was composited from**, so he went uniformly coloured. Shrinking the range
+breaks that property, and the failure was never about *which* colour — it was about **what fraction
+of the character carries the marker**.
+
+So keep the fraction at 100 % and make the candidate a **hole**: paint DK's entire block *except*
+the range under test. The question inverts from "is any part of him white?" — which fails, because
+a white patch hides among DK's pale muzzle and hands — to:
+
+> **Is any part of him still brown?**
+
+A brown patch on a uniformly white DK is the same unmistakable signal the coarse rounds had, and it
+does not degrade as the candidate shrinks. Better still, **the test is self-validating**: during any
+animation that does *not* use the candidate, DK must be 100 % white. If he shows brown during idle
+or walking, the premise is broken (sprites from outside the painted block) and the operator sees
+that immediately rather than reporting a false negative.
+
+`0x858..0x8A8` is left unpainted deliberately (A.13 — not DK), so a white Manky Kong cannot be
+mistaken for signal.
+
+**The general lesson, which is worth more than the roll.** Five rounds were spent tuning the
+*marker* — brown, amber, red, white, noise — when the broken variable was the *coverage*. When an
+instrument works at one scale and fails at another, suspect the thing that changed with scale, not
+the thing you have been adjusting. It took an operator asking why the early rounds worked to see it.
+
 **The methodological result.** Every previous round asked one yes/no question and mostly got "no".
 This round asked an operator to *play the game and report colours*, and returned ~15 localisations,
 two structural corrections and a falsifiable lead on jump. The change was not a better hypothesis —
