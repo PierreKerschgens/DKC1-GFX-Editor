@@ -313,6 +313,12 @@ per-run judgement call. **Check it per run** — the walk wants it off, the run 
 `--baseline`'s centre-X column on the *stock* range tells you which before you import.
 `--revert` undoes imports **and** expansion, byte-exactly, across a chain of runs (V4g).
 
+⚠️ **Name test ROMs so they cannot be confused at a glance.** `dk-run-flatx.sfc` and
+`dk-roll-flatx.sfc` differ by one letter and hold different animations; a boot of the wrong one
+produced a confusing report that took a ledger dump and a contact render to unpick. Prefer distinct
+words (`dk-TUMBLE-flatx.sfc`) over one-letter variants — the operator reads these under a file
+picker, not in a diff.
+
 Test ROMs in `port/` (gitignored): `dk-walk-test.sfc` (walk art in idle slots),
 `dk-move-test.sfc` (walk art in walk slots), `dk-move-anchored.sfc` (`--anchor-bottom`, failed),
 `dk-move-aligned.sfc` (vertical-only), `dk-move-aligned2.sfc` (both axes — confirmed in play),
