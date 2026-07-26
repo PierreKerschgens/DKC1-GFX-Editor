@@ -211,9 +211,18 @@ namespace DkcTool.Core
 
         /// <summary>One of the two is a fragment of the other — see <see cref="FragmentRatio"/>.
         /// Compared on opaque pixel count, not bbox area, because a figure's bbox is inflated by
-        /// whichever limb reaches furthest while its pixel count is not.</summary>
+        /// whichever limb reaches furthest while its pixel count is not.
+        ///
+        /// <para>Artwork never absorbs annotation. Policy 1 drops a pure-black component as a
+        /// caption, but that filter runs *after* merging, so a black mark touching a pose was
+        /// absorbed into it and carried through — the pose then contains a colour DK's palette does
+        /// not have. The sheet rules segment boundaries with thin drawn bars (A.29), and two of them
+        /// landed inside poses this way; the importer caught it as an UnmappedColor refusal rather
+        /// than importing a black bar, which is the refusal doing its job but well after the
+        /// mistake.</para></summary>
         private static bool Absorbs(Island a, Island b) =>
-            Math.Min(a.OpaquePixels, b.OpaquePixels)
+            a.HasArtwork == b.HasArtwork
+            && Math.Min(a.OpaquePixels, b.OpaquePixels)
                 < FragmentRatio * Math.Max(a.OpaquePixels, b.OpaquePixels);
 
         /// <summary>Runs a pose's occupancy mask through the real tiler. Colours don't affect the

@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "sourceRomSha256": "628147468c3539283197f58f03b94df49758a332831857481ea9cc31645f0527",
+  "allocations": [],
+  "expansion": {
+    "originalSize": "0x400000",
+    "originalSha256": "628147468c3539283197f58f03b94df49758a332831857481ea9cc31645f0527",
+    "originalMapMode": "0x31",
+    "originalSizeByte": "0x0C",
+    "originalChecksum": "0x2BCC",
+    "originalComplement": "0xD433",
+    "targetSize": "0x800000",
+    "mapMode": "0x35",
+    "mirrorLowBank": false,
+    "timestamp": "2026-07-26T23:48:54.5139580\u002B00:00"
+  }
+}
