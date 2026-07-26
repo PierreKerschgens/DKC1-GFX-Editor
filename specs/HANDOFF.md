@@ -444,6 +444,9 @@ reports **HEAD X** (mean X of opaque pixels in the top third of the box).
 Fixed with a per-strip `"offsetX": -7` on the run. Sizing it is direct: read HEAD X for both strips,
 compare the step against stock's, nudge by the difference.
 
+**Confirmed in play** — "way better". The head-continuity fix is the one that closed the transition,
+after ground line, centre line, centroid and coverage had each been tried and each left it intact.
+
 **The lesson, and it is the session's sharpest.** Every earlier instrument measured what was easy to
 compute — box edges, then centre of mass. The operator was tracking a *feature*, and was right three
 times while the measurements said "clean". **When a report keeps contradicting the numbers, the
