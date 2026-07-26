@@ -26,3 +26,9 @@ port/emu/goldens/
 
 # V3 save states — derived from a copyrighted ROM, same rule as goldens.
 port/emu/states/
+
+# Emulator working files left beside a test ROM when it is booted by hand
+# (zsnes/SuperZSNES SRAM and save-state dirs). Derived from a copyrighted ROM,
+# and regenerated on every boot — same rule as goldens.
+*.srm
+*.data.szsnes/
