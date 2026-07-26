@@ -1239,6 +1239,28 @@ confound that has plausibly been present since round 1.
 Next: `dk-poison-{d,e}.sfc` split `0x400..0x4FC` in half with the instrument that has never been
 wrong here — and separate roll from teeter in the same boots, since both garble.
 
+#### `dk-poison-d` (`0x400..0x47C`): the teeter falls, the roll stays ambiguous
+
+| action | result | conclusion |
+|---|---|---|
+| cliff teeter, **start** (stretched eyes) | normal | `0x3E0..0x3FC`, as round 4 found |
+| cliff teeter, **loop** | pixelated | **`0x400..0x47C`** |
+| blasted out of the house (level intro) | pixelated | **`0x400..0x47C`** |
+| roll | "maybe some pixels, not sure" | unresolved |
+
+**The teeter is now pinned in two phases by two independent instruments**, and both agree with
+round 2's original paint sighting ("starts white, loops red"). That is the first animation in this
+spec confirmed by *method triangulation* rather than by a single boot — and it partly rehabilitates
+the red channel: red *was* readable here, which narrows the round-2 failure specifically to the roll
+rather than condemning every coloured sighting.
+
+**The roll's ambiguity does not need resolving directly.** Roll is already known to be in
+`0x400..0x4FC`, and `d ∪ e` partitions it, so `dk-poison-e` decides by elimination whichever way it
+lands. **A clean result there is as informative as a garbled one** — which matters, because it
+removes the operator's judgement call about faint pixels entirely. Designing the next test so that
+*both* outcomes are decisive is the fix for an uncertain report, and it is cheaper than asking for a
+more careful look.
+
 **The methodological result.** Every previous round asked one yes/no question and mostly got "no".
 This round asked an operator to *play the game and report colours*, and returned ~15 localisations,
 two structural corrections and a falsifiable lead on jump. The change was not a better hypothesis —
