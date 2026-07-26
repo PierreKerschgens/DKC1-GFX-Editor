@@ -346,6 +346,36 @@ Test ROMs in `port/` (gitignored): `dk-walk-test.sfc` (walk art in idle slots),
 
 ---
 
+## Open: cross-strip ground alignment (found by the first multi-animation build)
+
+`port/dk-COMBINED.sfc` (Walk+Run+Roll, 54/54, confirmed in play) **bobs on the run→walk
+transition**. Measured foot lines: walk `127..130`, run `124..128` — the walk sits 2–3 px lower, so
+DK's feet step up as he accelerates.
+
+Stock has the same offset (walk 128, run ~126) but hides it: stock's run swings across **8 px** and
+reaches 130, overlapping the walk, so the step falls inside the gallop's own motion. The imported
+run is tighter (4 px) and sits consistently high, which exposes it.
+
+**Cause:** `--align-strip` anchors each strip to *its own* reference slot — walk to `0xE0`, run to
+`0x330` — and nothing makes two strips agree on a ground line. This is structurally the same mistake
+as A.17 (anchoring at the wrong *level*), one level up again: A.17 moved from per-pose to per-strip,
+and this needs per-*manifest*.
+
+**This class of defect is invisible when importing one animation at a time.** It only exists
+*between* strips, so it could not have appeared before the first combined build — which is an
+argument for building combined ROMs early rather than as a victory lap.
+
+Likely fix: an optional shared ground reference across strips (one slot, or an explicit Y), so every
+strip in a manifest lands on the same floor. Needs care — strips that legitimately sit at different
+heights (swim, rope) must be able to opt out.
+
+## Second roll: the barrel-blast
+
+The roll DK does when **blasted out of the house** is a *different animation* from the ground roll
+and still shows stock art in `dk-COMBINED.sfc`. It draws from `0x480..0x4B4` / `0x4F0..0x4FC`
+(garbled in both `dk-poison-d` and `dk-poison-e`, clean in the anim-24 range). Same pattern as the
+two idles: **one player action, two animations.** Assume it for every move until shown otherwise.
+
 ## What M5 probably is
 
 Two candidates, both surfaced by M4 rather than planned:
