@@ -508,7 +508,7 @@ namespace DkcTool.Core
         public static int RunBaseline(Rom rom, int low, int high, SKColor[] palette)
         {
             var valid = GfxTable.EnumerateImageIndices(rom).ToHashSet();
-            var rows = new List<(int Index, int Top, int Bottom, int Height, int Left, int Right)>();
+            var rows = new List<(int Index, int Top, int Bottom, int Height, int Left, int Right, int Cx, int Cy)>();
 
             for (int i = low; i <= high; i += 4)
             {
@@ -518,13 +518,15 @@ namespace DkcTool.Core
                 using var sprite = SpriteDecoder.Decode(rom, address, palette);
                 var b = OpaqueBounds(sprite);
                 if (b.Width <= 0 || b.Height <= 0) continue;
-                rows.Add((i, b.Top, b.Bottom - 1, b.Height, b.Left, b.Right - 1));
+                var c = OpaqueCentroid(sprite);
+                rows.Add((i, b.Top, b.Bottom - 1, b.Height, b.Left, b.Right - 1, c.X, c.Y));
             }
 
             Console.WriteLine($"=== opaque bbox over 0x{low:X}..0x{high:X} ({rows.Count} sprite(s)) ===");
             foreach (var r in rows)
                 Console.WriteLine($"  idx 0x{r.Index:X4}  top {r.Top,3}  bottom {r.Bottom,3}  height {r.Height,3}" +
-                                  $"  left {r.Left,3}  right {r.Right,3}  centreX {(r.Left + r.Right) / 2,3}");
+                                  $"  left {r.Left,3}  right {r.Right,3}  centreX {(r.Left + r.Right) / 2,3}" +
+                                  $"  centroid {r.Cx,3},{r.Cy,3}");
 
             if (rows.Count > 0)
             {
@@ -543,6 +545,22 @@ namespace DkcTool.Core
                                   $"spread {rows.Max(r => r.Left) - rows.Min(r => r.Left)} px");
                 Console.WriteLine($"  CENTRE X    : {centres.Min()}..{centres.Max()}  " +
                                   $"spread {centres.Max() - centres.Min()} px   <- horizontal jitter");
+
+                // Centre of *mass*, not of the box. A bbox is set by whatever limb reaches
+                // furthest -- the DK run's box is 44px wide because of an extended arm, not
+                // because the body moved -- so bbox centre reports a run as steady while the
+                // body visibly shifts, and vice versa. The centroid follows the bulk of the
+                // character, which is what a viewer's eye tracks (an operator watching this
+                // sheet's imports located a transition seam by DK's ear and eye, which no
+                // bbox number showed). Compare centroid spreads against stock, and compare
+                // centroid *means* between two strips that transition into each other -- a
+                // step there is a body jump the box cannot see.
+                var cxs = rows.Select(r => r.Cx).ToList();
+                var cys = rows.Select(r => r.Cy).ToList();
+                Console.WriteLine($"  CENTROID X  : {cxs.Min()}..{cxs.Max()}  spread {cxs.Max() - cxs.Min()} px" +
+                                  $"   (mean {cxs.Average():F1})   <- body mass, not box");
+                Console.WriteLine($"  CENTROID Y  : {cys.Min()}..{cys.Max()}  spread {cys.Max() - cys.Min()} px" +
+                                  $"   (mean {cys.Average():F1})");
             }
             return 0;
         }
@@ -561,6 +579,20 @@ namespace DkcTool.Core
                 prev = sorted[i];
             }
             yield return (low, prev, count);
+        }
+
+        /// <summary>
+        /// Centre of mass of the non-transparent pixels. Unlike the bbox centre this is not moved
+        /// by a single outstretched limb, so it tracks where the character's bulk actually sits.
+        /// Returns (0,0) for a fully transparent sprite, which callers filter out via the bbox.
+        /// </summary>
+        private static (int X, int Y) OpaqueCentroid(SKBitmap bmp)
+        {
+            long sx = 0, sy = 0, n = 0;
+            for (int y = 0; y < bmp.Height; y++)
+                for (int x = 0; x < bmp.Width; x++)
+                    if (bmp.GetPixel(x, y).Alpha != 0) { sx += x; sy += y; n++; }
+            return n == 0 ? (0, 0) : ((int)(sx / n), (int)(sy / n));
         }
 
         /// <summary>Bounding box of the non-transparent pixels, or an empty rect if there are none.</summary>

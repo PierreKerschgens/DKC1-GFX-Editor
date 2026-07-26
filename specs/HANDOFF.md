@@ -434,7 +434,19 @@ one artist drew the whole set to connect.
 so the cycles meet, or accept the seam. Worth stating plainly, because every instrument in this spec
 measures geometry and would keep reporting the transition as clean.
 
-**Proposed measurement, if geometry is ever suspected again:** opaque-pixel **centroid**, not bbox.
+**Implemented and run — and it clears geometry.** `--baseline` now reports `CENTROID X/Y` (spread
+and mean) beside the bbox numbers. Comparing the walk→run body-mass step:
+
+| | walk centroid | run centroid | step |
+|---|---|---|---|
+| stock | 128.9, 108.5 | 126.4, 105.2 | **2.5 X / 3.3 Y** |
+| dk-FLATALL | 129.4, 105.3 | 130.4, 103.5 | **1.0 X / 1.8 Y** |
+
+The imported transition moves DK's body **about half as much as stock's does**, on both axes. Stock
+reads as smooth, so a smaller step cannot be what makes the import read as harsh. **Geometry is
+exonerated**, and the artwork-seam explanation above is the one left standing.
+
+**The measurement, for reuse:** opaque-pixel **centroid**, not bbox.
 Every number in this spec comes from a bounding box, which is driven by whatever limb sticks out
 furthest — the run's bbox is 44 px wide because of a reaching arm, not because the body moved. A
 centroid tracks body mass, which is what a viewer's eye follows. (The operator proposed DK's eye,
