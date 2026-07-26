@@ -105,6 +105,7 @@ The sheet side is done; the ROM side is ~20 % done. `m4-batch-spec.md` A.10–A.
 | 0 "Idle" | `0x8C..0xDC` | anim 4/108 |
 | 6 "Walk" | `0xE0..0x12C` | anim 3 |
 | 7 "Run" | `0x330..0x37C` | anims 2/14/20, needs `--flat-x` (A.20) |
+| 10 "Jump" | `0x130..0x17C` | anims 5/7/21/81/8/102/82 — **a shared arc** (A.23) |
 | — (enemy bounce) | `0x478..0x4B4` | anims 23/101 (A.22) — no sheet strip claimed yet |
 | 8 "Roll" | `0x4B8..0x4EC` | anim 24, 14 poses ↔ 14 indices; wants `--flat-x` (A.22) |
 
@@ -170,11 +171,16 @@ known to be unused; re-test them in white before believing anything about them.
 seconds. `0x8C..0xDC` (A.16) and the white `0x180..0x32C` sighting are different animations, not a
 contradiction. The chest-beat has its own sheet strip (3, "Bang Chest", 7 poses).
 
+**Jump = `0x130..0x17C`, confirmed in play** (A.23). The complement-paint round settled it in one
+boot: DK went brown when jumping, jumping with a barrel, and falling off a ledge, and stayed white
+through walk, run, duck, roll, enemy bounce and barrel blast. The A.20 "climb" reading is dead.
+
+⚠️ **That range is a shared *pose arc*, not an animation** — eight animations traverse the same 20
+sprites at different entry points, two of them in reverse (anims 5/7/21/81/8/102/82, plus 104 which
+also reaches into Walk). Importing 20 poses there retargets all eight at once. **The unit of import
+is the arc, not the animation** — run `--anims-in` on a range before assuming it belongs to one move.
+
 **Open, do not treat as settled:**
-- *Jump* is cornered: not amber in round 2, not white in round 1, so it draws from a confirmed or
-  characterised range. Idle/Walk/Run are independently something else, which leaves **`0x130..0x17C`**
-  — the 40→72→36 height arc reads as crouch/apex/landing. The A.20 "climb" reading is probably wrong.
-  One paint round settles it.
 - `0x680..0x7FC` paints the **life/balloon HUD**, so it is not purely DK. A.8's ownership claim has
   another shared island in it besides `0x858..0x8A8`.
 - **A contiguous index range is not an animation** — now with direct in-play evidence, not just
@@ -187,8 +193,9 @@ range is the cheap discriminator that works: a loop holds height roughly constan
 and recovers. It refuted the `0x130..0x17C` prediction from the ROM side alone, before an import
 existed.
 
-**Next test:** find Roll. It is not `0x330..0x37C` and it is not a 20-frame animation (those are all
-accounted for: Walk, the climb, and Run).
+**Next test:** the remaining unmapped actions — turn, landing, deceleration, and the rope/ledge group.
+Use the complement paint from A.23; it is now 1 for 1 and is the only instrument that has produced a
+positive without a bisection.
 
 **Known unreachable:** *Minecart ×2* and *Steel Keg Ride* cannot be matched through the animation
 table — no script draws both DK and a vehicle (A.15). Their DK poses are composited by game code.
@@ -232,6 +239,11 @@ distinguish them by silhouette. Needs someone who knows the game.
     wrong DK pairings were each cheap to try — one manifest, one boot — so building an instrument
     never won against trying the next candidate, and the guesses ended up costing far more than the
     tool did. `--poison-index` took one commit and should have existed at A.14 (A.21).
+12. **A range is not one animation, and it may not even be one *ordering*.** Jump's 20 sprites are a
+    single crouch→extend→tuck arc that eight animations traverse from different entry points, two of
+    them **backwards** (A.23). "Contiguous range = animation" was already known false; "range =
+    animation *set*, played forward" is false too. `--anims-in <range> --frames N` prints the actual
+    draw order per animation and takes seconds — run it before writing a manifest entry.
 11. **Never ask an operator to notice an absence.** "Did the new art appear?" failed four times;
     imported art can resemble stock closely, and a move lasting under a second cannot be judged from
     a still. Ask a question with a positive, unmistakable answer — "did DK explode into static?" —
@@ -338,6 +350,20 @@ sidecar, or use a new name. `--dry-run` does not show this, because it never con
 produced a confusing report that took a ledger dump and a contact render to unpick. Prefer distinct
 words (`dk-TUMBLE-flatx.sfc`) over one-letter variants — the operator reads these under a file
 picker, not in a diff.
+
+**Boot through `./port/boot.sh <rom.sfc>`, never by opening the built ROM directly.** The emulator
+keys its `.srm` and save states off the *filename*, so every new descriptive name costs a fresh
+intro, a save-file selection and a walk back to the test spot. `boot.sh` copies the build to one
+fixed `port/dk-BOOT.sfc`, which keeps the save game and last state across every experiment — open
+that one in the emulator, always.
+
+Two things it deliberately does *not* do, both for reasons already paid for above:
+- It **copies**; the tool still writes the descriptive name. A fixed `--out` would chain the ledger
+  sidecar and silently spend the same allocations twice (the 54/54 → 37/54 trap).
+- It stamps `port/dk-BOOT.what` with the source name, timestamp and hash. A fixed name is
+  unidentifiable at a glance, which is the exact hazard distinct names were adopted to fix — so run
+  `./port/boot.sh` with no arguments to print what is currently staged, and do that before trusting
+  any surprising report.
 
 Test ROMs in `port/` (gitignored): `dk-walk-test.sfc` (walk art in idle slots),
 `dk-move-test.sfc` (walk art in walk slots), `dk-move-anchored.sfc` (`--anchor-bottom`, failed),
@@ -498,6 +524,12 @@ Two candidates, both surfaced by M4 rather than planned:
 1. **Animation-script editing.** 8 of 46 DK strips have pose counts no DK animation has, and the
    author changed frame counts deliberately. Without script editing, a faithful full-character
    import is impossible for those runs — you can only leave stale frames (A.9).
+
+   **Jump is now the live case, and it is off by one**: strip 10 has 19 poses, the arc has 20
+   indices, so the length check refuses. A.23 notes a cheap escape for *this* range specifically —
+   drop `0x130`, which only anim 5 uses — but it rests on an unchecked assumption about where the
+   sheet's first pose sits in the arc. That question (verify the escape, or build M5) is the next
+   decision.
 2. ~~**Strip-level pose placement.**~~ Done — implemented, confirmed in play, and as of A.19 the
    default, with the two coordinate systems reconciled. M5 is (1).
 

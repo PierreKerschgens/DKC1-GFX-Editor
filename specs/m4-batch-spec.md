@@ -1300,6 +1300,77 @@ This round asked an operator to *play the game and report colours*, and returned
 two structural corrections and a falsifiable lead on jump. The change was not a better hypothesis —
 it was making the instrument report which of several buckets fired, and then getting out of the way.
 
+### A.23 Jump confirmed at `0x130..0x17C` — and it is a shared *pose arc*, not an animation
+
+The complement-paint round A.22 called for. DK's whole block white **except** `0x130..0x17C`:
+
+```
+--paint 0x8C..0x12C:15 --paint 0x180..0x854:15 --paint 0x8AC..0x950:15 --out port/dk-JUMPHOLE.sfc
+```
+
+521 sprites painted, 20 left unpainted, 21 skipped as Manky (A.13). 521 + 20 + 21 = 562, so the
+arithmetic closes against A.8's block and nothing was missed. Operator report:
+
+| action | DK | reading |
+|---|---|---|
+| **jump** | **brown** | draws from the range |
+| **jump carrying a barrel** | **brown** | " |
+| **falling off a ledge** | **brown** | " |
+| walk, run, duck, roll | white | control holds |
+| jump onto an enemy | white | the bounce is a *separate* airborne set |
+| shot out of the house | white | the barrel-blast roll is separate too |
+
+**First unambiguous positive the paint instrument has produced**, and the first range identified
+without a bisection. Six white actions — three of them independently confirmed ranges — are the
+positive control, so the negatives are load-bearing rather than "we saw nothing".
+
+**Jump is `0x130..0x17C`. The A.20 "climb/hang" reading is dead**, and the elimination that predicted
+this (not amber in round 2, not white in round 1, Idle/Walk/Run independently placed) held.
+
+#### The structural finding: eight animations share one ordered arc
+
+`--anims-in 0x130..0x17C --frames N` for each length:
+
+| anim | frames | indices | direction |
+|---|---|---|---|
+| 5 | 20 | `0x130..0x17C` | forward, the whole range |
+| 7 | 18 | `0x138..0x17C` | forward, minus the first two |
+| 21 | 10 | `0x158..0x17C` | forward, second half |
+| 81 | 7 | `0x158..0x170` | forward |
+| **8 / 102** | 6 | `0x178..0x164` | **reverse** |
+| 82 | 5 | `0x174..0x164` | **reverse** |
+| 104 | 12 | this range **+ `0xE0`** | excluded — reaches into Walk |
+
+Read against `--baseline`'s height profile over the same range — 40 → 72 (held six frames) → 36 → 42,
+feet pinned within 6 px while the top edge rises 38 px — the range is **one monotonic pose arc**:
+crouched at `0x130`, fully extended around `0x144..0x158`, tucked tightest at `0x178`. Every
+animation above is a *sub-span of that arc*, entered at a different point and walked in one direction
+or the other. The three actions the operator saw fall out of it directly: a full jump traverses it
+from the crouch, a fall off a ledge starts already extended (anim 21 begins mid-arc, which is what a
+ledge-fall is — no launch), and the reverse-order pairs are the landing uncurl.
+
+**8/102 is a pair over one range** — the shape every confirmed DK move has (Idle 4/108, Walk 3,
+Run 2/14/20, enemy bounce 23/101). That the pattern reappears unprompted here is corroboration.
+
+**This changes the manifest's unit.** Every entry so far assumed strip → animation, and the manifest
+happens to list explicit indices, which is what saves it: importing 20 poses into `0x130..0x17C`
+retargets **all eight** animations at once, because they share the sprites. That is a large coverage
+win per import — but it also means two strips can never be assigned to two animations in this range.
+**The unit of import is the pose arc, not the animation.** Check for a shared arc with `--anims-in`
+before assuming a range belongs to one move.
+
+#### It lands squarely on the M5 problem
+
+Strip 10 is captioned **"Jump"** and has **19 poses**. The arc has **20** indices. Off by one, so the
+importer's length check refuses — this is A.9's scope finding arriving on the very next range mapped,
+and it is exactly what M5 (animation-script editing) exists for.
+
+There is a cheap non-M5 option here that there was not for other strips: drop **`0x130`**, the
+shallowest crouch, and import 19 poses into `0x134..0x17C`. `0x130` is used by **anim 5 only** —
+every other animation on the arc starts at `0x138` or later — so one stale frame costs the first
+frame of one animation and nothing else. Whether the sheet's 19 poses actually begin at the *second*
+crouch is an assumption about the artwork and must be checked on the slice, not asserted.
+
 ### A.13 `0x858..0x8A8` is **not** DK — it is a foreign island (corrected)
 
 > **This section previously concluded "DK at reduced scale". That was wrong**, and it was wrong in
