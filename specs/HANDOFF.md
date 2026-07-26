@@ -123,10 +123,12 @@ this tier have now been falsified, including Roll.
 despite being an unmistakable somersault. Static identification is **0 for 4** — use `--paint`, not
 montages.
 
-**Roll is somewhere in `0x380..0x3FC`** — 32 indices. The finer bisection **broke**: four white
-negatives partition that range exactly while the all-32 control was positive, so at small painted
-fractions white hides inside DK's own pale areas and a negative is not an exclusion (A.22). Redo the
-split with `--poison-index`, not paint. `0x3E0..0x3FC`
+⚠️ **Roll is NOT localised. Rounds 1–6 for roll are withdrawn** (A.22). Three inverted "hole" tests
+partition `0x380..0x3FC` and all came back negative, contradicting the paint positives that put roll
+there. One mechanism explains it: **white is a DK colour**, so his naturally pale muzzle and hands
+read as painted — false *positives* as easily as false negatives. For roll, paint produced 3
+positives (all now believed false) while poison and holes produced 4 mutually-consistent negatives.
+**Do not trust a white paint sighting on DK.** `0x3E0..0x3FC`
 is the **cliff-teeter start** (its opening frames are DK's eyes stretching downward as he looks over
 the edge). `0x3A4..0x3DC` was the provisional *Swim* and overlaps roll's range, so that pairing is
 at best partly wrong — the provisional tier is 0 for 4 whenever tested.

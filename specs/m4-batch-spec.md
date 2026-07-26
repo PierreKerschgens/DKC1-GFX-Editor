@@ -1162,6 +1162,37 @@ mistaken for signal.
 instrument works at one scale and fails at another, suspect the thing that changed with scale, not
 the thing you have been adjusting. It took an operator asking why the early rounds worked to see it.
 
+#### The inverted test cleared the range — and indicted every paint result for roll
+
+All three holes: **DK stayed white through the roll.** They partition `0x380..0x3FC` exactly, so
+**the roll uses nothing in it** — contradicting both round 2 and the control.
+
+**One mechanism explains every contradiction, and it is the one already half-identified: white is a
+DK colour, and that cuts both ways.** It was written up as causing false *negatives* (a white patch
+hiding among his pale muzzle and hands). It causes false *positives* just as easily — during a roll
+DK's hands and muzzle are prominent and naturally near-white, so *"DK turns white when rolling"* may
+never have been the paint at all.
+
+That retro-fits the whole sequence: the paint positives (round 1 "black", round 2 "white", the
+control) are the unreliable observations, and the negatives — which required noticing *nothing* —
+were right. **Roll is not localised at all.** Rounds 1–6 for roll are withdrawn.
+
+**Scoreboard, because it is the only defence against repeating this.** For the roll specifically:
+paint produced 3 positives, all now believed false. Poison produced 1 negative (`0x188..0x1FC`),
+never contradicted. Holes produced 3 negatives, mutually consistent. **The colour-based instrument
+has never once produced a roll result that survived.**
+
+**Where the paint survey still stands:** the ~15 *other* localisations in the A.22 table used the
+same instrument and deserve the same suspicion — but most were reported as *non-white* colours
+(red, pink), which do not collide with DK's palette the way white does, and several were
+cross-checked (the teeter's white start was independently re-seen in round 4 with the eye detail).
+Treat white sightings as suspect and coloured sightings as provisional.
+
+**Next**: `dk-poison-wide.sfc` poisons all of `0x380..0x4FC` — the original round-1 chunk — in one
+boot. Garbage during a roll means the region is real and only the fine-grained paint work was wrong;
+a clean roll means the region was never right and the search restarts across DK's whole block with
+poison, which is the only instrument here with an unbroken record.
+
 **The methodological result.** Every previous round asked one yes/no question and mostly got "no".
 This round asked an operator to *play the game and report colours*, and returned ~15 localisations,
 two structural corrections and a falsifiable lead on jump. The change was not a better hypothesis —
