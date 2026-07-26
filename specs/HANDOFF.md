@@ -106,6 +106,7 @@ The sheet side is done; the ROM side is ~20 % done. `m4-batch-spec.md` A.10–A.
 | 6 "Walk" | `0xE0..0x12C` | anim 3 |
 | 7 "Run" | `0x330..0x37C` | anims 2/14/20, needs `--flat-x` (A.20) |
 | — (enemy bounce) | `0x478..0x4B4` | anims 23/101 (A.22) — no sheet strip claimed yet |
+| 8 "Roll" | `0x4B8..0x4EC` | anim 24, 14 poses ↔ 14 indices; wants `--flat-x` (A.22) |
 
 **Provisional** (identified from draw-order montages, *never observed in motion*): Ground Slap →
 `0x2E4..0x32C`, Swim → `0x3A4..0x3DC`, Death → anim 16. Treat as unverified — **three** pairings in
@@ -127,8 +128,13 @@ montages.
 **`0x478..0x4B4` (anims 23/101) is the ENEMY BOUNCE**, confirmed in play — imported art appears when
 jumping on an enemy. It is *not* the roll; that prediction was falsified by the same boot.
 
-**Roll is anim 24, `0x4B8..0x4EC`** — the last candidate in the poison-narrowed range, 14 contiguous
-indices against the sheet's 14 Roll poses. **Unbooted**; `port/dk-roll-anim24.sfc` imports it.
+**Roll = anim 24, `0x4B8..0x4EC`** — **confirmed in play**. 14 contiguous indices, exactly the
+sheet's 14 Roll poses. Found by poison bisection: ~430 → 96 → 64 → 32 → 16 → 14, every step a boot.
+
+⚠️ Roll needs **`--flat-x`** (untested in play): stock's roll centre-X jitters **15 px**, worse than
+the run's 9 px that made it sway, and the default import inherits it frame-for-frame.
+`port/dk-roll-flatx.sfc` is the corrected build (centre-X 0 px); `port/dk-roll-anim24.sfc` is the
+plain one already confirmed for *mapping*.
 
 **Cliff teeter** is confirmed in two phases by two instruments: start (stretched eyes)
 `0x3E0..0x3FC`, loop `0x400..0x47C`.
