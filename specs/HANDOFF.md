@@ -227,11 +227,14 @@ renders as a flat silhouette whose colour names the range — and **leaving conf
 keeps idle/walk/run normal**, so the game stays playable and only unmapped actions light up. Test
 many actions in one boot; each is a separate data point.
 
-**Use only these four: white 15, red 8, light pink 14, amber 7.** Learned the hard way (A.22):
-near-black (1) vanishes against dark jungle backgrounds, and dark brown (3) reads as *normal DK*, so
-it is confusable with unpainted as well as with black — one survey's worth of "black" answers had to
-be re-run. Four buckets per boot, not five. Most of a 16-colour Kong palette is browns and dark reds
-and none of it is usable as a marker.
+**Use only these three: white 15, red 8, light pink 14.** The rule is **contrast with the
+character**, not brightness — DK is warm brown-and-orange, so every warm marker reads as ordinary DK
+no matter how vivid. Near-black (1) vanishes on dark jungle backgrounds; dark brown (3) *and*
+amber (7) both read as normal DK. Each cost a wasted round (A.22). Three buckets per boot.
+
+**A painted DK is usually a *mixture*, not a clean silhouette** — a mid-animation Kong composites
+sprites from several ranges, so expect part of him painted and part normal. Judge by "is any of him
+the marker colour", not "is he entirely the marker colour".
 
 Overwrites a range's char data with noise; headers, placements and pointers untouched, so every
 animation plays as before and only the pixels turn to static. Boot it and whichever action turns DK

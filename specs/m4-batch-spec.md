@@ -1018,6 +1018,33 @@ matches the swim sighting and the old provisional Swim guess of `0x3A4..0x3DC`) 
 `0x3E0..0x3FC`. **Prediction, recorded before the boot so it can be scored:** roll is
 `0x3E0..0x3FC`. Round 3 splits the 32 into four 8-index buckets to check.
 
+#### Round 3 contradicted itself, and chasing it found a second colour failure
+
+Round 3 reported **roll unchanged** — impossible, since it painted all 32 indices that rounds 1 and 2
+both pointed at. The ROM was verified first (32 sprites in four clean bands, 18 KB from stock), which
+ruled out the artefact and left the observation.
+
+A **single-variable control** settled it: `0x380..0x3FC` painted one colour, everything else removed.
+Roll turns white. So the mapping was right and **round 3's "unchanged" was an instrument failure**.
+
+The control screenshot also shows *why*: DK is only **partially** painted mid-roll — a pale mass plus
+normal brown. Round 3 gave `0x3E0..0x3FC` **amber**, and amber over a partly-painted brown gorilla
+reads as ordinary DK.
+
+**So amber joins the unusable list, for exactly the reason dark brown did.** The rule is not "bright
+and saturated" — it is **contrast with the character**, and DK is a warm brown-and-orange character,
+so every warm marker fails no matter how bright. The usable set on DK is **three**: white (15),
+red (8), light pink (14). Amber was on the "legible" list in this very section one round earlier;
+the lesson had been written down and still not applied, which is the same shape of mistake as A.21.
+
+**Partial painting is itself a finding.** A rolling DK composites sprites from inside *and* outside
+`0x380..0x3FC` — consistent with the swim sighting (only the reaching arm turned white) and the
+enemy bounce crossing ranges. Expect a mid-animation DK to be several sprites from several ranges,
+and expect a paint result to be a *mixture* rather than a clean silhouette.
+
+Round 4 tests the standing prediction with two colours only: `0x380..0x3DC` red against
+`0x3E0..0x3FC` white.
+
 **The methodological result.** Every previous round asked one yes/no question and mostly got "no".
 This round asked an operator to *play the game and report colours*, and returned ~15 localisations,
 two structural corrections and a falsifiable lead on jump. The change was not a better hypothesis —
