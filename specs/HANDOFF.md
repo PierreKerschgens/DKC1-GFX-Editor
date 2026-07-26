@@ -131,10 +131,15 @@ jumping on an enemy. It is *not* the roll; that prediction was falsified by the 
 **Roll = anim 24, `0x4B8..0x4EC`** — **confirmed in play**. 14 contiguous indices, exactly the
 sheet's 14 Roll poses. Found by poison bisection: ~430 → 96 → 64 → 32 → 16 → 14, every step a boot.
 
-⚠️ Roll needs **`--flat-x`** (untested in play): stock's roll centre-X jitters **15 px**, worse than
-the run's 9 px that made it sway, and the default import inherits it frame-for-frame.
-`port/dk-roll-flatx.sfc` is the corrected build (centre-X 0 px); `port/dk-roll-anim24.sfc` is the
-plain one already confirmed for *mapping*.
+**Roll wants `--flat-x`.** Stock's roll centre-X jitters **15 px** — worse than the run's 9 px that
+visibly swayed — and the default import inherits it frame-for-frame; `--flat-x` takes it to 0 px.
+Use it for this strip.
+
+The evidence is **strong on measurement, weak in play**: the operator reports the flat-x build "a
+bit smoother" but notes the roll is quick and hard to follow. Unlike Run — where the defect was
+plainly visible before and plainly gone after — this one is at the edge of what play can judge, so
+the measurement is doing the work and the boot only fails to contradict it. Recorded at that
+strength deliberately (cf. gotcha 8).
 
 **Cliff teeter** is confirmed in two phases by two instruments: start (stretched eyes)
 `0x3E0..0x3FC`, loop `0x400..0x47C`.
@@ -210,6 +215,10 @@ distinguish them by silhouette. Needs someone who knows the game.
    silently rebase every future gate on a hacked image. Use `--emu-diff`.
 7. **DK knuckle-walks.** Upright = idle, on all fours = locomotion. Getting this backwards
    invalidated two "confirmed" pairings at once.
+8b. **A fast animation is at the edge of what play can judge.** The roll lasts under a second, and
+    the operator could only say the corrected build looked "a bit smoother". For short animations,
+    weight `--baseline` over the boot and do not upgrade a hedged report into a confirmation — the
+    hedge is the finding (A.22).
 8. **Booting settles *what a sprite is for*; measuring settles *where it sits*.** The companion to
    gotcha 1, and it does not repeal it. A 2 px placement error is invisible in play — the A.19 build
    was booted and read as no different. Don't ask the emulator a question `--baseline`/`--coords`
