@@ -102,7 +102,7 @@ The sheet side is done; the ROM side is ~20 % done. `m4-batch-spec.md` A.10–A.
 
 | sheet run | ROM indices | note |
 |---|---|---|
-| 0 "Idle" | `0x8C..0xDC` | anim 4/108 |
+| 0 "Idle" | `0x8C..0xDC` | anim 4/108. 11 poses over 21 frames, repeated (A.27) |
 | 6 "Walk" | `0xE0..0x12C` | anim 3 |
 | 7 "Run" | `0x330..0x37C` | anims 2/14/20, needs `--flat-x` (A.20) |
 | 10 "Jump" | `0x130..0x17C` | anims 5/7/21/81/8/102/82 — **a shared arc** (A.23) |
@@ -558,7 +558,16 @@ Two candidates, both surfaced by M4 rather than planned:
    V4b 1041/1056 → **1216/1216**. Golden rebuilt, **V4 7/7**, and the confirmed Walk+Run+Roll build
    is byte-for-byte identical.
 
-1. **Animation-script editing — M5, and it now has a concrete forcing case.** **Recomputed against
+1. **Animation-script editing — M5. Smaller than it looked: the idle did not need it** (A.27).
+   A count mismatch only forces a script rewrite when the animation's extra frames are a *distinct
+   sub-motion*. When they are the same motion played slower — the idle's 21 frames against the
+   sheet's 11 poses — repeating each pose covers them, preserves the ROM's timing exactly and
+   rewrites nothing (`"poses": "0,0,1,1,..."`). **Check that before counting a strip as an M5
+   case**; the 9-of-51 figure below is an upper bound, not a work list.
+
+   Where the extra frames *are* a real sub-motion, repeating would smear one pose across a movement
+   the artist drew separately, and M5 is genuinely required — the roll's recovery (A.26) is that
+   shape. **Recomputed against
    the corrected counts and it survives**: 8 of 46 strips before, **9 of 51 after** (A.25). The
    membership churned — Jump left the list, which is what started this — but the class is the same
    size. (The A.24 guess that it might shrink or vanish was wrong; recorded there so it isn't

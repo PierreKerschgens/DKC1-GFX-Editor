@@ -1632,6 +1632,72 @@ half-imported character will notice the seams between imported and stock art whe
 about them**, and those seams are exactly where the defects are. Ask what looked *wrong*, not only
 what was predicted to look wrong.
 
+### A.27 The idle did not need M5 — repeat a pose instead of rewriting a script
+
+Two operator reports closed one loop and opened this one.
+
+**First: "after rolling while running and continuing to run, old DK appears for a frame between the
+rolling and running animation."** That is *not* a second defect. `anim 25` is the roll's **exit**, so
+its `0xB4` tail plays before whatever comes next — stand, run, anything. `FindStaleFrames` had
+reported exactly one straddling animation for the whole build, and the operator has now seen that
+one animation in two different contexts. **The instrument's completeness claim survived a test it
+could have failed**, which is worth more than the original report.
+
+**Second: authorisation to start M5 on the idle.** It turned out not to be needed.
+
+#### What the two sides actually are
+
+| | frames/poses | what it is |
+|---|---|---|
+| ROM `0x8C..0xDC` (anims 4/108) | 21 | DK hunched on his knuckles: ~5 settling frames, then ~16 near-identical resting ones |
+| sheet strip 0, captioned "Idle" | 11 | DK standing fully upright, a breathing loop |
+
+M5's premise is that a count mismatch forces a script rewrite. But 21 ≠ 11 does not force one here,
+because the ROM's extra frames are **a slower version of the same motion, not a distinct sub-motion**.
+So each sheet pose is held for two frames (the last for one):
+
+```json
+{ "strip": 0, "animation": "0x4", "poses": "0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10" }
+```
+
+21 covered, **the ROM's own timing preserved exactly**, and nothing rewritten. `poses` therefore
+takes a *list*, not just a range — and the mapping is spelled out pose by pose deliberately, because
+this substitution is *not* always legitimate and a reader must be able to argue with it. Where an
+animation's extra frames are a real sub-motion (the roll's `0x4B8..0x4EC` recovery, A.26), repeating
+would smear one pose across a movement the artist drew separately, and M5 is genuinely required.
+
+**The stale frame is gone.** `0xB4` is imported; `FindStaleFrames` no longer lists anim 25.
+
+#### It measures as well as anything in this spec
+
+| | stock idle | imported idle |
+|---|---|---|
+| foot line | 127..129 (2 px) | **127..129 (2 px)** |
+| centre X | 125..130 (5 px) | 129..130 (1 px) |
+| head X, mean | 132.2 | 131.2 |
+
+Foot line identical. Head X puts idle→walk at 0.4 px *backwards* where stock steps 1.4 px forwards —
+a 1.8 px discrepancy against the 6.8 px that was plainly visible on run→walk (A.20). Recorded, not
+chased: below what play resolves is exactly where this spec has agreed to stop.
+
+#### The cost, stated rather than buried
+
+Importing the idle made **three** animations straddle that did not before: anim 1 (315 frames — the
+intro cutscene) and anims 9/113 (96 frames), which draw idle indices *and* a `0x200..` block. The
+trade is a stale frame in a move the player hits constantly, against inconsistency in cutscenes.
+Worth taking, but it is a trade and `FindStaleFrames` is what makes it visible instead of a surprise.
+
+**The general shape:** every import straddles more animations until the character is finished, so the
+stale-frame count is not a defect count — it is a *coverage* readout. It should fall to zero only at
+the end. The pool is down to 7.6 KB, so `0x200..` needs `--expand` (M3, already built).
+
+#### Method note
+
+A latent crash surfaced here: `BatchImporter` keyed its alignment maps by `(strip, position)`, which
+a repeated pose collides on. Keyed by plan-entry identity now, with slots read once per distinct
+index. Worth noting that the feature that exposed it was one line of manifest syntax — the assumption
+"a position appears once per strip" was load-bearing and unwritten.
+
 ### A.13 `0x858..0x8A8` is **not** DK — it is a foreign island (corrected)
 
 > **This section previously concluded "DK at reduced scale". That was wrong**, and it was wrong in
