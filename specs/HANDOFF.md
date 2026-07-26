@@ -422,6 +422,25 @@ draws him upright where stock knuckle-walks. Expected, and not a placement error
 **Measure the top edge too.** Everything in this spec compares foot lines and centre-X; the head was
 never checked until an operator noticed a 1 px step in play that no existing measurement reported.
 
+### Leading explanation for the residual: artwork discontinuity, not placement
+
+`dk-GAPS.sfc` booted without obvious garbage at the transition, which weakens the coverage
+hypothesis for *that moment* specifically. The operator's own reading is more likely: **the arm
+jumps between the run's last frame and the walk's first**, because the sheet's strips were drawn as
+separate cycles rather than as cycles that hand off to each other. Stock DKC1 has no such seam --
+one artist drew the whole set to connect.
+
+**No placement or alignment work fixes this.** The remedies are art-side: redraw the boundary frames
+so the cycles meet, or accept the seam. Worth stating plainly, because every instrument in this spec
+measures geometry and would keep reporting the transition as clean.
+
+**Proposed measurement, if geometry is ever suspected again:** opaque-pixel **centroid**, not bbox.
+Every number in this spec comes from a bounding box, which is driven by whatever limb sticks out
+furthest — the run's bbox is 44 px wide because of a reaching arm, not because the body moved. A
+centroid tracks body mass, which is what a viewer's eye follows. (The operator proposed DK's eye,
+then his ear, as landmarks — right instinct; the centroid is the robust form, since the dark palette
+indices used for eyes also appear in outlines, and any facial landmark vanishes when he tumbles.)
+
 ## Second roll: the barrel-blast
 
 The roll DK does when **blasted out of the house** is a *different animation* from the ground roll
