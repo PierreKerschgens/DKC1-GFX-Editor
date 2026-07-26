@@ -55,7 +55,8 @@
         "0x378",
         "0x37C"
       ],
-      "flatX": true
+      "flatX": true,
+      "offsetX": -7
     },
     {
       "strip": 8,

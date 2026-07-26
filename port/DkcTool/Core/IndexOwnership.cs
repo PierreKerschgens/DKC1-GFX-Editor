@@ -508,7 +508,7 @@ namespace DkcTool.Core
         public static int RunBaseline(Rom rom, int low, int high, SKColor[] palette)
         {
             var valid = GfxTable.EnumerateImageIndices(rom).ToHashSet();
-            var rows = new List<(int Index, int Top, int Bottom, int Height, int Left, int Right, int Cx, int Cy)>();
+            var rows = new List<(int Index, int Top, int Bottom, int Height, int Left, int Right, int Cx, int Cy, int Head)>();
 
             for (int i = low; i <= high; i += 4)
             {
@@ -519,14 +519,15 @@ namespace DkcTool.Core
                 var b = OpaqueBounds(sprite);
                 if (b.Width <= 0 || b.Height <= 0) continue;
                 var c = OpaqueCentroid(sprite);
-                rows.Add((i, b.Top, b.Bottom - 1, b.Height, b.Left, b.Right - 1, c.X, c.Y));
+                int head = HeadCentreX(sprite, b);
+                rows.Add((i, b.Top, b.Bottom - 1, b.Height, b.Left, b.Right - 1, c.X, c.Y, head));
             }
 
             Console.WriteLine($"=== opaque bbox over 0x{low:X}..0x{high:X} ({rows.Count} sprite(s)) ===");
             foreach (var r in rows)
                 Console.WriteLine($"  idx 0x{r.Index:X4}  top {r.Top,3}  bottom {r.Bottom,3}  height {r.Height,3}" +
                                   $"  left {r.Left,3}  right {r.Right,3}  centreX {(r.Left + r.Right) / 2,3}" +
-                                  $"  centroid {r.Cx,3},{r.Cy,3}");
+                                  $"  centroid {r.Cx,3},{r.Cy,3}  head {r.Head,3}");
 
             if (rows.Count > 0)
             {
@@ -561,6 +562,15 @@ namespace DkcTool.Core
                                   $"   (mean {cxs.Average():F1})   <- body mass, not box");
                 Console.WriteLine($"  CENTROID Y  : {cys.Min()}..{cys.Max()}  spread {cys.Max() - cys.Min()} px" +
                                   $"   (mean {cys.Average():F1})");
+
+                // The head, measured separately, because neither box nor centroid tracks it. Both
+                // average in an outstretched arm, so a run whose arm reaches forward can hold a
+                // steady box *and* a steady centroid while the head sits further back -- which is
+                // what a player watches. Reported after an operator described exactly that: "when
+                // running to the right and then walking, DK's head is suddenly a bit left".
+                var heads = rows.Select(r => r.Head).ToList();
+                Console.WriteLine($"  HEAD X      : {heads.Min()}..{heads.Max()}  spread {heads.Max() - heads.Min()} px" +
+                                  $"   (mean {heads.Average():F1})   <- what the eye follows");
             }
             return 0;
         }
@@ -593,6 +603,21 @@ namespace DkcTool.Core
                 for (int x = 0; x < bmp.Width; x++)
                     if (bmp.GetPixel(x, y).Alpha != 0) { sx += x; sy += y; n++; }
             return n == 0 ? (0, 0) : ((int)(sx / n), (int)(sy / n));
+        }
+
+        /// <summary>
+        /// Horizontal centre of the character's head: the mean X of opaque pixels in the top third
+        /// of the sprite's opaque box. Approximate by construction, but it is the only one of the
+        /// three horizontal measures that ignores the arms, and a player tracks the head.
+        /// </summary>
+        private static int HeadCentreX(SKBitmap bmp, SKRectI b)
+        {
+            int limit = b.Top + Math.Max(1, b.Height / 3);
+            long sx = 0, n = 0;
+            for (int y = b.Top; y < limit && y < bmp.Height; y++)
+                for (int x = 0; x < bmp.Width; x++)
+                    if (bmp.GetPixel(x, y).Alpha != 0) { sx += x; n++; }
+            return n == 0 ? 0 : (int)(sx / n);
         }
 
         /// <summary>Bounding box of the non-transparent pixels, or an empty rect if there are none.</summary>

@@ -69,6 +69,18 @@ namespace DkcTool.Core
         /// <summary>Per-strip floor override; "self" parses to -1, meaning anchor to this strip's
         /// own first slot. Null = inherit the manifest's <see cref="Manifest.GroundRef"/>.</summary>
         public int? GroundRef;
+
+        /// <summary>
+        /// Horizontal nudge applied to every pose in this strip, after all other placement.
+        ///
+        /// Exists because aligning two strips on a shared centre line does not align the thing a
+        /// player actually watches: the **head**. Both the bbox centre and the centroid average in
+        /// an outstretched arm, so a run whose arm reaches forward can share a centre line with the
+        /// walk while its head sits several px further back. Measured on this sheet, the imported
+        /// head stepped 2.6 px *backwards* on run->walk where stock's steps 4.2 px forwards -- read
+        /// in play as DK's head snapping left. `--baseline`'s HEAD X column is how you size it.
+        /// </summary>
+        public int? OffsetX;
     }
 
     /// <summary>One resolved (sheet rect -> target image index) instruction, ready for
@@ -87,6 +99,9 @@ namespace DkcTool.Core
         /// <summary>Shared-floor index for this pose's strip; -1 = anchor to the strip's own slot,
         /// null = no shared floor (M4 behaviour).</summary>
         public int? GroundRef;
+
+        /// <summary>Per-strip horizontal nudge, applied after all other placement.</summary>
+        public int? OffsetX;
     }
 
     /// <summary>
@@ -150,6 +165,7 @@ namespace DkcTool.Core
                     Indices = s.indices,
                     FlatX = s.flatX,
                     GroundRef = ParseGroundRef(s.groundRef),
+                    OffsetX = s.offsetX,
                 });
             }
             foreach (var o in doc.overrides ?? new List<OverrideJson>())
@@ -267,6 +283,7 @@ namespace DkcTool.Core
                         RectH = rect.H,
                         FlatX = entry.FlatX,
                         GroundRef = entry.GroundRef ?? GroundRef,
+                        OffsetX = entry.OffsetX,
                     });
                 }
             }
@@ -312,6 +329,7 @@ namespace DkcTool.Core
             public List<string>? indices { get; set; }
             public bool? flatX { get; set; }
             public string? groundRef { get; set; }
+            public int? offsetX { get; set; }
         }
 
         private sealed class OverrideJson

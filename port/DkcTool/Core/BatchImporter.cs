@@ -162,7 +162,7 @@ namespace DkcTool.Core
 
                         var slot = slots[p.Position];
                         int centreX = stripFlatX ? flatCentre : (slot.OpaqueMinX + slot.OpaqueMaxX) / 2;
-                        originX[(p.Strip, p.Position)] = centreX - (p.RectW - 1) / 2;
+                        originX[(p.Strip, p.Position)] = centreX - (p.RectW - 1) / 2 + (p.OffsetX ?? 0);
                     }
                 }
             }

@@ -422,7 +422,35 @@ draws him upright where stock knuckle-walks. Expected, and not a placement error
 **Measure the top edge too.** Everything in this spec compares foot lines and centre-X; the head was
 never checked until an operator noticed a 1 px step in play that no existing measurement reported.
 
-### Leading explanation for the residual: artwork discontinuity, not placement
+### The jitter was real, and it was the HEAD — measure that, not the box or the centroid
+
+Operator, after every geometric measure had come back clean: *"FLATALL jitters, I'm 100 % sure. When
+running to the right and then walking, DK's head is suddenly a bit left."* Correct, and directional:
+
+| | walk head | run head | run→walk |
+|---|---|---|---|
+| stock | 133.6 | 129.4 | **+4.2 (forward)** |
+| dk-FLATALL, before | 130.8 | 133.4 | **−2.6 (backward)** |
+| dk-FLATALL, after `offsetX: -7` | 130.8 | 126.4 | **+4.4 (forward)** |
+
+**Stock's head continues forward into the walk; the import snapped it backward.** That is why it read
+as wrong rather than merely different.
+
+**Neither the bbox nor the centroid could see it.** Both average in the run's outstretched arm, so
+the run held a *steady box* and a *steady centroid* while its head sat several px back. Three
+horizontal measures, and the first two were blind to the only one a player watches. `--baseline` now
+reports **HEAD X** (mean X of opaque pixels in the top third of the box).
+
+Fixed with a per-strip `"offsetX": -7` on the run. Sizing it is direct: read HEAD X for both strips,
+compare the step against stock's, nudge by the difference.
+
+**The lesson, and it is the session's sharpest.** Every earlier instrument measured what was easy to
+compute — box edges, then centre of mass. The operator was tracking a *feature*, and was right three
+times while the measurements said "clean". **When a report keeps contradicting the numbers, the
+numbers are probably measuring the wrong thing.** Ask what the observer is actually looking at, and
+measure that.
+
+### Superseded: the artwork-discontinuity theory
 
 `dk-GAPS.sfc` booted without obvious garbage at the transition, which weakens the coverage
 hypothesis for *that moment* specifically. The operator's own reading is more likely: **the arm
