@@ -394,6 +394,14 @@ three imported ones, so anything that garbles in play is an animation still runn
 Chained across five `--poison-index` runs (487 sprites). Whatever garbles during a run→walk
 transition is the next thing worth importing.
 
+**Independently confirmed:** the operator reported the transition "off horizontally" from play at
+the same time the 2 px centre-line step was found in the measurements, neither informing the other.
+
+**Vocabulary note, because it cost a wrong first look:** the report was *"bobbing (or jitter?)"* and
+the hedge was carrying the answer — **bob = vertical, jitter = horizontal**. Anchoring on the first
+word sent the search up the wrong axis. When an operator offers two words for a symptom, treat both
+as live rather than picking one.
+
 ## Second roll: the barrel-blast
 
 The roll DK does when **blasted out of the house** is a *different animation* from the ground roll
