@@ -1097,6 +1097,41 @@ whenever it has been tested.
 question, one bit. Roll went 430 → 96 → 32 → 24 → 12 without a single wrong turn, after five rounds
 of clever methods produced five wrong answers. Round 6 paints `0x3B0..0x3C4`, leaving `0x3C8..0x3DC`.
 
+#### Round 6 broke the method: four negatives cover one positive
+
+Both halves of the remaining 12 came back negative. Tabulated against everything else:
+
+| boot | painted white | roll white? |
+|---|---|---|
+| control | `0x380..0x3FC` (32) | **yes** |
+| round 4 | `0x3E0..0x3FC` (8) | no |
+| round 5 | `0x380..0x3AC` (12) | no |
+| round 6 | `0x3B0..0x3C4` (6) | no |
+| round 6b | `0x3C8..0x3DC` (6) | no |
+
+The four negatives **partition the control's range exactly**. They cannot all be true. Bisection has
+been assuming a negative is a clean exclusion, and at this granularity it is not.
+
+**The likely cause: white is one of DK's own colours.** His muzzle, hands and chest are pale, so a
+white-painted *subset* looks like his normal light areas. With all 32 painted he went obviously
+white; with 6–12 painted, the marker hides inside the character. This is the same failure as amber
+and dark brown — *marker resembles character* — and white escaped it only while the painted fraction
+was large. **Every solid fill is some DK colour, because the palette is DK's.** There is no safe
+marker colour at small fractions, only a safe *fraction*.
+
+**So paint does not scale down, and poison does.** Noise is not a colour, it is a texture, and
+nothing on a Kong looks like high-frequency multi-colour static — the operator described the poisoned
+run unprompted as "a red and white pixel mess". Poison should have been the fine instrument from the
+start; paint's advantage was only ever that it can label *many* buckets at once.
+
+**Use paint to localise coarsely, poison to confirm finely.** Rounds A–C repeat the last split as
+poison over thirds of `0x380..0x3FC`.
+
+**And the honest possibility that the control itself was misread:** it painted `0x3E0..0x3FC` too,
+which round 4 identified as the cliff teeter. If the operator was near an edge, the white DK in that
+screenshot may have been a teeter frame rather than a roll frame. The poison rounds settle that as
+well — `dk-poison-c.sfc` covers exactly that range.
+
 **The methodological result.** Every previous round asked one yes/no question and mostly got "no".
 This round asked an operator to *play the game and report colours*, and returned ~15 localisations,
 two structural corrections and a falsifiable lead on jump. The change was not a better hypothesis —

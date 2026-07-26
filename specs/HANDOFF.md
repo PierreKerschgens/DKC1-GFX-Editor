@@ -123,7 +123,10 @@ this tier have now been falsified, including Roll.
 despite being an unmistakable somersault. Static identification is **0 for 4** — use `--paint`, not
 montages.
 
-**Roll is `0x3B0..0x3DC`** — 12 indices, from ~430, by white-only bisection (A.22). `0x3E0..0x3FC`
+**Roll is somewhere in `0x380..0x3FC`** — 32 indices. The finer bisection **broke**: four white
+negatives partition that range exactly while the all-32 control was positive, so at small painted
+fractions white hides inside DK's own pale areas and a negative is not an exclusion (A.22). Redo the
+split with `--poison-index`, not paint. `0x3E0..0x3FC`
 is the **cliff-teeter start** (its opening frames are DK's eyes stretching downward as he looks over
 the edge). `0x3A4..0x3DC` was the provisional *Swim* and overlaps roll's range, so that pairing is
 at best partly wrong — the provisional tier is 0 for 4 whenever tested.
@@ -236,12 +239,20 @@ renders as a flat silhouette whose colour names the range — and **leaving conf
 keeps idle/walk/run normal**, so the game stays playable and only unmapped actions light up. Test
 many actions in one boot; each is a separate data point.
 
-**On DK, use white (15) and nothing else.** One range painted white, the rest left alone, one
-trustworthy bit per boot. Every other marker tried has failed in play: near-black (1) vanishes on
-dark backgrounds; dark brown (3), amber (7) and red (8) all read as ordinary DK. The rule is
-**contrast with the character**, not brightness — DK is warm brown-and-orange, and partial painting
-means a warm marker only ever covers *part* of a warm character. Three wasted rounds are recorded in
-A.22; don't buy a fourth by trying to fit more buckets into a boot.
+**Paint to localise coarsely; `--poison-index` to confirm finely.** That division is the hard-won
+part (A.22):
+
+- **Paint's only advantage is labelling many buckets at once**, and it works while the painted
+  fraction of the character is *large*. On DK use white (15) and nothing else — near-black (1)
+  vanishes on dark backgrounds, and dark brown (3), amber (7) and red (8) all read as ordinary DK.
+- **Paint stops working on small ranges.** Every solid fill is one of DK's own colours, because the
+  palette is DK's; white hides in his pale muzzle/hands/chest once only a few sprites are painted.
+  Four consecutive "negatives" that provably partitioned a known-positive range were all this.
+- **Poison has no such failure mode.** Noise is a *texture*, not a colour, and nothing on a Kong
+  looks like high-frequency static. Slower (one bucket per boot) but it does not lie.
+
+**A painted or poisoned DK is usually a *mixture*** — a mid-animation Kong composites sprites from
+several ranges. Judge by "is any of him marked", not "is all of him marked".
 
 **A painted DK is usually a *mixture*, not a clean silhouette** — a mid-animation Kong composites
 sprites from several ranges, so expect part of him painted and part normal. Judge by "is any of him
