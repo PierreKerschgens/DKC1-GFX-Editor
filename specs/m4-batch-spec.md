@@ -1223,8 +1223,21 @@ the instrument's failure mode tracked the change, not the target.
 round.* Shrink the range or change the marker, never both. Had the fine rounds kept round 1's
 colours, the red-unreadable problem would have surfaced immediately instead of after six boots.
 
+**A confound, reported alongside the result: the cliff teeter garbles too.** Both roll and teeter
+draw from `0x380..0x4FC` — consistent with round 2, which put the teeter's start at `0x380..0x3FC`
+and its loop at `0x400..0x47C`.
+
+That is a hazard, not just a fact. **The two animations are adjacent in play and similar when
+garbled**, so a test performed near a ledge cannot distinguish them, and the control screenshot —
+DK pale and low to the ground — is now more likely to have been a teeter frame than a roll frame.
+Some part of the false-positive story above may be *misattribution* rather than palette collision;
+both mechanisms were available and they are not mutually exclusive.
+
+**Test the roll on open flat ground, well away from any edge.** Cheap to arrange, and it removes a
+confound that has plausibly been present since round 1.
+
 Next: `dk-poison-{d,e}.sfc` split `0x400..0x4FC` in half with the instrument that has never been
-wrong here.
+wrong here — and separate roll from teeter in the same boots, since both garble.
 
 **The methodological result.** Every previous round asked one yes/no question and mostly got "no".
 This round asked an operator to *play the game and report colours*, and returned ~15 localisations,
