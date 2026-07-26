@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "sheet": "/Users/pierre/devel/DKC1-GFX-Editor/port/sprites/Custom _ Edited - Donkey Kong Customs - Donkey Kong - Donkey Kong (Classic, DKC-Style).png",
+  "palette": "Donkey Kong 1P",
+  "strips": [
+    {
+      "strip": 6,
+      "name": "Walk -> anim 3. flatX OFF: stock's walk centre-X spans 4px smoothly and the per-pose import reproduces it exactly. Confirmed in play (A.19).",
+      "indices": [
+        "0xE0",
+        "0xE4",
+        "0xE8",
+        "0xEC",
+        "0xF0",
+        "0xF4",
+        "0xF8",
+        "0xFC",
+        "0x100",
+        "0x104",
+        "0x108",
+        "0x10C",
+        "0x110",
+        "0x114",
+        "0x118",
+        "0x11C",
+        "0x120",
+        "0x124",
+        "0x128",
+        "0x12C"
+      ],
+      "flatX": true
+    },
+    {
+      "strip": 7,
+      "name": "Run -> anims 2/14/20. flatX ON: stock's run lunges 9px with a 6px single-frame step, which the upright sheet art cannot carry. Confirmed in play (A.20).",
+      "indices": [
+        "0x330",
+        "0x334",
+        "0x338",
+        "0x33C",
+        "0x340",
+        "0x344",
+        "0x348",
+        "0x34C",
+        "0x350",
+        "0x354",
+        "0x358",
+        "0x35C",
+        "0x360",
+        "0x364",
+        "0x368",
+        "0x36C",
+        "0x370",
+        "0x374",
+        "0x378",
+        "0x37C"
+      ],
+      "flatX": true,
+      "offsetX": -7
+    },
+    {
+      "strip": 8,
+      "name": "Roll -> anim 24. flatX ON: stock's roll jitters 15px. Measured strongly, weakly corroborated in play (A.22).",
+      "indices": [
+        "0x4B8",
+        "0x4BC",
+        "0x4C0",
+        "0x4C4",
+        "0x4C8",
+        "0x4CC",
+        "0x4D0",
+        "0x4D4",
+        "0x4D8",
+        "0x4DC",
+        "0x4E0",
+        "0x4E4",
+        "0x4E8",
+        "0x4EC"
+      ],
+      "flatX": true
+    },
+    {
+      "strip": 10,
+      "name": "Jump -> the 0x130..0x17C arc (anims 5/7/21/81/8/102/82). 20 poses <-> 20 indices after the A.25 slicer fix.",
+      "indices": [
+        "0x130",
+        "0x134",
+        "0x138",
+        "0x13c",
+        "0x140",
+        "0x144",
+        "0x148",
+        "0x14c",
+        "0x150",
+        "0x154",
+        "0x158",
+        "0x15c",
+        "0x160",
+        "0x164",
+        "0x168",
+        "0x16c",
+        "0x170",
+        "0x174",
+        "0x178",
+        "0x17c"
+      ],
+      "flatX": true
+    }
+  ],
+  "groundRef": "0xE0"
+}
