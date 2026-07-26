@@ -16,7 +16,9 @@ namespace DkcTool.Core
     ///    caption, not a pose -- DKC's palette has no pure black, so this is the one thing on the
     ///    sheet that legitimately isn't artwork.
     /// 2. A component under <see cref="MinPosePixels"/> is label dust, not a pose.
-    /// 3. Flood-fill 8-connected, merge bboxes within <see cref="MergeGap"/>.
+    /// 3. Flood-fill 8-connected, then absorb bboxes within <see cref="MergeGap"/> — but only
+    ///    asymmetrically, a fragment into a figure, never figure into figure
+    ///    (<see cref="FragmentRatio"/>).
     ///
     /// <b>Stability is a requirement, not a nicety</b>: the manifest addresses poses by the
     /// (strip, position) numbers this produces. A change here silently retargets every existing
@@ -28,6 +30,23 @@ namespace DkcTool.Core
         public const int MergeGap = 4;
         public const int MinPosePixels = 64;
         public static readonly uint AnnotationRgb = 0x000000;
+
+        /// <summary>
+        /// Absorption is <b>asymmetric</b>: a component only joins a neighbour within
+        /// <see cref="MergeGap"/> if it is smaller than this fraction of it.
+        ///
+        /// <para><see cref="MergeGap"/> exists to reattach a <i>fragment</i> — a hand clear of the
+        /// body across transparent pixels — to its figure. It was never meant to join two figures,
+        /// but a symmetric proximity test cannot tell the two cases apart, and the DK sheet lays
+        /// poses <b>1–3 px apart</b>, inside the gap. That merged 39 rects across 21 of 46 strips
+        /// and hid ≥89 poses (A.24), which is what made strip 10 "Jump" read as 19 poses against
+        /// its animation's 20 and look like it needed animation-script editing. It did not.</para>
+        ///
+        /// <para>A fragment is a small share of its figure; two adjacent poses are comparable in
+        /// size. 0.5 sits in the empty middle of that distribution rather than at a measured edge —
+        /// see the margin figures in A.25 before tightening it.</para>
+        /// </summary>
+        public const double FragmentRatio = 0.5;
 
         public sealed class SlicedPose
         {
@@ -114,8 +133,9 @@ namespace DkcTool.Core
         }
 
         /// <summary>
-        /// Flood-fills opaque islands, then merges islands whose bboxes are within
-        /// <see cref="MergeGap"/> of each other, dropping caption-only and dust components.
+        /// Flood-fills opaque islands, then absorbs islands whose bboxes are within
+        /// <see cref="MergeGap"/> of each other <i>and</i> differ enough in size to be a fragment
+        /// and its figure (<see cref="FragmentRatio"/>), dropping caption-only and dust components.
         /// Identical policy and order to the research pass (SheetResearch.Segment) --
         /// determinism here is what V4a pins.
         /// </summary>
@@ -168,6 +188,7 @@ namespace DkcTool.Core
                     for (int j = i + 1; j < islands.Count; j++)
                     {
                         if (!Near(islands[i], islands[j])) continue;
+                        if (!Absorbs(islands[i], islands[j])) continue;
                         islands[i].MinX = Math.Min(islands[i].MinX, islands[j].MinX);
                         islands[i].MinY = Math.Min(islands[i].MinY, islands[j].MinY);
                         islands[i].MaxX = Math.Max(islands[i].MaxX, islands[j].MaxX);
@@ -187,6 +208,13 @@ namespace DkcTool.Core
         private static bool Near(Island a, Island b) =>
             a.MinX - MergeGap <= b.MaxX && b.MinX - MergeGap <= a.MaxX &&
             a.MinY - MergeGap <= b.MaxY && b.MinY - MergeGap <= a.MaxY;
+
+        /// <summary>One of the two is a fragment of the other — see <see cref="FragmentRatio"/>.
+        /// Compared on opaque pixel count, not bbox area, because a figure's bbox is inflated by
+        /// whichever limb reaches furthest while its pixel count is not.</summary>
+        private static bool Absorbs(Island a, Island b) =>
+            Math.Min(a.OpaquePixels, b.OpaquePixels)
+                < FragmentRatio * Math.Max(a.OpaquePixels, b.OpaquePixels);
 
         /// <summary>Runs a pose's occupancy mask through the real tiler. Colours don't affect the
         /// char/OAM budget -- only which 8x8 cells are occupied -- so every opaque pixel is set to

@@ -535,19 +535,16 @@ two idles: **one player action, two animations.** Assume it for every move until
 
 Two candidates, both surfaced by M4 rather than planned:
 
-0. **Fix the slicer's pose merging — this now comes first** (A.24). `MergeGap = 4` joins two
-   figures laid out 1–3 px apart, so **21 of 46 strips have wrong pose counts and ≥89 poses are
-   missing** (a lower bound; strip 26 also exposes a separate two-rows-in-one-band defect). The fix
-   is not a smaller gap — the gap exists to reattach fragments — but an asymmetric rule: **never
-   merge two components that are both pose-sized.** It renumbers poses in 21 strips, so it needs
-   V4a's golden rebuilt deliberately, in its own change, with the new counts reviewed against the
-   sheet. **Strips 6/7/8 (Walk/Run/Roll) are clean, so nothing already confirmed in play is at
-   risk.**
+0. ~~**Fix the slicer's pose merging.**~~ **Done** (A.25) — `FragmentRatio = 0.5` makes absorption
+   asymmetric, so a fragment still joins its figure but two pose-sized components never merge. DK
+   533 → **678** poses, 46 → 51 strips; DK Jr 542 → **553**. Over-budget 16 → 0, over-canvas 5 → 0,
+   V4b 1041/1056 → **1216/1216**. Golden rebuilt, **V4 7/7**, and the confirmed Walk+Run+Roll build
+   is byte-for-byte identical.
 
-1. **Animation-script editing.** ~~8 of 46 DK strips have pose counts no DK animation has.~~
-   **Recompute that number after (0)** — it was derived from the counts A.24 just invalidated, and
-   Jump was the live example until it turned out to have 20 poses and fit its arc exactly. M5 may
-   be smaller than believed, or unnecessary. Do not scope it on the old figure.
+1. **Animation-script editing.** **Recomputed against the corrected counts, and it survives**: 8 of
+   46 strips before, **9 of 51 after** (A.25). The membership churned — Jump left the list, which is
+   what started this — but the class is the same size. M5 is still justified. (The A.24 guess that
+   it might shrink or vanish was wrong; recorded there so it isn't re-made.)
 2. ~~**Strip-level pose placement.**~~ Done — implemented, confirmed in play, and as of A.19 the
    default, with the two coordinate systems reconciled. M5 is (1).
 
@@ -558,8 +555,11 @@ Two candidates, both surfaced by M4 rather than planned:
 - DK owns `0x8C..0x950`, 562 indices; Diddy begins `0x954` (A.8).
 - `0x858..0x8A8` inside that range is **not DK** — most likely Manky Kong. **Exclude from any DK
   manifest** (A.13). Reference at `port/DkcTool/testdata/manky-reference.png`.
-- DK sheet: 46 strips, **29 authorable captioned runs** (a strip is not an animation).
-  ⚠️ **The 533-pose figure is wrong** — the slicer merges tightly-packed figures, so the true count
-  is ≥622 and 21 strips are under-counted (A.24). Do not use per-strip pose counts until (0) lands.
+- DK sheet: **678 poses, 51 strips**, **29 authorable captioned runs** (a strip is not an animation).
+  DK Jr: 553 poses, 42 strips. These are the post-A.25 counts; anything citing **533 / 46 strips**
+  predates the merge fix and is wrong. Strips **0–25 kept their numbers** across that fix, strips
+  ≥26 did not.
+- ⚠️ **Strips ≥25 still group two rows into one strip** on both sheets (A.25) — 6 DK strips, 1 DK Jr.
+  Their pose rects are right; the strip grouping and pose order are not. Fixing it renumbers ≥25.
 - Capacity: DK alone is 487 KB against a 92 KB stock pool → `--expand` is mandatory for a full
   import, but a single ~20-pose run fits stock with room to spare.

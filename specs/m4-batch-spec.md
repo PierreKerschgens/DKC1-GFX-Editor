@@ -1459,6 +1459,77 @@ That change renumbers poses in 21 strips, which is exactly what the class doc wa
 It needs the golden rebuilt deliberately, in its own change, with the 21 strips' new counts reviewed
 against the sheet — not folded into other work.
 
+### A.25 The slicer fix: absorption is asymmetric
+
+A.24's defect, fixed. `SheetSlicer.FragmentRatio = 0.5`: a component within `MergeGap` is absorbed
+into its neighbour **only if it is under half the neighbour's opaque pixel count**. A fragment is a
+small share of its figure; two adjacent poses are comparable. Compared on pixel count rather than
+bbox area, because a figure's bbox is inflated by whichever limb reaches furthest.
+
+| | DK sheet | DK Jr sheet |
+|---|---|---|
+| strips | 46 → **51** | 42 → 42 |
+| poses | 533 → **678** | 542 → **553** |
+| over 88-char budget | 16 → **0** | — |
+| over 256×256 canvas | 5 → **0** | — |
+
+**Six independent checks, because renumbering poses is the one change this spec says to be afraid
+of:**
+
+1. **The merge survey goes to zero.** `port/mismerge-survey.py` found 39 merged rects before, 0
+   after, on *both* sheets.
+2. **No over-correction.** The opposite failure — a figure split into parts — would leave poses much
+   smaller than their strip's median. 0 poses under half the median width on either sheet.
+3. **The counts were predicted.** The survey named each rect's split *before* the fix existed. For
+   strips 0–21 the new counts match its predictions exactly, all eleven of them: strip 0 6→11,
+   5 11→19, 9 15→16, 10 19→20, 11 13→22, 13 14→20, 14 13→18, 16 17→19, 20 7→17, 21 6→13. Two
+   instruments built from different evidence agreeing to the pose.
+4. **Every "impossible" pose became legal.** V4b went 1041/1056 with **15 over-budget skipped** to
+   **1216/1216 with 0 skipped**, and over-canvas went 5 → 0. Those poses were never over budget:
+   they were several figures in one rect. The encoder had been reporting the defect all along.
+5. **Strips 0–25 keep their identity** (same origin pose); renumbering starts at 26, where the
+   two-row rect split. Strips 6/7/8 — Walk, Run, Roll — keep their numbers *and* their exact rects.
+6. **The confirmed build is bit-identical.** `--batch dk-combined-flatall.json --dry-run` emits
+   byte-for-byte the same 54 poses before and after. Nothing confirmed in play is affected.
+
+Golden rebuilt deliberately (delete + re-bootstrap), **V4 7/7**.
+
+#### Still broken: bands merge two rows
+
+Fixing the merge exposed the second defect A.24 predicted, and did not fix it. A band is formed by
+*vertical overlap*, so one tall pose reaching from row N into row N+1 pulls both rows into one band;
+the horizontal split then cuts across both and produces strips whose poses alternate between rows.
+
+**6 of 51 DK strips (68 poses) and 1 of 42 DK Jr strips (19 poses)** — all in bands 19–20, none below
+strip 25, none used by any manifest. Their pose *rects* are now correct; only the strip grouping and
+`Position` order are wrong.
+
+This is a redesign, not a tweak — band membership would have to come from clustering pose tops rather
+than transitive overlap, and the right grouping for a grid of small items is genuinely ambiguous.
+Deliberately left. It renumbers only strips ≥25 on each sheet when it lands.
+
+#### M5's justification survives — the recount did not go as expected
+
+A.24 said the "8 of 46 strips have pose counts no DK animation has" figure had to be recomputed and
+that M5 might shrink or vanish. Recomputed against the 27 distinct frame counts of DK-block
+animations:
+
+| | strips with no matching count |
+|---|---|
+| before (46 strips) | **8** — 11, 14, 15, 16, 19, 27, 35, 41 |
+| after (51 strips) | **9** — 11, 15, 19, 20, 21, 37, 38, 39, 45 |
+
+The old counts reproduce A.9's 8/46 exactly, which validates the method; the corrected ones give
+9/51. **The headline number is unchanged.** The membership churned — strip 10 "Jump" left the list,
+which is the case that started this — but the class is as large as it was.
+
+**So M5 is still justified, and the prediction that it might not be was wrong.** Recorded because the
+prediction was made in writing one section earlier: a correction that invalidates an input does not
+necessarily move the conclusion that was drawn from it, and the tempting inference — "the input was
+wrong, so the finding must fall" — is the same shape of error as the one A.24 caught. The 9 strips
+carry the usual caveats: those above 25 rest on counts the band defect still disturbs, and the range
+scanned includes Manky's animations (A.13).
+
 ### A.13 `0x858..0x8A8` is **not** DK — it is a foreign island (corrected)
 
 > **This section previously concluded "DK at reduced scale". That was wrong**, and it was wrong in

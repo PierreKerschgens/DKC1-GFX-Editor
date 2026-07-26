@@ -18,12 +18,14 @@ overlap horizontally can join. So test the specific signature instead --
 -- which is what a merge looks like and what an internal gap does not: an internal
 gap leaves one wide part and one narrow one, never two full-width figures.
 """
-import re, subprocess, struct, sys, os, statistics
+import re, subprocess, struct, sys, os, statistics, tempfile
 
 SHEET = sys.argv[1]
 MINFRAC = 0.60
 ROM = "port/Donkey Kong Country (USA) (Rev 2).sfc"
-SCRATCH = os.path.dirname(os.path.abspath(__file__))
+# A system temp dir, never alongside this script: the sheet decodes to a ~12 MB BMP,
+# and writing it next to the source once put that blob in a commit.
+SCRATCH = tempfile.mkdtemp(prefix="dkc-slice-")
 REPO = "/Users/pierre/devel/DKC1-GFX-Editor"
 
 out = subprocess.run(["dotnet", "run", "--project", "port/DkcTool", "--", ROM, "--slice", SHEET],
