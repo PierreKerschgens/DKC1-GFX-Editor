@@ -365,9 +365,18 @@ and this needs per-*manifest*.
 *between* strips, so it could not have appeared before the first combined build — which is an
 argument for building combined ROMs early rather than as a victory lap.
 
-Likely fix: an optional shared ground reference across strips (one slot, or an explicit Y), so every
-strip in a manifest lands on the same floor. Needs care — strips that legitimately sit at different
-heights (swim, rope) must be able to opt out.
+**Fixed** by a manifest-level `"groundRef": "0xE0"` — one slot whose opaque bottom every strip lands
+on, instead of each strip anchoring to its own first slot. A strip opts out with its own
+`"groundRef": "self"`, for runs legitimately off the floor (swim, rope).
+
+| | before | after |
+|---|---|---|
+| walk | 127..130 | 127..130 |
+| run | 124..128 | **126..130** |
+| roll | 131..134 | **126..129** |
+
+The run was 2–3 px high and the roll 4 px low; both now sit on the walk's ground line. V4 7/7.
+**Not yet re-booted** — the measurement says the step is gone, play has not confirmed it.
 
 ## Second roll: the barrel-blast
 

@@ -126,7 +126,17 @@ namespace DkcTool.Core
 
                     var refPose = strip.OrderBy(p => p.Position).First();
                     int baseline = refPose.RectY + refPose.RectH - 1;
-                    int reference = slots[refPose.Position].OpaqueMaxY;
+
+                    // Shared floor across strips. Anchoring each strip to its own first slot puts
+                    // two animations on two different ground lines -- the imported walk sat 2-3 px
+                    // below the run, so DK's feet stepped up as he accelerated. That defect exists
+                    // only *between* strips, so per-strip anchoring cannot see it: the same
+                    // wrong-level mistake as A.17, one level further out. `groundRef` names one
+                    // slot whose opaque bottom every strip lands on; "self" (-1) opts a strip out,
+                    // for runs that are legitimately off the floor (swim, rope).
+                    int reference = refPose.GroundRef is int g && g >= 0
+                        ? SpriteSlot.Read(rom, g).OpaqueMaxY
+                        : slots[refPose.Position].OpaqueMaxY;
 
                     // A strip may override the batch-wide choice, because two animations in one
                     // manifest can want opposite answers -- the walk matches stock with per-pose

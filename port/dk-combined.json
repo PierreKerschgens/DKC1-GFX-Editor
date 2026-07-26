@@ -78,5 +78,6 @@
       ],
       "flatX": true
     }
-  ]
+  ],
+  "groundRef": "0xE0"
 }

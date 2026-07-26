@@ -65,6 +65,10 @@ namespace DkcTool.Core
         /// regresses whichever strip disagrees with it.
         /// </summary>
         public bool? FlatX;
+
+        /// <summary>Per-strip floor override; "self" parses to -1, meaning anchor to this strip's
+        /// own first slot. Null = inherit the manifest's <see cref="Manifest.GroundRef"/>.</summary>
+        public int? GroundRef;
     }
 
     /// <summary>One resolved (sheet rect -> target image index) instruction, ready for
@@ -79,6 +83,10 @@ namespace DkcTool.Core
 
         /// <summary>Per-strip horizontal-placement override; null = use the batch default.</summary>
         public bool? FlatX;
+
+        /// <summary>Shared-floor index for this pose's strip; -1 = anchor to the strip's own slot,
+        /// null = no shared floor (M4 behaviour).</summary>
+        public int? GroundRef;
     }
 
     /// <summary>
@@ -95,6 +103,30 @@ namespace DkcTool.Core
         public List<ManifestStripEntry> Strips = new List<ManifestStripEntry>();
         public List<ManifestOverride> Overrides = new List<ManifestOverride>();
 
+        /// <summary>
+        /// Shared floor for every strip: the image index whose opaque bottom all strips are placed
+        /// against. Null = each strip anchors to its own first target slot, which is the M4
+        /// behaviour and is wrong for a multi-animation manifest.
+        ///
+        /// Without this, two strips land on two different ground lines -- DK's imported walk sat
+        /// 2-3 px below his run, so his feet stepped up as he accelerated (handoff, "cross-strip
+        /// ground alignment"). Per-strip anchoring cannot see the problem because it exists
+        /// *between* strips: the same wrong-level mistake as A.17, one level further out.
+        ///
+        /// A strip may opt out with its own `groundRef` (its index, or "self") when it legitimately
+        /// sits at a different height -- swimming and rope work are not standing on the floor.
+        /// </summary>
+        public int? GroundRef;
+
+        /// <summary>Parses a groundRef field: a hex image index, or "self" (-1) meaning the
+        /// strip anchors to its own first slot rather than a shared floor.</summary>
+        private static int? ParseGroundRef(string? raw)
+        {
+            if (string.IsNullOrWhiteSpace(raw)) return null;
+            if (raw.Trim().Equals("self", StringComparison.OrdinalIgnoreCase)) return -1;
+            return Convert.ToInt32(raw.Trim(), 16);
+        }
+
         public static Manifest Load(string path)
         {
             var doc = JsonSerializer.Deserialize<ManifestJson>(File.ReadAllText(path),
@@ -106,6 +138,7 @@ namespace DkcTool.Core
                 Version = doc.version,
                 Sheet = doc.sheet ?? "",
                 Palette = doc.palette ?? "",
+                GroundRef = ParseGroundRef(doc.groundRef),
             };
             foreach (var s in doc.strips ?? new List<StripJson>())
             {
@@ -116,6 +149,7 @@ namespace DkcTool.Core
                     Animation = s.animation,
                     Indices = s.indices,
                     FlatX = s.flatX,
+                    GroundRef = ParseGroundRef(s.groundRef),
                 });
             }
             foreach (var o in doc.overrides ?? new List<OverrideJson>())
@@ -232,6 +266,7 @@ namespace DkcTool.Core
                         RectW = rect.W,
                         RectH = rect.H,
                         FlatX = entry.FlatX,
+                        GroundRef = entry.GroundRef ?? GroundRef,
                     });
                 }
             }
@@ -266,6 +301,7 @@ namespace DkcTool.Core
             public string? palette { get; set; }
             public List<StripJson>? strips { get; set; }
             public List<OverrideJson>? overrides { get; set; }
+            public string? groundRef { get; set; }
         }
 
         private sealed class StripJson
@@ -275,6 +311,7 @@ namespace DkcTool.Core
             public string? animation { get; set; }
             public List<string>? indices { get; set; }
             public bool? flatX { get; set; }
+            public string? groundRef { get; set; }
         }
 
         private sealed class OverrideJson
