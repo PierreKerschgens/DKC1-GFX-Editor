@@ -123,11 +123,19 @@ this tier have now been falsified, including Roll.
 despite being an unmistakable somersault. Static identification is **0 for 4** — use `--paint`, not
 montages.
 
-**Round 2 (A.22):** **Roll is `0x380..0x3FC`** — 32 indices, from ~430, in two boots. Also: narrow
+**Round 4/control (A.22):** **Roll is `0x380..0x3DC`** — 24 indices. Established by elimination:
+the control painted all of `0x380..0x3FC` white and roll turned white; round 4 painted only
+`0x3E0..0x3FC` white and roll did not. `0x3E0..0x3FC` is the **cliff-teeter start**.
+
+**Round 2 (A.22):** Roll localised to `0x380..0x3FC` — 32 indices, from ~430, in two boots. Also: narrow
 crouch → `0x380..0x3FC`; getting hit → `0x400..0x47C`; enemy bounce and cliff teeter span *both*
-ranges; swimming alternates `0x380..0x3FC` with an unpainted range. **No amber and no light pink
-were ever seen**, so `0x800..0x854`/`0x8AC..0x950` and `0x480..0x4FC` are untouched by ~20 common
-actions — suspect them of not being DK, like `0x858..0x8A8`.
+ranges; swimming alternates `0x380..0x3FC` with an unpainted range.
+
+⚠️ That round also reported **no amber and no light pink anywhere**, which was written up as
+"those ranges are unused, suspect them of not being DK". **Withdraw that** — amber was later shown
+to be unreadable on DK (A.22), so "no amber seen" is equally consistent with amber being invisible.
+Light pink is unverified either way. `0x800..0x854`/`0x8AC..0x950` and `0x480..0x4FC` are **not**
+known to be unused; re-test them in white before believing anything about them.
 
 **Resolved:** DK has **two** idle animations — standing, and a chest-beating one after several
 seconds. `0x8C..0xDC` (A.16) and the white `0x180..0x32C` sighting are different animations, not a
@@ -227,10 +235,12 @@ renders as a flat silhouette whose colour names the range — and **leaving conf
 keeps idle/walk/run normal**, so the game stays playable and only unmapped actions light up. Test
 many actions in one boot; each is a separate data point.
 
-**Use only these three: white 15, red 8, light pink 14.** The rule is **contrast with the
-character**, not brightness — DK is warm brown-and-orange, so every warm marker reads as ordinary DK
-no matter how vivid. Near-black (1) vanishes on dark jungle backgrounds; dark brown (3) *and*
-amber (7) both read as normal DK. Each cost a wasted round (A.22). Three buckets per boot.
+**On DK, use white (15) and nothing else.** One range painted white, the rest left alone, one
+trustworthy bit per boot. Every other marker tried has failed in play: near-black (1) vanishes on
+dark backgrounds; dark brown (3), amber (7) and red (8) all read as ordinary DK. The rule is
+**contrast with the character**, not brightness — DK is warm brown-and-orange, and partial painting
+means a warm marker only ever covers *part* of a warm character. Three wasted rounds are recorded in
+A.22; don't buy a fourth by trying to fit more buckets into a boot.
 
 **A painted DK is usually a *mixture*, not a clean silhouette** — a mid-animation Kong composites
 sprites from several ranges, so expect part of him painted and part normal. Judge by "is any of him

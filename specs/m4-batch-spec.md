@@ -1045,6 +1045,38 @@ and expect a paint result to be a *mixture* rather than a clean silhouette.
 Round 4 tests the standing prediction with two colours only: `0x380..0x3DC` red against
 `0x3E0..0x3FC` white.
 
+#### Round 4: the prediction was wrong, red is unusable, and only white survives
+
+Result: **roll normal, and only the cliff-teeter's first frames white.** Combined with the control
+this is decidable without another boot:
+
+| boot | painted white | roll white? |
+|---|---|---|
+| control | `0x380..0x3FC` (all 32) | **yes** |
+| round 4 | `0x3E0..0x3FC` only | **no** |
+
+⇒ roll's frames are in **`0x380..0x3DC`**, which round 4 painted *red* and the operator read as
+normal. **Red is unusable too.** Three warm markers have now failed — dark brown, amber, red — and
+the reason is the same each time, compounded by partial painting: a warm marker over part of a warm
+character is not a signal. **On DK the only reliable marker is white.** One trustworthy bit per boot
+beats three buckets that lie.
+
+**The prediction is scored and it failed.** `0x3E0..0x3FC` was called for roll on the strength of
+its upright poses; it is the cliff-teeter start, matching the operator's round-2 sighting exactly.
+The horizontal arm-forward poses in `0x380..0x3DC` — read here as "swim-like" — are the roll, which
+in hindsight is obvious: a DKC1 roll *is* a horizontal tumble. **That is the fifth time reading
+silhouettes has produced a wrong answer in this spec** (A.16 ×2, A.20, A.21, A.22). The record is
+now unambiguous enough to state as a rule rather than a caution: *do not use contact sheets to
+predict identity, only to describe geometry after the mapping is known.*
+
+Worth noting what the survey got right anyway: every *boot* result has been consistent. Rounds 1, 2
+and the control all pointed at ranges containing the roll; only the interpretations layered on top —
+colour legends and silhouette predictions — have failed. **The instrument is sound; the readings off
+it were not.**
+
+Roll is down to 24 indices. Round 5 bisects white-only: `0x380..0x3AC` painted, `0x3B0..0x3DC` left
+alone.
+
 **The methodological result.** Every previous round asked one yes/no question and mostly got "no".
 This round asked an operator to *play the game and report colours*, and returned ~15 localisations,
 two structural corrections and a falsifiable lead on jump. The change was not a better hypothesis —
