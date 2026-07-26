@@ -1530,6 +1530,75 @@ wrong, so the finding must fall" — is the same shape of error as the one A.24 
 carry the usual caveats: those above 25 rest on counts the band defect still disturbs, and the range
 scanned includes Manky's animations (A.13).
 
+### A.26 Stale frames: a manifest is a range, an animation is a draw order
+
+Reported from play, unprompted, on the Walk+Run+Roll+Jump build: *"one frame at the end of rolling
+where old DK appears."* Diagnosed exactly.
+
+`anim 25` is the **roll's exit**, and its draw order is:
+
+```
+0x4E0   0x4EC   0x4EC   0xB4   0xB4
+```
+
+It rolls out of the imported `0x4B8..0x4EC` and settles on **`0xB4`** — an index in the *idle* range
+that no manifest touched. Two frames of one index, so it reads as a single held frame of stock DK.
+Confirmed against the ledger: 74 indices imported, `0xB4` not among them.
+
+**Neither containment holds.** A manifest is written in index ranges; an animation is a draw order:
+
+- `anim 25` draws **outside** the range — the range is not a superset.
+- `anim 24` draws only **11 of the range's 14** indices, skipping `0x4BC`, `0x4E4`, `0x4E8` — the
+  range is not a subset either.
+
+The second is a **live defect in an import this spec calls confirmed**: three sheet poses are never
+displayed, and every pose after the first skip sits at a different point in the cycle than the sheet
+drew it. It plausibly explains why the roll only ever measured well and never clearly *looked*
+better (A.22's hedged report).
+
+#### The manifest's own length check would have caught it
+
+`animation` derives indices in draw order and length-mismatches against the strip; `indices` is the
+explicit escape hatch. The roll used `indices`, listing 14 contiguous slots — so the 14-pose strip
+zipped onto 14 indices and **the check that exists for exactly this passed vacuously**. Written as
+`"animation": 24` it would have derived 11 indices and refused against 14 poses, which is the true
+state of affairs.
+
+⚠️ **`indices` disables the strongest check in the manifest.** C.2 calls it "the explicit escape
+hatch when no single animation matches"; it is also an escape from verification. Prefer `animation`
+wherever an animation is known, and treat an `indices` list as an assertion no tool is checking.
+
+That the two 14s agreed was the frame-count trap (A.9) arriving through a *range* instead of a count,
+and getting past a reader who had already learned to distrust counts. **A range's size is a frame
+count in disguise.**
+
+#### `FindStaleFrames`, and what it says about the whole build
+
+`BatchImporter.FindStaleFrames` reports every animation drawing both imported and stock indices,
+ordered by fewest missing, on `--dry-run` as well — catching this before a boot is the point. A
+warning, never a refusal: importing one animation at a time is the normal workflow, so straddling is
+expected until a character is finished.
+
+Over the 74-index Walk+Run+Roll+Jump build it reports **exactly one animation — anim 25 needs
+`0xB4`** — the single observed defect and no false positives.
+
+**Not fixed, and the reason is the interesting part.** `0xB4` is also frame 11 of the idle (anims
+4/108, 21 indices). Importing it alone trades a stale frame in the roll, seen rarely, for a lone
+new-art frame in the idle, which plays constantly — a worse deal. The clean fix is the whole idle
+run: **21 indices against sheet strip 0's 11 poses.** That is an M5 case, and a far more concrete
+argument for M5 than the strip-count survey (A.25) — a specific artifact an operator saw, traced to
+a specific animation, blocked on a specific missing capability.
+
+#### Method note
+
+The operator could not answer the question that was asked — whether the jump floats — because the
+comparison pose is *itself* stock art, so there was nothing to judge it against. They answered a
+question nobody asked instead, and that answer was worth more than the one requested. Gotcha 11 says
+to ask for a positive, unmistakable observation; this adds that **an operator playing an
+half-imported character will notice the seams between imported and stock art whether or not you ask
+about them**, and those seams are exactly where the defects are. Ask what looked *wrong*, not only
+what was predicted to look wrong.
+
 ### A.13 `0x858..0x8A8` is **not** DK — it is a foreign island (corrected)
 
 > **This section previously concluded "DK at reduced scale". That was wrong**, and it was wrong in

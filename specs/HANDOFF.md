@@ -107,7 +107,7 @@ The sheet side is done; the ROM side is ~20 % done. `m4-batch-spec.md` A.10–A.
 | 7 "Run" | `0x330..0x37C` | anims 2/14/20, needs `--flat-x` (A.20) |
 | 10 "Jump" | `0x130..0x17C` | anims 5/7/21/81/8/102/82 — **a shared arc** (A.23) |
 | — (enemy bounce) | `0x478..0x4B4` | anims 23/101 (A.22) — no sheet strip claimed yet |
-| 8 "Roll" | `0x4B8..0x4EC` | anim 24, 14 poses ↔ 14 indices; wants `--flat-x` (A.22) |
+| 8 "Roll" | `0x4B8..0x4EC` | anim 24, wants `--flat-x` (A.22). ⚠️ **mis-mapped — see A.26** |
 
 **Provisional** (identified from draw-order montages, *never observed in motion*): Ground Slap →
 `0x2E4..0x32C`, Swim → `0x3A4..0x3DC`, Death → anim 16. Treat as unverified — **three** pairings in
@@ -129,8 +129,15 @@ montages.
 **`0x478..0x4B4` (anims 23/101) is the ENEMY BOUNCE**, confirmed in play — imported art appears when
 jumping on an enemy. It is *not* the roll; that prediction was falsified by the same boot.
 
-**Roll = anim 24, `0x4B8..0x4EC`** — **confirmed in play**. 14 contiguous indices, exactly the
-sheet's 14 Roll poses. Found by poison bisection: ~430 → 96 → 64 → 32 → 16 → 14, every step a boot.
+**Roll = anim 24, `0x4B8..0x4EC`** — **confirmed in play**. Found by poison bisection: ~430 → 96 →
+64 → 32 → 16 → 14, every step a boot.
+
+⚠️ **"14 contiguous indices, exactly the sheet's 14 Roll poses" was wrong** (A.26). The *range* holds
+14, but **anim 24 draws only 11 of them**, skipping `0x4BC`, `0x4E4`, `0x4E8`. So three imported roll
+poses are never displayed and the rest sit at a different offset in the cycle than the sheet drew
+them — a live defect in a build this file calls confirmed. The coincidence of 14 and 14 was the
+frame-count trap again, arriving through a *range* rather than a count and getting past a reader who
+knew to distrust counts.
 
 **Roll wants `--flat-x`.** Stock's roll centre-X jitters **15 px** — worse than the run's 9 px that
 visibly swayed — and the default import inherits it frame-for-frame; `--flat-x` takes it to 0 px.
@@ -246,6 +253,13 @@ distinguish them by silhouette. Needs someone who knows the game.
     wrong DK pairings were each cheap to try — one manifest, one boot — so building an instrument
     never won against trying the next candidate, and the guesses ended up costing far more than the
     tool did. `--poison-index` took one commit and should have existed at A.14 (A.21).
+14. **A range's size is a frame count in disguise, and `indices` disables the check that catches
+    it.** The roll's 14-index range and the sheet's 14 Roll poses agreed, so a manifest written with
+    explicit `indices` zipped them 1:1 and the length check passed vacuously — while anim 24 draws
+    only 11 of those indices (A.26). Written as `"animation": 24` it would have derived 11 and
+    refused. **Prefer `animation` over `indices` wherever the animation is known**; an `indices`
+    list is an assertion no tool is checking. `--batch` now prints STALE FRAMES for animations that
+    straddle imported and stock art, on `--dry-run` too.
 13. **When you flag an assumption as needing a check, check the *inputs* too.** A.23 correctly
     flagged one assumption in the drop-`0x130` escape and named it. The escape died anyway — from
     the pose count underneath it, which nobody had thought to doubt because it came from a tool
@@ -541,10 +555,26 @@ Two candidates, both surfaced by M4 rather than planned:
    V4b 1041/1056 → **1216/1216**. Golden rebuilt, **V4 7/7**, and the confirmed Walk+Run+Roll build
    is byte-for-byte identical.
 
-1. **Animation-script editing.** **Recomputed against the corrected counts, and it survives**: 8 of
-   46 strips before, **9 of 51 after** (A.25). The membership churned — Jump left the list, which is
-   what started this — but the class is the same size. M5 is still justified. (The A.24 guess that
-   it might shrink or vanish was wrong; recorded there so it isn't re-made.)
+1. **Animation-script editing — M5, and it now has a concrete forcing case.** **Recomputed against
+   the corrected counts and it survives**: 8 of 46 strips before, **9 of 51 after** (A.25). The
+   membership churned — Jump left the list, which is what started this — but the class is the same
+   size. (The A.24 guess that it might shrink or vanish was wrong; recorded there so it isn't
+   re-made.)
+
+   **Start from the idle, not from the survey.** A.26 traces an artifact an operator actually saw —
+   stock DK for one frame at the end of the roll — to anim 25 settling on `0xB4`, and the clean fix
+   is the idle run: **21 indices against sheet strip 0's 11 poses.** That is one specific animation,
+   one specific missing capability, and a visible defect to verify the fix against, which is a much
+   better place to start than a list of nine strips.
+
+2. **The roll is mis-mapped and it is not blocked on M5** (A.26). Anim 24 draws 11 of the range's 14
+   indices; the manifest lists all 14, so three poses are never displayed and the rest are offset in
+   the cycle. Re-mapping needs an art call about which sheet poses to drop — or M5 to lengthen the
+   script to 14. Worth deciding before more strips are imported the same way.
+
+3. **Band membership in the slicer** (A.25) — 6 of 51 DK strips, 1 of 42 DK Jr, all bands 19–20,
+   none below strip 25, none used by a manifest. Their rects are right; the grouping is not.
+   Renumbers strips ≥25 when it lands.
 2. ~~**Strip-level pose placement.**~~ Done — implemented, confirmed in play, and as of A.19 the
    default, with the two coordinate systems reconciled. M5 is (1).
 
