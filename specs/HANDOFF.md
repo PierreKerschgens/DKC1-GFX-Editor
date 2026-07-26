@@ -105,6 +105,7 @@ The sheet side is done; the ROM side is ~20 % done. `m4-batch-spec.md` A.10–A.
 | 0 "Idle" | `0x8C..0xDC` | anim 4/108 |
 | 6 "Walk" | `0xE0..0x12C` | anim 3 |
 | 7 "Run" | `0x330..0x37C` | anims 2/14/20, needs `--flat-x` (A.20) |
+| — (enemy bounce) | `0x478..0x4B4` | anims 23/101 (A.22) — no sheet strip claimed yet |
 
 **Provisional** (identified from draw-order montages, *never observed in motion*): Ground Slap →
 `0x2E4..0x32C`, Swim → `0x3A4..0x3DC`, Death → anim 16. Treat as unverified — **three** pairings in
@@ -123,12 +124,11 @@ this tier have now been falsified, including Roll.
 despite being an unmistakable somersault. Static identification is **0 for 4** — use `--paint`, not
 montages.
 
-**Roll is anims 23/101, `0x478..0x4B4`** (16 frames) — located by poison bisection, ~430 indices
-down to 16 (A.22). Runner-up was anim 24 (`0x4B8..0x4EC`); 23/101 wins because it crosses into
-`0x400..0x47C`, which explains the faint-pixel report on `dk-poison-d`, and because a *pair* of
-animation entries over one range is the shape every confirmed DK move has. **Unbooted** —
-`port/dk-roll-real.sfc` imports sheet strip 8 there; `port/dk-poison-g.sfc` poisons anim 24's range
-as the discriminator if the import shows nothing.
+**`0x478..0x4B4` (anims 23/101) is the ENEMY BOUNCE**, confirmed in play — imported art appears when
+jumping on an enemy. It is *not* the roll; that prediction was falsified by the same boot.
+
+**Roll is anim 24, `0x4B8..0x4EC`** — the last candidate in the poison-narrowed range, 14 contiguous
+indices against the sheet's 14 Roll poses. **Unbooted**; `port/dk-roll-anim24.sfc` imports it.
 
 **Cliff teeter** is confirmed in two phases by two instruments: start (stretched eyes)
 `0x3E0..0x3FC`, loop `0x400..0x47C`.

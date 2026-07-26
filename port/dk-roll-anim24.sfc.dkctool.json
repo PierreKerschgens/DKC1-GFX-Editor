@@ -1,0 +1,133 @@
+{
+  "version": 1,
+  "sourceRomSha256": "628147468c3539283197f58f03b94df49758a332831857481ea9cc31645f0527",
+  "allocations": [
+    {
+      "imageIndex": "0x4B8",
+      "offset": "0x7A22",
+      "length": "0x37C",
+      "previousPointer": "0xF376FA",
+      "source": "roll-anim24.json strip8:0",
+      "timestamp": "2026-07-26T00:37:01.1173900\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4BC",
+      "offset": "0x174BA",
+      "length": "0x338",
+      "previousPointer": "0xF37992",
+      "source": "roll-anim24.json strip8:1",
+      "timestamp": "2026-07-26T00:37:01.1246060\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4C0",
+      "offset": "0x177F2",
+      "length": "0x2D2",
+      "previousPointer": "0xF37BE6",
+      "source": "roll-anim24.json strip8:2",
+      "timestamp": "2026-07-26T00:37:01.1298980\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4C4",
+      "offset": "0x17AC4",
+      "length": "0x28E",
+      "previousPointer": "0xF37E3A",
+      "source": "roll-anim24.json strip8:3",
+      "timestamp": "2026-07-26T00:37:01.1353500\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4C8",
+      "offset": "0x13E9C1",
+      "length": "0x2B0",
+      "previousPointer": "0xF380B6",
+      "source": "roll-anim24.json strip8:4",
+      "timestamp": "2026-07-26T00:37:01.1410380\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4CC",
+      "offset": "0x13EC71",
+      "length": "0x2D2",
+      "previousPointer": "0xF3830A",
+      "source": "roll-anim24.json strip8:5",
+      "timestamp": "2026-07-26T00:37:01.1463390\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4D0",
+      "offset": "0x17D52",
+      "length": "0x26C",
+      "previousPointer": "0xF38542",
+      "source": "roll-anim24.json strip8:6",
+      "timestamp": "2026-07-26T00:37:01.1516640\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4D4",
+      "offset": "0x13EF43",
+      "length": "0x2D2",
+      "previousPointer": "0xF38764",
+      "source": "roll-anim24.json strip8:7",
+      "timestamp": "2026-07-26T00:37:01.1570180\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4D8",
+      "offset": "0x13F215",
+      "length": "0x2F4",
+      "previousPointer": "0xF38958",
+      "source": "roll-anim24.json strip8:8",
+      "timestamp": "2026-07-26T00:37:01.1623980\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4DC",
+      "offset": "0x13F509",
+      "length": "0x35A",
+      "previousPointer": "0xF38B90",
+      "source": "roll-anim24.json strip8:9",
+      "timestamp": "2026-07-26T00:37:01.1679810\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4E0",
+      "offset": "0x13F863",
+      "length": "0x338",
+      "previousPointer": "0xF38DEA",
+      "source": "roll-anim24.json strip8:10",
+      "timestamp": "2026-07-26T00:37:01.1735670\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4E4",
+      "offset": "0x13FB9B",
+      "length": "0x39E",
+      "previousPointer": "0xF39044",
+      "source": "roll-anim24.json strip8:11",
+      "timestamp": "2026-07-26T00:37:01.1790540\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4E8",
+      "offset": "0x17FA3C",
+      "length": "0x37C",
+      "previousPointer": "0xF392C0",
+      "source": "roll-anim24.json strip8:12",
+      "timestamp": "2026-07-26T00:37:01.1846150\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4EC",
+      "offset": "0x18EED0",
+      "length": "0x39E",
+      "previousPointer": "0xF39558",
+      "source": "roll-anim24.json strip8:13",
+      "timestamp": "2026-07-26T00:37:01.1900920\u002B00:00",
+      "fillByte": "0x00"
+    }
+  ],
+  "expansion": null
+}
