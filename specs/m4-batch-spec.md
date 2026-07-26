@@ -1371,6 +1371,94 @@ every other animation on the arc starts at `0x138` or later — so one stale fra
 frame of one animation and nothing else. Whether the sheet's 19 poses actually begin at the *second*
 crouch is an assumption about the artwork and must be checked on the slice, not asserted.
 
+> **Checked, and the premise was false — see A.24.** The strip has **20** poses; the slicer merged
+> two of them across a 3 px gap. There is no mismatch, no escape needed and no M5 dependency here.
+> The check also found the same defect in 21 of 46 strips and took A.9's negative result down with
+> it. Left above as written because the *reasoning* was sound — it was the input that was wrong, and
+> that is the point: the assumption flagged as needing a check was not the one that broke.
+
+### A.24 The escape was not needed — the slicer under-counts poses, and it contaminated A.9
+
+Checking A.23's "drop `0x130`" escape against the sheet dissolved the problem it was solving.
+
+**Strip 10 "Jump" has 20 poses, not 19.** The slicer's pose 9 is a 117 px rect holding *two* 57 px
+DK figures separated by a **3 px gap**. Verified three ways: visually (two unmistakable Kongs in the
+crop), by opaque-column runs over the band (20 runs, and pose 9's rect splits 485..541 / 545..601),
+and by the ROM — 20 poses is exactly the arc's 20 indices, and the strip's caption reads "Jump".
+
+So there is **no length mismatch, no stale frame, and no M5 dependency for this strip**. It imports
+1:1. The escape, and the assumption it rested on, are both moot.
+
+#### Root cause: the merge gap is wider than the sheet's real gaps
+
+`SheetSlicer.MergeGap = 4` joins two flood-fill components whose bboxes are within 4 px. It exists to
+reattach a *fragment* to its figure — a hand clear of the body across transparent pixels. But this
+sheet lays poses out **1–3 px apart**, which is inside that radius, so wherever the author packed two
+figures tightly the slicer emits them as one pose.
+
+Surveying every pose rect for the specific signature — splits into ≥2 opaque runs, each ≥60 % of the
+strip's median pose width, which a genuine internal gap cannot produce because it leaves one wide
+part and one narrow one:
+
+**39 merged rects across 21 of 46 strips, ≥89 poses missing.** Every gap measured 1–3 px. Examples:
+
+| strip | rect w | splits into | gaps | count |
+|---|---|---|---|---|
+| 10 "Jump" | 117 | 57 + 57 | 3 | 19 → **20** |
+| 21 | 533 | 8 × 64 | 3 | 6 → **13** |
+| 11 | 263 | 5 × ~50 | 3 | 13 → **17** |
+| 20 | 622 | 10 × ~60 | 1–3 | 7 → **16** |
+
+**89 is a lower bound**, for two reasons. The heuristic only counts full-width parts, so a merged
+fragment is missed. And strip 26's "pose 0" is a 677 px rect that the survey scored as 2 parts but
+which is visibly **~30 figures across two rows** — there the *row-band* detection failed, not the
+merge gap, so that is a second and separate defect this survey does not measure.
+
+⚠️ **A.3's "automatic segmentation works, at about 96 %" is withdrawn.** It counted strips that
+looked plausible, not figures. The real figure-level rate is at most ~85 % and the true number is
+unknown until the band defect is measured too.
+
+#### The damage: A.9's negative result does not survive, and both rows fail differently
+
+A.9 concluded frame-count matching "does not narrow toward the right answer — it excludes it", from
+two rows. **Both are now known to be broken, and in both the right answer was inside the
+count-matched set:**
+
+| A.9 row | what it claimed | what is now known |
+|---|---|---|
+| strip 6 "Walk", 20 poses → anims 2, 3, 5, 14, 20 | "**none** correct; the real walk is anim 4/108, 21 frames" | **Anim 3 *is* the Walk**, confirmed in play, and it is right there in the list. A.9 judged it against the `0x8C..0xDC` pairing that **A.16 later falsified** — that range is Idle. |
+| strip 10 "Jump", 19 poses → anim 74, a *unique* match | "**no**, anim 74 is the hand-slap" | The **count was wrong**. At the true 20, anim 5 — the Jump confirmed in A.23 — is in the candidate set. The spurious uniqueness at 19 is a slicer artefact. |
+
+A.9 even anticipated the objection and dismissed it: *"The 20 is not a slicing artefact — the band
+genuinely ends after 20 poses, checked at the right edge."* True and irrelevant — the strip's *ends*
+were right, and the merge was in the *middle*, where nobody looked.
+
+**Withdraw the negative result.** What survives is much weaker and was already in `--stats-anim`:
+count matching is a **filter, not an identification** — a 20-pose strip still matches 5 animations,
+an 8-pose strip matches 52, and only 21 of 51 counts are unique. It does not select the right answer;
+it just no longer stands accused of excluding it. **Gotcha 3 ("0 for 2/0 for 3") is void** — those
+were never clean tests. Confirmation still comes only from a boot (gotcha 1), which is untouched.
+
+**This also undercuts M5's justification.** "8 of 46 strips have pose counts no DK animation has" was
+computed from these counts, and 21 of 46 strips have wrong ones. That number must be recomputed
+before M5 is scoped on it.
+
+#### What is safe, and what the fix is
+
+**The three confirmed imports are unaffected.** Strips 6 (Walk), 7 (Run) and 8 (Roll) contain no
+merged rects, so their pose numbering — the thing the manifests address — is already correct. Nothing
+that has been booted needs revisiting.
+
+**The fix is not "lower `MergeGap`".** The gap exists to absorb fragments, and shrinking it would
+start splitting figures whose limbs clear the body. The rule that matches the intent is: **never
+merge two components that are both pose-sized, however close they are.** Absorption should be
+asymmetric — a small component joins a large neighbour; two large ones are two poses.
+
+That change renumbers poses in 21 strips, which is exactly what the class doc warns about
+("a change here silently retargets every existing manifest") and what V4a's golden slice list pins.
+It needs the golden rebuilt deliberately, in its own change, with the 21 strips' new counts reviewed
+against the sheet — not folded into other work.
+
 ### A.13 `0x858..0x8A8` is **not** DK — it is a foreign island (corrected)
 
 > **This section previously concluded "DK at reduced scale". That was wrong**, and it was wrong in

@@ -188,10 +188,11 @@ is the arc, not the animation** — run `--anims-in` on a range before assuming 
 `0x130..0x17C` is a climb/hang, not the Run — its height swells 40→72→36, a one-shot, and DK is
 upright with both arms overhead.
 
-**Frame-count matching is 0 for 3.** Stop reaching for it. `--baseline`'s *height profile* across a
-range is the cheap discriminator that works: a loop holds height roughly constant, a one-shot swells
-and recovers. It refuted the `0x130..0x17C` prediction from the ROM side alone, before an import
-existed.
+**Frame-count matching: see gotcha 3 — the "0 for 3" verdict is withdrawn** (A.24), though it is
+still only a filter. `--baseline`'s *height profile* across a range remains the cheap discriminator:
+a loop holds height roughly constant, a one-shot swells and recovers. (It was used to refute a
+`0x130..0x17C` reading from the ROM side alone — that range is now confirmed Jump, and the swell it
+measured was the jump arc.)
 
 **Next test:** the remaining unmapped actions — turn, landing, deceleration, and the rope/ledge group.
 Use the complement paint from A.23; it is now 1 for 1 and is the only instrument that has produced a
@@ -212,8 +213,14 @@ distinguish them by silhouette. Needs someone who knows the game.
    overturned the anchor pairing six passes of static analysis had treated as settled (A.16).
 2. **Verify against draw order, never an index range.** An animation's frames are not its contiguous
    index range; rendering the range nearly cost a correct match (A.14).
-3. **Frame-count matching does not work** — 0 for 2, including a *unique* in-block match. The sheet's
-   author changed frame counts deliberately (A.9).
+3. ~~**Frame-count matching does not work**~~ — **void, and the way it broke is the lesson** (A.24).
+   Both of A.9's two rows were defective: one judged against a pairing A.16 later falsified, the
+   other against a pose count the slicer got wrong. In *both*, the correct animation was inside the
+   count-matched set. A negative result assembled from two cases is one bad input away from being
+   backwards — and it stood for six sections while both of its inputs were separately overturned.
+   What is true is weaker: count matching is a **filter, not an identification** (a 20-pose strip
+   matches 5 animations, an 8-pose strip 52, only 21 of 51 counts unique). Confirmation still needs
+   a boot — gotcha 1 is untouched.
 4. **Palette identity needs all candidates on screen at once** (`--palette-sweep`), not a hand-picked
    few. Judging "coherent" in isolation produced two wrong identifications of the same block (A.13).
 5. **`--zoom` is capped by `--cell`** (`scale = min(zoom, cell/w, cell/h)`). Raising zoom alone does
@@ -239,6 +246,13 @@ distinguish them by silhouette. Needs someone who knows the game.
     wrong DK pairings were each cheap to try — one manifest, one boot — so building an instrument
     never won against trying the next candidate, and the guesses ended up costing far more than the
     tool did. `--poison-index` took one commit and should have existed at A.14 (A.21).
+13. **When you flag an assumption as needing a check, check the *inputs* too.** A.23 correctly
+    flagged one assumption in the drop-`0x130` escape and named it. The escape died anyway — from
+    the pose count underneath it, which nobody had thought to doubt because it came from a tool
+    (A.24). A.9 had even pre-emptively defended that number ("not a slicing artefact — the band
+    genuinely ends after 20 poses, checked at the right edge"): the ends *were* right, and the
+    merge was in the middle, where the check didn't look. **A defence that checks the edges does
+    not cover the interior.**
 12. **A range is not one animation, and it may not even be one *ordering*.** Jump's 20 sprites are a
     single crouch→extend→tuck arc that eight animations traverse from different entry points, two of
     them **backwards** (A.23). "Contiguous range = animation" was already known false; "range =
@@ -521,15 +535,19 @@ two idles: **one player action, two animations.** Assume it for every move until
 
 Two candidates, both surfaced by M4 rather than planned:
 
-1. **Animation-script editing.** 8 of 46 DK strips have pose counts no DK animation has, and the
-   author changed frame counts deliberately. Without script editing, a faithful full-character
-   import is impossible for those runs — you can only leave stale frames (A.9).
+0. **Fix the slicer's pose merging — this now comes first** (A.24). `MergeGap = 4` joins two
+   figures laid out 1–3 px apart, so **21 of 46 strips have wrong pose counts and ≥89 poses are
+   missing** (a lower bound; strip 26 also exposes a separate two-rows-in-one-band defect). The fix
+   is not a smaller gap — the gap exists to reattach fragments — but an asymmetric rule: **never
+   merge two components that are both pose-sized.** It renumbers poses in 21 strips, so it needs
+   V4a's golden rebuilt deliberately, in its own change, with the new counts reviewed against the
+   sheet. **Strips 6/7/8 (Walk/Run/Roll) are clean, so nothing already confirmed in play is at
+   risk.**
 
-   **Jump is now the live case, and it is off by one**: strip 10 has 19 poses, the arc has 20
-   indices, so the length check refuses. A.23 notes a cheap escape for *this* range specifically —
-   drop `0x130`, which only anim 5 uses — but it rests on an unchecked assumption about where the
-   sheet's first pose sits in the arc. That question (verify the escape, or build M5) is the next
-   decision.
+1. **Animation-script editing.** ~~8 of 46 DK strips have pose counts no DK animation has.~~
+   **Recompute that number after (0)** — it was derived from the counts A.24 just invalidated, and
+   Jump was the live example until it turned out to have 20 poses and fit its arc exactly. M5 may
+   be smaller than believed, or unnecessary. Do not scope it on the old figure.
 2. ~~**Strip-level pose placement.**~~ Done — implemented, confirmed in play, and as of A.19 the
    default, with the two coordinate systems reconciled. M5 is (1).
 
@@ -540,6 +558,8 @@ Two candidates, both surfaced by M4 rather than planned:
 - DK owns `0x8C..0x950`, 562 indices; Diddy begins `0x954` (A.8).
 - `0x858..0x8A8` inside that range is **not DK** — most likely Manky Kong. **Exclude from any DK
   manifest** (A.13). Reference at `port/DkcTool/testdata/manky-reference.png`.
-- DK sheet: 533 poses, 46 strips, **29 authorable captioned runs** (a strip is not an animation).
+- DK sheet: 46 strips, **29 authorable captioned runs** (a strip is not an animation).
+  ⚠️ **The 533-pose figure is wrong** — the slicer merges tightly-packed figures, so the true count
+  is ≥622 and 21 strips are under-counted (A.24). Do not use per-strip pose counts until (0) lands.
 - Capacity: DK alone is 487 KB against a 92 KB stock pool → `--expand` is mandatory for a full
   import, but a single ~20-pose run fits stock with room to spare.
