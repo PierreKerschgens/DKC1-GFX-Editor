@@ -1192,6 +1192,20 @@ static int RunBatchCli(Rom rom, string[] args)
                           r.Drift.SeverityLabel);
     }
 
+    // Would these poses have fitted in the bytes they replace? The importer never writes in place,
+    // so this is the measurement of whether expansion was necessary rather than merely convenient.
+    var fit = BatchImporter.MeasureInPlaceFit(rom, report);
+    if (fit.Total > 0)
+    {
+        Console.WriteLine();
+        Console.WriteLine($"IN-PLACE FIT : {fit.Fits}/{fit.Total} pose(s) would fit their existing slot " +
+                          $"({100.0 * fit.Fits / fit.Total:F0} %)");
+        Console.WriteLine($"  too big for the slot : {fit.TooBig}");
+        Console.WriteLine($"  aliased (unsafe in place, whatever the size) : {fit.Aliased}");
+        Console.WriteLine($"  new art {fit.NewBytes:N0} B vs {fit.OldBytes:N0} B replaced; " +
+                          $"free space still needed: {fit.BytesIfInPlace:N0} B");
+    }
+
     // Stale frames: an animation that draws some imported art and some stock art will show the
     // old character part-way through an otherwise imported move. Printed for --dry-run too --
     // catching this before a boot is the whole point (BatchImporter.FindStaleFrames).

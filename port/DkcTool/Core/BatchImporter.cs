@@ -256,6 +256,45 @@ namespace DkcTool.Core
             return straddling.OrderBy(s => s.Stale.Count).ThenBy(s => s.Animation).ToList();
         }
 
+        /// <summary>What an in-place write would cost, per pose and in total.</summary>
+        public sealed class FitReport
+        {
+            public int Total, Fits, TooBig, Aliased;
+            public long NewBytes, OldBytes, BytesIfInPlace;
+        }
+
+        /// <summary>
+        /// Would each imported sprite fit in the bytes it replaces?
+        ///
+        /// <para>The importer always allocates fresh and repoints — never writes in place — which
+        /// is what makes `--revert` byte-exact (V4g) and what makes expansion necessary at all. The
+        /// question of whether that is *required* has never been measured, so this measures it.</para>
+        ///
+        /// <para>A pose is only safely in-place if it fits <b>and</b> its slot has no aliases: when
+        /// several image indices point at one sprite, overwriting it changes every one of them, and
+        /// a slot shared with an animation nobody is importing would be corrupted silently.</para>
+        /// </summary>
+        public static FitReport MeasureInPlaceFit(Rom rom, BatchReport report)
+        {
+            var fit = new FitReport();
+            foreach (var o in report.Imported)
+            {
+                var slot = SpriteSlot.Read(rom, o.Result!.ImageIndex);
+                int newLen = o.Result!.Serialized.Length;
+
+                fit.Total++;
+                fit.NewBytes += newLen;
+                fit.OldBytes += slot.Size;
+
+                bool aliased = slot.AliasIndices.Count > 1;
+                if (aliased) fit.Aliased++;
+
+                if (newLen <= slot.Size && !aliased) fit.Fits++;
+                else { fit.TooBig += newLen > slot.Size ? 1 : 0; fit.BytesIfInPlace += newLen; }
+            }
+            return fit;
+        }
+
         /// <summary>QA overlay (C.4): the source sheet with every planned pose boxed and annotated
         /// with its target image index -- green for imported, red for refused. The only artefact
         /// that makes a wrong mapping visible before the ROM is booted.</summary>

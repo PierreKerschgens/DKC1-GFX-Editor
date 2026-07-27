@@ -1871,6 +1871,39 @@ An expanded ROM changes size and map mode, so **emulator save states made agains
 not load** — states embed the memory map. SRAM (`.srm`) is unaffected. Delete the save-state directory
 after the first expanded build.
 
+### A.31 Is expansion actually necessary? Measured: yes, overwhelmingly
+
+Fair challenge from the operator — *"why ExHiROM at all? why can't you just swap the animations?"* —
+because the importer **never writes in place**. `SpriteImporter.Import` always allocates fresh space
+and repoints, even when the new sprite would fit the bytes it replaces. That is deliberate (it is
+what makes `--revert` byte-exact, V4g, and it sidesteps aliasing), but whether it is *necessary* had
+never been measured. `--batch` now measures it:
+
+```
+IN-PLACE FIT : 1/120 pose(s) would fit their existing slot (1 %)
+  too big for the slot : 119
+  aliased (unsafe in place, whatever the size) : 0
+  new art 116.662 B vs 84.354 B replaced; free space still needed: 115.804 B
+```
+
+**One pose in 120.** The new art is **38 % larger** than the art it replaces, and the reason is
+inherent rather than incidental: the sheet draws DK upright and full-height where stock draws him
+compact on his knuckles, so nearly every pose covers more 8×8 cells. No amount of allocator cleverness
+recovers that.
+
+Even granting a perfect in-place path, the remaining 119 poses still need **115.8 KB** against a
+**92 KB** stock pool — so **expansion is required for this sheet whatever the write strategy is**,
+and would have been required at roughly 100 poses even if in-place worked flawlessly.
+
+Aliasing turned out to be a non-issue here (0 of 120), which is worth knowing: it was one of the two
+stated reasons for the allocate-and-repoint design, and on this manifest it never applies. The
+byte-exact-revert reason still stands on its own.
+
+**Recorded because the question was right even though the answer was no.** The design had two
+justifications and neither had a number attached; one of them (aliasing) turns out not to bind at
+all, and the other is now backed by a measurement rather than an assumption. A challenge that
+confirms a decision is worth as much as one that overturns it — and it cost one commit.
+
 ### A.13 `0x858..0x8A8` is **not** DK — it is a foreign island (corrected)
 
 > **This section previously concluded "DK at reduced scale". That was wrong**, and it was wrong in

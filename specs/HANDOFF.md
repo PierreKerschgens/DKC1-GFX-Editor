@@ -631,3 +631,7 @@ Two candidates, both surfaced by M4 rather than planned:
   Their pose rects are right; the strip grouping and pose order are not. Fixing it renumbers ≥25.
 - Capacity: DK alone is 487 KB against a 92 KB stock pool → `--expand` is mandatory for a full
   import, but a single ~20-pose run fits stock with room to spare.
+- **In-place writing would not avoid expansion** (A.31): only **1 of 120** poses fits the slot it
+  replaces, because the sheet's upright DK is **38 % larger** than stock's compact knuckle pose.
+  Even a perfect in-place path still needs 115.8 KB against the 92 KB pool. `--batch` reports
+  `IN-PLACE FIT` on every run, `--dry-run` included.
