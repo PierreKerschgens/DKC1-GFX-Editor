@@ -11,7 +11,7 @@
     "originalComplement": "0xD433",
     "targetSize": "0x800000",
     "mapMode": "0x35",
-    "mirrorLowBank": false,
-    "timestamp": "2026-07-26T23:48:54.5139580\u002B00:00"
+    "mirrorLowBank": true,
+    "timestamp": "2026-07-27T00:01:48.8810760\u002B00:00"
   }
 }

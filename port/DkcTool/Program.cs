@@ -254,7 +254,19 @@ if (args.Length >= 2 && args[1] == "--expand")
     // recording the expansion (specs/m3-expansion-spec.md C.1) so it is reversible later via
     // Expansion.Revert -- expansion is not meant to be a one-way door.
     string expOut = ArgValue(args, "--out") ?? throw new ArgumentException("--expand needs --out");
-    bool expMirror = Array.IndexOf(args, "--mirror") >= 0;
+
+    // Mirrored by default, because the un-mirrored form does not boot -- and this spec's own
+    // gate says so. `--verify-m3`'s X1 constructs exactly this ROM and passes by asserting the
+    // screen *dies*: "the console resets into the zero-filled half". Every gate that expects a
+    // working ROM (X2, X3a, X3b) builds it with the mirror.
+    //
+    // It shipped defaulting to false anyway, so the first real use of --expand produced an 8MB
+    // ROM that black-screened in every emulator while --verify-m3 reported 6/6. A gate that
+    // documents a broken configuration does not protect anyone from the CLI selecting it.
+    bool expMirror = Array.IndexOf(args, "--no-mirror") < 0 && Expansion.MirrorLowBankByDefault;
+    if (!expMirror)
+        Console.Error.WriteLine("warning: --no-mirror builds the configuration --verify-m3's X1 " +
+                                "gate proves does not boot. Only useful for reproducing that gate.");
     byte expMode = ArgValue(args, "--map") is string m ? Convert.ToByte(m, 16) : Expansion.MapModeExHiRom;
     int expSize = Convert.ToInt32(ArgValue(args, "--size") ?? "0x800000", 16);
 

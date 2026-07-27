@@ -31,6 +31,14 @@ namespace DkcTool.Core
         public const byte MapModeHiRom = 0x31;    // HiROM + FastROM -- what DKC1 is
         public const byte MapModeExHiRom = 0x35;  // ExHiROM + FastROM -- what >4 MB needs
 
+        /// <summary>
+        /// Whether an expanded ROM mirrors $00:8000-FFFF into the extended half. <b>Required for
+        /// the ROM to boot at all</b> -- without it the console resets into the zero-filled half
+        /// and black-screens, which is precisely what `--verify-m3`'s X1 gate asserts. Only a test
+        /// reproducing X1 should pass false.
+        /// </summary>
+        public const bool MirrorLowBankByDefault = true;
+
         /// <summary>Size byte is log2(size) - 10, i.e. 0x0C = 4 MB, 0x0D = 8 MB.</summary>
         public static byte SizeByteFor(int bytes) => (byte)(Math.Log2(bytes) - 10);
         public static int SizeFromByte(byte b) => 1 << (b + 10);

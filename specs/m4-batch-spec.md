@@ -1820,6 +1820,57 @@ poison bisections. The artist had written it down. **Before building an instrume
 information, check whether the source already states it** — and check that "the source doesn't say"
 isn't really "our renderer drew black on black".
 
+### A.30 `--expand`'s default was the configuration its own gate proves is dead
+
+The first real use of `--expand` produced an 8 MB ROM that **black-screened in every emulator**, while
+`--verify-m3` reported 6/6 and `--verify-m4` 7/7.
+
+The cause, in the gate's own words. `--verify-m3` X1:
+
+> **8 MB ExHiROM, size byte + checksum fixed, NO low-bank mirror** — expect: differs, *"the console
+> resets into the zero-filled half and dies"*. **PASS** (documents why "append banks and bump the
+> size byte" does not work)
+
+Every gate that expects a *working* ROM — X2, X3a, X3b — builds it with `$00:8000-FFFF` mirrored to
+`0x408000`. And the CLI read the mirror as opt-in:
+
+```csharp
+bool expMirror = Array.IndexOf(args, "--mirror") >= 0;   // default: false
+```
+
+So `--expand` with no flags built X1. The knowledge was not missing, was not wrong, and was not even
+undocumented — it was asserted by a passing gate three lines from the code that contradicted it.
+
+**Fixed:** mirroring is the default (`Expansion.MirrorLowBankByDefault`), `--no-mirror` opts out and
+warns that it builds the non-booting form. Verified the whole way through: `--expand` with no flags,
+then the 116-pose batch, is now **byte-identical** to the build confirmed booting under snes9x.
+
+#### Why every gate missed it
+
+- **M3's gates test `Expansion.Build(...)` directly**, with the mirror passed explicitly. They never
+  exercise the CLI, so the CLI's default was outside every gate.
+- **M4's gates never expand.** V4c/V4d import into the stock pool by design (C.3: "`--batch` never
+  expands"), so 7/7 says nothing about expanded output.
+- **X1 passing is what made it invisible.** A gate whose success condition is *"this ROM is broken"*
+  reads as reassurance in a summary line. `--verify-m3: 6/6` counted the proof-of-brokenness as one
+  of its six.
+
+**The lesson, and it is not "add a gate".** There was already a gate; the defect lived in the gap
+between what the gate constructed and what the tool constructs. **Gate the artifact the user actually
+gets** — for anything with a CLI default, the default is part of the artifact. This is the same shape
+as A.26, where the manifest's length check passed vacuously because `indices` bypassed it: in both
+cases a real check was aimed at something adjacent to the thing that broke.
+
+⚠️ **Still not gated:** nothing boots the output of `--expand`'s default path. The check that caught
+this was run by hand (`--emu-boot`, then counting non-black pixels). A "does the shipped default
+boot" gate is the obvious next addition and does not exist yet.
+
+#### Operator-facing note
+
+An expanded ROM changes size and map mode, so **emulator save states made against the 4 MB LoROM will
+not load** — states embed the memory map. SRAM (`.srm`) is unaffected. Delete the save-state directory
+after the first expanded build.
+
 ### A.13 `0x858..0x8A8` is **not** DK — it is a foreign island (corrected)
 
 > **This section previously concluded "DK at reduced scale". That was wrong**, and it was wrong in

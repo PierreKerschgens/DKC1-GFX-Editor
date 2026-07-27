@@ -10,7 +10,7 @@ The durable record is in the numbered specs; this file is the map and the open e
 | milestone | state |
 |---|---|
 | M0 core port, M1 encoder, M2a tiler, M2b writer, M2c free space | done, gated |
-| M3 ROM expansion (ExHiROM) | done, `--verify-m3 --all-cores` 6/6 |
+| M3 ROM expansion (ExHiROM) | done, `--verify-m3 --all-cores` 6/6. ⚠️ its CLI default shipped broken — A.30 |
 | M4 batch import | done, `--verify-m4` **7/7** (V4a–V4g), V4d 6/6 cores with alignment defaulted on |
 | M5 | not started. One candidate left — see "What M5 probably is" |
 
@@ -373,6 +373,16 @@ right but lands wrong by a small constant, `--coords` is the one that finds it (
 
 Writing: `--import`, `--batch` (both take `--dry-run`; `--batch` also `--no-align-strip` and
 `--flat-x`), `--expand`, `--revert`.
+
+⚠️ **`--expand` must mirror the low bank or the ROM does not boot** — it is the default now, but it
+shipped opt-in, so the first real expansion black-screened everywhere while both verify suites stayed
+green (A.30). `--verify-m3`'s X1 gate *asserts* the un-mirrored form is dead; the CLI selected it
+anyway. **Nothing yet boots the output of `--expand`'s default path** — check by hand with
+`--emu-boot` and look at the frame.
+
+⚠️ **Expanding invalidates emulator save states** (size + map mode change); `.srm` survives. Tell the
+operator to delete the save-state dir after the first expanded build, or they will report "the ROM
+does not load" for a second, unrelated reason.
 
 `--flat-x` anchors a run to one horizontal centre instead of matching each replaced frame's. Use it
 when the imported art does not lunge and the replaced animation does (A.20) — confirmed in play on
