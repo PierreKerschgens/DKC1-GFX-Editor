@@ -1,0 +1,170 @@
+{
+  "version": 1,
+  "sheet": "/Users/pierre/devel/DKC1-GFX-Editor/port/sprites/Custom _ Edited - Donkey Kong Customs - Donkey Kong - Donkey Kong (Classic, DKC-Style).png",
+  "palette": "Donkey Kong 1P",
+  "strips": [
+    {
+      "strip": 6,
+      "name": "Walk -> anim 3. flatX OFF: stock's walk centre-X spans 4px smoothly and the per-pose import reproduces it exactly. Confirmed in play (A.19).",
+      "indices": [
+        "0xE0",
+        "0xE4",
+        "0xE8",
+        "0xEC",
+        "0xF0",
+        "0xF4",
+        "0xF8",
+        "0xFC",
+        "0x100",
+        "0x104",
+        "0x108",
+        "0x10C",
+        "0x110",
+        "0x114",
+        "0x118",
+        "0x11C",
+        "0x120",
+        "0x124",
+        "0x128",
+        "0x12C"
+      ],
+      "flatX": true
+    },
+    {
+      "strip": 7,
+      "name": "Run -> anims 2/14/20. flatX ON: stock's run lunges 9px with a 6px single-frame step, which the upright sheet art cannot carry. Confirmed in play (A.20).",
+      "indices": [
+        "0x330",
+        "0x334",
+        "0x338",
+        "0x33C",
+        "0x340",
+        "0x344",
+        "0x348",
+        "0x34C",
+        "0x350",
+        "0x354",
+        "0x358",
+        "0x35C",
+        "0x360",
+        "0x364",
+        "0x368",
+        "0x36C",
+        "0x370",
+        "0x374",
+        "0x378",
+        "0x37C"
+      ],
+      "flatX": true,
+      "offsetX": -7
+    },
+    {
+      "strip": 8,
+      "name": "Roll -> anim 24 (0x18), which draws 11 of the range 0x4B8..0x4EC and skips 0x4BC/0x4E4/0x4E8 -- nothing in the 438-script table draws those three. Sheet poses 0..10 are the tumble; 11..13 are DK standing up, which is anim 25 landing on 0xB4 and needs the idle imported (A.26).",
+      "flatX": true,
+      "animation": "0x18",
+      "poses": "0..10"
+    },
+    {
+      "strip": 10,
+      "name": "Jump -> the 0x130..0x17C arc (anims 5/7/21/81/8/102/82). 20 poses <-> 20 indices after the A.25 slicer fix.",
+      "indices": [
+        "0x130",
+        "0x134",
+        "0x138",
+        "0x13c",
+        "0x140",
+        "0x144",
+        "0x148",
+        "0x14c",
+        "0x150",
+        "0x154",
+        "0x158",
+        "0x15c",
+        "0x160",
+        "0x164",
+        "0x168",
+        "0x16c",
+        "0x170",
+        "0x174",
+        "0x178",
+        "0x17c"
+      ],
+      "flatX": true
+    },
+    {
+      "strip": 0,
+      "name": "Idle -> anim 4 (0x4). Sheet has 11 poses, the animation 21 frames, so each pose is held two frames (last one once) -- even resampling, no script edit, ROM timing preserved. Covers 0xB4, which is the stale frame anim 25 lands on at the end of the roll (A.26).",
+      "animation": "0x4",
+      "poses": "0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10",
+      "flatX": true
+    },
+    {
+      "strip": 3,
+      "name": "Bang Chest wind-up -> 0x200..0x210. Sheet strip 3 splits 10 | 5 at a drawn rule (A.29); poses 0..9 are the rise, which the ROM does by borrowing idle indices 0x8C..0xB0 that strip 0 already owns, so only 10..14 have slots here.",
+      "indices": [
+        "0x200",
+        "0x204",
+        "0x208",
+        "0x20c",
+        "0x210"
+      ],
+      "poses": "10..14",
+      "flatX": true
+    },
+    {
+      "strip": 5,
+      "name": "Bang Chest loop+recovery -> 0x214..0x25C. Strip 5 is the row BELOW the Bang Chest caption -- the run wraps (A.29) -- and carries \"(Loop and Reverse)\": poses 1..10 are the pounding loop anim 9 plays forward-then-back x3 over 0x218..0x23C, 11..18 the recovery over 0x240..0x25C.",
+      "indices": [
+        "0x214",
+        "0x218",
+        "0x21c",
+        "0x220",
+        "0x224",
+        "0x228",
+        "0x22c",
+        "0x230",
+        "0x234",
+        "0x238",
+        "0x23c",
+        "0x240",
+        "0x244",
+        "0x248",
+        "0x24c",
+        "0x250",
+        "0x254",
+        "0x258",
+        "0x25c"
+      ],
+      "poses": "0..18",
+      "flatX": true
+    },
+    {
+      "strip": 1,
+      "name": "Turn -> anim 6 (0x6), whose draw order is 0x180 0x184 0x184 0x180 -- two poses played out and back, the ROM form of the sheet's loop-and-reverse compression (A.29). \"poses\": \"0,1,1,0\" mirrors that palindrome so `animation` keeps its length check instead of an indices list bypassing it (A.26).",
+      "animation": "0x6",
+      "poses": "0,1,1,0",
+      "flatX": true
+    },
+    {
+      "strip": 9,
+      "animation": "0x17",
+      "flatX": true,
+      "name": "CANDIDATE. Sheet strip 9 \"Flip\", 16 poses -> anim 23 (0x478..0x4B4, 16 distinct, contiguous). That range is the enemy bounce, CONFIRMED IN PLAY (A.22), and the operator reports it still shows stock art -- so this one is directly falsifiable: bounce off an enemy and see."
+    },
+    {
+      "strip": 2,
+      "animation": "0x4F",
+      "flatX": true,
+      "name": "CANDIDATE. Sheet strip 2 \"Swap (Partner)\", 10 poses -> anim 79 (0x748..0x76C, 10 distinct). A.22 puts the Diddy swap in the 0x680..0x7FC chunk. Count exact, chunk agrees; nothing stronger than that."
+    },
+    {
+      "strip": 4,
+      "animation": "0x50",
+      "flatX": true,
+      "name": "CANDIDATE. Sheet strip 4 \"Swap (Leader)\", 5 poses -> anim 80 (0x770..0x780, 5 distinct), immediately after anim 79 in the same chunk -- the two swaps should sit together. Draw order 0x770 0x774 0x778 0x77C 0x780 0x77C repeats 0x77C, so poses mirror it.",
+      "poses": "0,1,2,3,4,3"
+    }
+  ],
+  "groundRef": "0xE0"
+}

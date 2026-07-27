@@ -341,7 +341,7 @@ namespace DkcTool.Core
                         $"strip {entry.Strip} has {selected.Count} pose(s)" +
                         (entry.Poses is null ? "" : $" selected (of {stripPoses.Poses.Count})") +
                         $" but resolved to {targetIndices.Count} target index(es) " +
-                        (hasAnimation ? $"(animation 0x{entry.Animation})." : "(explicit indices)."));
+                        (hasAnimation ? $"(animation {entry.Animation})." : "(explicit indices)."));
 
                 // Duplicate index within one strip: two poses would target the same slot, and the
                 // second write would silently discard the first. Refuse unless the two source
