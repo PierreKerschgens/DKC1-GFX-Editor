@@ -541,6 +541,48 @@ if (args.Length >= 2 && args[1] == "--paint")
     return 0;
 }
 
+if (args.Length >= 3 && args[1] == "--refs")
+{
+    // dotnet run -- <rom> --refs <lo>..<hi>
+    //
+    // For each index, count where its sprite's 24-bit address appears in the ROM.
+    //
+    // The importer relocates a sprite and rewrites its GFX-table entry. That only works if the
+    // table is how the game *reaches* the sprite. If an address is also referenced from somewhere
+    // else -- a DMA list, a second table, code -- then repointing moves the copy nobody reads and
+    // the import silently does nothing, while `--paint` (which edits chars in place at the current
+    // address) appears to work fine. That pair of symptoms is exactly what the DK roll showed.
+    //
+    // One expected hit per index: the GFX table entry itself. Two or more means a second reference.
+    string[] rfBounds = args[2].Split("..");
+    int rfLo = Convert.ToInt32(rfBounds[0], 16);
+    int rfHi = Convert.ToInt32(rfBounds[^1], 16);
+
+    var image = rom.Snapshot();
+    Console.WriteLine($"=== references to each sprite address over 0x{rfLo:X}..0x{rfHi:X} ===");
+    Console.WriteLine($"{"idx",-8} {"sprite addr",-12} {"refs",5}  extra reference sites");
+
+    for (int index = rfLo; index <= rfHi; index += 4)
+    {
+        if (!DkcTool.Core.GfxTable.IsValidIndex(rom, index)) continue;
+        int addr = DkcTool.Core.GfxTable.ResolveSpriteAddress(rom, index);
+        if (addr == 0) continue;
+
+        byte b0 = (byte)(addr & 0xFF), b1 = (byte)((addr >> 8) & 0xFF), b2 = (byte)((addr >> 16) & 0xFF);
+        int tableEntry = DkcTool.Core.GfxTable.BaseAddress + index;
+        var sites = new List<int>();
+        for (int i = 0; i + 2 < image.Length; i++)
+            if (image[i] == b0 && image[i + 1] == b1 && image[i + 2] == b2)
+                sites.Add(i);
+
+        var extra = sites.Where(s => s != (tableEntry & 0x3fffff) && s != tableEntry).ToList();
+        Console.WriteLine($"0x{index:X4}   0x{addr:X6}     {sites.Count,5}  " +
+                          (extra.Count == 0 ? "-" : string.Join(" ", extra.Take(6).Select(s => $"0x{s:X6}"))
+                                                    + (extra.Count > 6 ? $" +{extra.Count - 6}" : "")));
+    }
+    return 0;
+}
+
 if (args.Length >= 3 && args[1] == "--coords")
 {
     // dotnet run -- <rom> --coords <lo>..<hi>
@@ -1056,6 +1098,10 @@ static int RunImportCli(Rom rom, string romPath, string[] args)
         return 0;
     }
 
+    // The mirror is a snapshot taken at expansion time, and the GFX pointer table sits inside a
+    // mirrored bank -- so every import leaves a stale copy of the table it just repointed. Re-sync
+    // before saving (Expansion.RefreshMirror). No-op on an unexpanded ROM.
+    working.RefreshLowBankMirror();
     working.Save(outPath!);
     ledger.Save(ledgerPath);
     Console.WriteLine($"Wrote {outPath}");
@@ -1237,6 +1283,10 @@ static int RunBatchCli(Rom rom, string[] args)
         return report.Refused.Any() ? 1 : 0;
     }
 
+    // The mirror is a snapshot taken at expansion time, and the GFX pointer table sits inside a
+    // mirrored bank -- so every import leaves a stale copy of the table it just repointed. Re-sync
+    // before saving (Expansion.RefreshMirror). No-op on an unexpanded ROM.
+    working.RefreshLowBankMirror();
     working.Save(outPath!);
     ledger.Save(ledgerPath);
     Console.WriteLine();

@@ -87,6 +87,11 @@ namespace DkcTool.Core
         /// <summary>Writes the current buffer to <paramref name="path"/>. The loaded file itself is never touched.</summary>
         public void Save(string path) => File.WriteAllBytes(path, _data);
 
+        /// <summary>Re-syncs an expanded ROM's low-bank mirror against writes made since expansion,
+        /// and no-ops on an unexpanded one. See <see cref="Expansion.RefreshMirror"/> for why a
+        /// snapshot mirror plus a repointing importer silently loses updates.</summary>
+        public void RefreshLowBankMirror() => Expansion.RefreshMirror(_data);
+
         private void AssertInBounds(int maskedAddress, int length)
         {
             if (maskedAddress < 0 || maskedAddress + length > _data.Length)

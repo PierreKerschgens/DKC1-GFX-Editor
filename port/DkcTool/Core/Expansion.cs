@@ -228,6 +228,33 @@ namespace DkcTool.Core
         /// A stock (unexpanded) ROM is unaffected -- it has no extended half, so this is exactly
         /// <see cref="FreeSpace.Scan"/>, same as before M3.
         /// </summary>
+        /// <summary>
+        /// Re-copies the low-bank mirror so it reflects writes made *after* expansion, and fixes
+        /// the checksum in both header copies. Call after any pass that writes to the first 4 MB
+        /// of an expanded ROM.
+        ///
+        /// <para><b>Why this has to exist.</b> The mirror is a snapshot. The GFX pointer table
+        /// lives at 0x3BCC9C — inside a mirrored upper half — so an import updates the real table
+        /// and leaves a stale copy at 0x7BCC9C holding pre-import addresses. Read through bank $BB
+        /// the game sees the new sprite; read through bank $3B it sees the old one. That is not
+        /// hypothetical: DK's roll kept its stock art through three imports while walk, run, jump,
+        /// idle and the chest-beat all updated, and `--refs` found the stale duplicate.</para>
+        ///
+        /// <para>Safe against the allocator because <see cref="ExtendedRuns"/> hands out the lower
+        /// half of each extended bank and the mirror only writes upper halves — re-copying cannot
+        /// overwrite an imported sprite. That separation is load-bearing, not incidental.</para>
+        /// </summary>
+        public static void RefreshMirror(byte[] rom)
+        {
+            if (rom.Length <= StockSize) return;
+
+            for (int bank = 0; bank < LowBankMirrorBanks; bank++)
+                Array.Copy(rom, LowBankMirrorSource + bank * 0x10000,
+                           rom, LowBankMirrorOffset + bank * 0x10000, LowBankMirrorLength);
+
+            WriteChecksum(rom, mirroredHeader: true);
+        }
+
         public static List<FreeSpace.Run> FreeRunsFor(Rom rom) =>
             rom.Length > StockSize ? ExtendedRuns() : FreeSpace.Scan(rom);
 

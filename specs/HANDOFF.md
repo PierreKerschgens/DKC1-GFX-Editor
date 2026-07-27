@@ -374,6 +374,12 @@ right but lands wrong by a small constant, `--coords` is the one that finds it (
 Writing: `--import`, `--batch` (both take `--dry-run`; `--batch` also `--no-align-strip` and
 `--flat-x`), `--expand`, `--revert`.
 
+⚠️ **The low-bank mirror is a *snapshot*, and the GFX pointer table lives inside it.** An import
+repoints the real table at 0x3BCC9C and leaves a stale copy at 0x7BCC9C, so art read through bank
+$3B stays stock while art read through $BB updates — DK's roll kept its stock model through three
+imports for exactly this reason. `Rom.RefreshLowBankMirror()` re-syncs before every save; `--refs
+<lo>..<hi>` is the instrument that finds a stale duplicate.
+
 ⚠️ **`--expand` must mirror the low bank or the ROM does not boot** — it is the default now, but it
 shipped opt-in, so the first real expansion black-screened everywhere while both verify suites stayed
 green (A.30). `--verify-m3`'s X1 gate *asserts* the un-mirrored form is dead; the CLI selected it
