@@ -213,6 +213,13 @@ is the arc, not the animation** — run `--anims-in` on a range before assuming 
 `0x130..0x17C` is a climb/hang, not the Run — its height swells 40→72→36, a one-shot, and DK is
 upright with both arms overhead.
 
+**Desk mapping now works — 3 for 3 on its first outing** (A.33). Strip 9 "Flip" → the enemy bounce,
+and both Swap runs, all confirmed in play from one boot, with no paint round and no bisection. What
+changed is the *inputs*, not the method: pose counts are correct since A.25, the captions give
+identity and structure (A.29), `--anims-in` gives the real draw order rather than a range, and the
+length check refuses a wrong pairing before it ships (A.26). Match on **distinct-index count against
+draw order**, in a chunk the paint survey supports, and confirm with one boot per batch.
+
 **Frame-count matching: see gotcha 3 — the "0 for 3" verdict is withdrawn** (A.24), though it is
 still only a filter. `--baseline`'s *height profile* across a range remains the cheap discriminator:
 a loop holds height roughly constant, a one-shot swells and recovers. (It was used to refute a
@@ -227,7 +234,12 @@ positive without a bisection.
 table — no script draws both DK and a vehicle (A.15). Their DK poses are composited by game code.
 Look in `0x538..0x594`, which is DK's mounted/riding pose set.
 
-**Where I am blind:** rope / ledge / swing on the **ROM** side. The *sheet* side is settled — strips
+**Rope is mapped** (A.33, awaiting one boot): idle `0x714..0x720` (anim 94), turn `0x724..0x728`
+(anim 95), climb `0x72C..0x740` (anims 92/93) — three contiguous animations, sheet poses 4/2/6
+exactly, all three loop-and-reverse just as the sheet's annotation says. Ledge and swing are still
+open.
+
+**Where I was blind:** rope / ledge / swing on the **ROM** side. The *sheet* side is settled — strips
 22/23/24 are captioned "Rope Idle", "Rope Climb", "Rope Turn" (A.28). Matching them to index ranges
 still needs a paint round or someone who knows the game.
 
