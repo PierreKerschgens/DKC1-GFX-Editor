@@ -1904,6 +1904,51 @@ justifications and neither had a number attached; one of them (aliasing) turns o
 all, and the other is now backed by a measurement rather than an assumption. A challenge that
 confirms a decision is worth as much as one that overturns it — and it cost one commit.
 
+### A.32 The roll kept its stock art because the mirror is a snapshot
+
+**Confirmed fixed in play.** Symptom: DK's roll showed the stock model through three successive
+imports while walk, run, jump, idle and the chest-beat all updated correctly.
+
+Two paint rounds located it, and the *pair* is what made them decisive:
+
+| build | roll reads | conclusion |
+|---|---|---|
+| complement paint, hole at `0x4B8..0x4EC` | **brown** | draws from the hole… or from outside DK's block |
+| DK's entire block painted, no hole | **white** | inside the block — so the hole reading was a hit |
+
+with walking, running and jumping white in both as the control. **anim 24 was right all along and the
+slots were correct** — which meant the bug had to be in the write path, not the mapping.
+
+#### The cause
+
+The low-bank mirror (A.30) is a **snapshot taken at expansion time**, and `GfxTable.BaseAddress`
+resolves to `0x3BCC9C` — *inside* a mirrored upper half. So an import rewrites the real table entry
+and leaves a stale copy at `0x7BCC9C + index` holding the pre-import address. Read through bank `$BB`
+the game finds the new sprite; read through `$3B` it finds the old one — which is exactly why the
+failure hit some animations and not others.
+
+`Rom.RefreshLowBankMirror()` re-syncs before every save. It is safe against the allocator **by
+construction**: `ExtendedRuns` hands out the lower half of each extended bank and the mirror only
+writes upper halves, so re-copying can never overwrite an imported sprite. That separation was made
+in A.30 for an unrelated reason and turned out to be load-bearing here.
+
+#### `--refs`, and how nearly the evidence was thrown away
+
+`--refs <lo>..<hi>` counts where each sprite's 24-bit address appears. One hit is its table entry; a
+second is a duplicate reference.
+
+The first theory was a *second reference path* (a DMA list or second table). `--refs` on the roll
+returned **1 reference per index — theory refuted** — and it was nearly abandoned there. The answer
+was in the same output, in the rows for the three indices we deliberately **do not** import
+(`0x4BC`, `0x4E4`, `0x4E8`): those were the only ones showing a duplicate, at `0x7BD158`, `0x7BD180`,
+`0x7BD184`. The imported ones showed one hit because their *new* address existed only in the real
+table — the stale mirror still held the old one, so it did not match the search term.
+
+**The rows that refuted the hypothesis were the rows carrying the answer**, and the reason is worth
+keeping: a search for "where does X appear" cannot see the places that still hold *not-X*. Searching
+for the value you expect makes the stale copy invisible precisely when staleness is the bug. The
+untouched controls are what made it visible.
+
 ### A.13 `0x858..0x8A8` is **not** DK — it is a foreign island (corrected)
 
 > **This section previously concluded "DK at reduced scale". That was wrong**, and it was wrong in

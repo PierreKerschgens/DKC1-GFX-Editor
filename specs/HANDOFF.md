@@ -109,6 +109,23 @@ The sheet side is done; the ROM side is ~20 % done. `m4-batch-spec.md` A.10–A.
 | — (enemy bounce) | `0x478..0x4B4` | anims 23/101 (A.22) — no sheet strip claimed yet |
 | 8 "Roll" | `0x4B8..0x4EC` | anim 24 draws **11** of these; poses 0..10 (A.26). `--flat-x` |
 
+**Imported so far (7 runs, 120 poses, `port/dk-combined-turn.json`).** Everything else is stock, so
+an operator will keep reporting "X is old DK" — that is coverage, not a defect, and the list below is
+what to check a report against before investigating it:
+
+| run | indices | animation |
+|---|---|---|
+| Idle | `0x8C..0xDC` | 4/108 |
+| Turn | `0x180..0x184` | 6 |
+| Walk | `0xE0..0x12C` | 3 |
+| Jump | `0x130..0x17C` | 5/7/21/81/8/102/82 |
+| Bang Chest | `0x200..0x25C` | 9/113 |
+| Run | `0x330..0x37C` | 2/14/20 |
+| Roll | `0x4B8..0x4EC` | 24 |
+
+**Known un-imported and already reported:** enemy bounce `0x478..0x4B4` (anims 23/101), barrel-blast
+roll `0x4F0..0x528` (anims 15/96), duck, crawl, swim, ledge, rope, minecart, victory, death.
+
 **Provisional** (identified from draw-order montages, *never observed in motion*): Ground Slap →
 `0x2E4..0x32C`, Swim → `0x3A4..0x3DC`, Death → anim 16. Treat as unverified — **three** pairings in
 this tier have now been falsified, including Roll.
