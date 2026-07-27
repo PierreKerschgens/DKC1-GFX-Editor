@@ -592,10 +592,21 @@ indices used for eyes also appear in outlines, and any facial landmark vanishes 
 
 ## Second roll: the barrel-blast
 
-The roll DK does when **blasted out of the house** is a *different animation* from the ground roll
-and still shows stock art in `dk-COMBINED.sfc`. It draws from `0x480..0x4B4` / `0x4F0..0x4FC`
-(garbled in both `dk-poison-d` and `dk-poison-e`, clean in the anim-24 range). Same pattern as the
-two idles: **one player action, two animations.** Assume it for every move until shown otherwise.
+The roll DK does when **blasted out of the house** is a *different animation* from the ground roll.
+Same pattern as the two idles: **one player action, two animations.** Assume it for every move until
+shown otherwise — that part still holds.
+
+⚠️ **Its range is NOT known.** The old claim ("draws from `0x480..0x4B4` / `0x4F0..0x4FC`, garbled in
+`dk-poison-d` and `dk-poison-e`") is **falsified**: a complement paint with the hole at
+`0x4F0..0x528` left DK entirely white through the blast, with walk/run white as the control. So the
+blast does not draw from `0x4F0..0x528` at all, and anims 15/96 — 15 sequential indices, a pair, the
+shape a real move has — are **something else, still unidentified**.
+
+DK stayed white, so the blast *is* inside his block; it is somewhere in the painted remainder. That
+is ~440 indices and a complement paint tests one bucket per boot, so **do not bisect for it** — it
+would cost ~9 boots for one animation. It will resolve for free as coverage grows. The poison-based
+localisation that produced the old claim is now 0 for 2 on this animation, which is consistent with
+this file's own warning that poison rounds `d`/`e` were read as ambiguous at the time.
 
 ## What M5 probably is
 
