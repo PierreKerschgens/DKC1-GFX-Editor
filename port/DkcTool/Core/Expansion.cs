@@ -157,6 +157,23 @@ namespace DkcTool.Core
         public const int LowBankMirrorSource = 0x008000;
         public const int LowBankMirrorLength = 0x008000;
 
+        /// <summary>
+        /// How many banks of <c>$xx:8000-FFFF</c> the mirror covers. <b>All 64</b>, not just bank
+        /// $00.
+        ///
+        /// <para>ExHiROM maps every bank in <c>$00-$3F:8000-FFFF</c> into the extended half
+        /// (<c>0x400000 + bank*0x10000 + 0x8000</c>), not just the reset bank. Mirroring only bank
+        /// $00 left banks $01-$3F reading zeroes through that window, and DKC's boot code reads
+        /// through it: the "Nintendo presents" screen came up with the logo's lower half, the word
+        /// PRESENTS and the Rare mark all missing. Reproduced on a bare expansion with no imports,
+        /// so it is the map change alone.</para>
+        ///
+        /// <para>2 MB of the 4 MB gained, and it must be reserved from the allocator -- see
+        /// <see cref="ExtendedRuns"/>, which now hands out the *lower* half of each extended bank
+        /// only. That still leaves ~1.9 MB against the ~116 KB a full character import uses.</para>
+        /// </summary>
+        public const int LowBankMirrorBanks = 0x40;
+
         /// <summary>Base of the mirrored bank, so mirrored header fields are addressed as
         /// <c>LowBankMirrorBase + ChecksumOffset</c> etc. -- 0x40FFC0 for the header itself.</summary>
         public const int LowBankMirrorBase = 0x400000;
@@ -188,9 +205,12 @@ namespace DkcTool.Core
         /// </summary>
         public static List<FreeSpace.Run> ExtendedRuns()
         {
+            // Lower half of each extended bank only. The upper half is the $00-$3F mirror
+            // (LowBankMirrorBanks) -- handing it to the allocator would overwrite the boot data
+            // the mirror exists to provide, with the sprite that happened to land there.
             var runs = new List<FreeSpace.Run>();
             for (int start = ExtendedStart; start < ExtendedLimit; start += 0x10000)
-                runs.Add(new FreeSpace.Run { Start = start, Length = 0x10000, Value = 0 });
+                runs.Add(new FreeSpace.Run { Start = start, Length = 0x8000, Value = 0 });
             return runs;
         }
 
@@ -332,7 +352,9 @@ namespace DkcTool.Core
             // Put bank $00's upper half where ExHiROM will look for it: vectors, the boot code the
             // reset vector points at, and -- now -- the corrected header. 32 KB of the 4 MB gained.
             if (mirrorLowBank)
-                Array.Copy(expanded, LowBankMirrorSource, expanded, LowBankMirrorOffset, LowBankMirrorLength);
+                for (int bank = 0; bank < LowBankMirrorBanks; bank++)
+                    Array.Copy(expanded, LowBankMirrorSource + bank * 0x10000,
+                               expanded, LowBankMirrorOffset + bank * 0x10000, LowBankMirrorLength);
 
             if (fixChecksum) WriteChecksum(expanded, mirroredHeader: mirrorLowBank);
 
