@@ -1,0 +1,1935 @@
+{
+  "version": 1,
+  "sourceRomSha256": "628147468c3539283197f58f03b94df49758a332831857481ea9cc31645f0527",
+  "allocations": [
+    {
+      "imageIndex": "0xE0",
+      "offset": "0x410000",
+      "length": "0x3E2",
+      "previousPointer": "0xCD0000",
+      "source": "dk-combined-barrel.json strip6:0",
+      "timestamp": "2026-07-28T22:04:09.0698330\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xE4",
+      "offset": "0x4103E2",
+      "length": "0x37C",
+      "previousPointer": "0xCD02BA",
+      "source": "dk-combined-barrel.json strip6:1",
+      "timestamp": "2026-07-28T22:04:09.0722550\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xE8",
+      "offset": "0x41075E",
+      "length": "0x35A",
+      "previousPointer": "0xCD0574",
+      "source": "dk-combined-barrel.json strip6:2",
+      "timestamp": "2026-07-28T22:04:09.0748740\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xEC",
+      "offset": "0x410AB8",
+      "length": "0x39E",
+      "previousPointer": "0xCD0850",
+      "source": "dk-combined-barrel.json strip6:3",
+      "timestamp": "2026-07-28T22:04:09.0771980\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xF0",
+      "offset": "0x410E56",
+      "length": "0x404",
+      "previousPointer": "0xCD0B2C",
+      "source": "dk-combined-barrel.json strip6:4",
+      "timestamp": "2026-07-28T22:04:09.0795350\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xF4",
+      "offset": "0x41125A",
+      "length": "0x448",
+      "previousPointer": "0xCD0E08",
+      "source": "dk-combined-barrel.json strip6:5",
+      "timestamp": "2026-07-28T22:04:09.0819510\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xF8",
+      "offset": "0x4116A2",
+      "length": "0x3E2",
+      "previousPointer": "0xCD1106",
+      "source": "dk-combined-barrel.json strip6:6",
+      "timestamp": "2026-07-28T22:04:09.0843210\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xFC",
+      "offset": "0x411A84",
+      "length": "0x3C0",
+      "previousPointer": "0xCD13E8",
+      "source": "dk-combined-barrel.json strip6:7",
+      "timestamp": "2026-07-28T22:04:09.0866800\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x100",
+      "offset": "0x411E44",
+      "length": "0x39E",
+      "previousPointer": "0xCD16C4",
+      "source": "dk-combined-barrel.json strip6:8",
+      "timestamp": "2026-07-28T22:04:09.0889940\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x104",
+      "offset": "0x4121E2",
+      "length": "0x37C",
+      "previousPointer": "0xCD197E",
+      "source": "dk-combined-barrel.json strip6:9",
+      "timestamp": "2026-07-28T22:04:09.0914810\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x108",
+      "offset": "0x41255E",
+      "length": "0x37C",
+      "previousPointer": "0xCD1C38",
+      "source": "dk-combined-barrel.json strip6:10",
+      "timestamp": "2026-07-28T22:04:09.0937980\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x10C",
+      "offset": "0x4128DA",
+      "length": "0x316",
+      "previousPointer": "0xCD1ED6",
+      "source": "dk-combined-barrel.json strip6:11",
+      "timestamp": "2026-07-28T22:04:09.0961620\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x110",
+      "offset": "0x412BF0",
+      "length": "0x338",
+      "previousPointer": "0xCD2196",
+      "source": "dk-combined-barrel.json strip6:12",
+      "timestamp": "2026-07-28T22:04:09.0985300\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x114",
+      "offset": "0x412F28",
+      "length": "0x338",
+      "previousPointer": "0xCD2472",
+      "source": "dk-combined-barrel.json strip6:13",
+      "timestamp": "2026-07-28T22:04:09.1008500\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x118",
+      "offset": "0x413260",
+      "length": "0x37C",
+      "previousPointer": "0xCD272C",
+      "source": "dk-combined-barrel.json strip6:14",
+      "timestamp": "2026-07-28T22:04:09.1032140\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x11C",
+      "offset": "0x4135DC",
+      "length": "0x3E2",
+      "previousPointer": "0xCD29E6",
+      "source": "dk-combined-barrel.json strip6:15",
+      "timestamp": "2026-07-28T22:04:09.1083220\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x120",
+      "offset": "0x4139BE",
+      "length": "0x426",
+      "previousPointer": "0xCD2CA0",
+      "source": "dk-combined-barrel.json strip6:16",
+      "timestamp": "2026-07-28T22:04:09.1107330\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x124",
+      "offset": "0x413DE4",
+      "length": "0x3C0",
+      "previousPointer": "0xCD2F7C",
+      "source": "dk-combined-barrel.json strip6:17",
+      "timestamp": "2026-07-28T22:04:09.1131340\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x128",
+      "offset": "0x4141A4",
+      "length": "0x3C0",
+      "previousPointer": "0xCD327A",
+      "source": "dk-combined-barrel.json strip6:18",
+      "timestamp": "2026-07-28T22:04:09.1154860\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x12C",
+      "offset": "0x414564",
+      "length": "0x3C0",
+      "previousPointer": "0xCD3534",
+      "source": "dk-combined-barrel.json strip6:19",
+      "timestamp": "2026-07-28T22:04:09.1177640\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x330",
+      "offset": "0x414924",
+      "length": "0x3C0",
+      "previousPointer": "0xD7620A",
+      "source": "dk-combined-barrel.json strip7:0",
+      "timestamp": "2026-07-28T22:04:09.1199760\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x334",
+      "offset": "0x414CE4",
+      "length": "0x35A",
+      "previousPointer": "0xD7646A",
+      "source": "dk-combined-barrel.json strip7:1",
+      "timestamp": "2026-07-28T22:04:09.1222050\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x338",
+      "offset": "0x41503E",
+      "length": "0x39E",
+      "previousPointer": "0xD766E6",
+      "source": "dk-combined-barrel.json strip7:2",
+      "timestamp": "2026-07-28T22:04:09.1246860\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x33C",
+      "offset": "0x4153DC",
+      "length": "0x35A",
+      "previousPointer": "0xD76984",
+      "source": "dk-combined-barrel.json strip7:3",
+      "timestamp": "2026-07-28T22:04:09.1270790\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x340",
+      "offset": "0x415736",
+      "length": "0x35A",
+      "previousPointer": "0xD76C82",
+      "source": "dk-combined-barrel.json strip7:4",
+      "timestamp": "2026-07-28T22:04:09.1295860\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x344",
+      "offset": "0x415A90",
+      "length": "0x404",
+      "previousPointer": "0xD76FE6",
+      "source": "dk-combined-barrel.json strip7:5",
+      "timestamp": "2026-07-28T22:04:09.1319960\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x348",
+      "offset": "0x415E94",
+      "length": "0x3C0",
+      "previousPointer": "0xD772F0",
+      "source": "dk-combined-barrel.json strip7:6",
+      "timestamp": "2026-07-28T22:04:09.1344770\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x34C",
+      "offset": "0x416254",
+      "length": "0x3C0",
+      "previousPointer": "0xD77632",
+      "source": "dk-combined-barrel.json strip7:7",
+      "timestamp": "2026-07-28T22:04:09.1369230\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x350",
+      "offset": "0x416614",
+      "length": "0x3C0",
+      "previousPointer": "0xD77952",
+      "source": "dk-combined-barrel.json strip7:8",
+      "timestamp": "2026-07-28T22:04:09.1396000\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x354",
+      "offset": "0x4169D4",
+      "length": "0x3C0",
+      "previousPointer": "0xD77CB6",
+      "source": "dk-combined-barrel.json strip7:9",
+      "timestamp": "2026-07-28T22:04:09.1421050\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x358",
+      "offset": "0x416D94",
+      "length": "0x404",
+      "previousPointer": "0xD77FD6",
+      "source": "dk-combined-barrel.json strip7:10",
+      "timestamp": "2026-07-28T22:04:09.1445570\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x35C",
+      "offset": "0x417198",
+      "length": "0x404",
+      "previousPointer": "0xD782FC",
+      "source": "dk-combined-barrel.json strip7:11",
+      "timestamp": "2026-07-28T22:04:09.1469650\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x360",
+      "offset": "0x41759C",
+      "length": "0x404",
+      "previousPointer": "0xD78600",
+      "source": "dk-combined-barrel.json strip7:12",
+      "timestamp": "2026-07-28T22:04:09.1494630\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x364",
+      "offset": "0x4179A0",
+      "length": "0x3E2",
+      "previousPointer": "0xD78948",
+      "source": "dk-combined-barrel.json strip7:13",
+      "timestamp": "2026-07-28T22:04:09.1541190\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x368",
+      "offset": "0x420000",
+      "length": "0x448",
+      "previousPointer": "0xD78C2A",
+      "source": "dk-combined-barrel.json strip7:14",
+      "timestamp": "2026-07-28T22:04:09.1566320\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x36C",
+      "offset": "0x420448",
+      "length": "0x39E",
+      "previousPointer": "0xD78EEA",
+      "source": "dk-combined-barrel.json strip7:15",
+      "timestamp": "2026-07-28T22:04:09.1589340\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x370",
+      "offset": "0x4207E6",
+      "length": "0x35A",
+      "previousPointer": "0xD79188",
+      "source": "dk-combined-barrel.json strip7:16",
+      "timestamp": "2026-07-28T22:04:09.1612030\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x374",
+      "offset": "0x420B40",
+      "length": "0x39E",
+      "previousPointer": "0xD79426",
+      "source": "dk-combined-barrel.json strip7:17",
+      "timestamp": "2026-07-28T22:04:09.1635630\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x378",
+      "offset": "0x420EDE",
+      "length": "0x39E",
+      "previousPointer": "0xD796E0",
+      "source": "dk-combined-barrel.json strip7:18",
+      "timestamp": "2026-07-28T22:04:09.1658440\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x37C",
+      "offset": "0x42127C",
+      "length": "0x3C0",
+      "previousPointer": "0xD7995C",
+      "source": "dk-combined-barrel.json strip7:19",
+      "timestamp": "2026-07-28T22:04:09.1680420\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4B8",
+      "offset": "0x42163C",
+      "length": "0x37C",
+      "previousPointer": "0xF376FA",
+      "source": "dk-combined-barrel.json strip8:0",
+      "timestamp": "2026-07-28T22:04:09.1703270\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4C0",
+      "offset": "0x4219B8",
+      "length": "0x338",
+      "previousPointer": "0xF37BE6",
+      "source": "dk-combined-barrel.json strip8:1",
+      "timestamp": "2026-07-28T22:04:09.1727110\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4C4",
+      "offset": "0x421CF0",
+      "length": "0x2D2",
+      "previousPointer": "0xF37E3A",
+      "source": "dk-combined-barrel.json strip8:2",
+      "timestamp": "2026-07-28T22:04:09.1749560\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4C8",
+      "offset": "0x421FC2",
+      "length": "0x28E",
+      "previousPointer": "0xF380B6",
+      "source": "dk-combined-barrel.json strip8:3",
+      "timestamp": "2026-07-28T22:04:09.1771230\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4CC",
+      "offset": "0x422250",
+      "length": "0x2B0",
+      "previousPointer": "0xF3830A",
+      "source": "dk-combined-barrel.json strip8:4",
+      "timestamp": "2026-07-28T22:04:09.1792550\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4D0",
+      "offset": "0x422500",
+      "length": "0x2D2",
+      "previousPointer": "0xF38542",
+      "source": "dk-combined-barrel.json strip8:5",
+      "timestamp": "2026-07-28T22:04:09.1813700\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4D4",
+      "offset": "0x417D82",
+      "length": "0x26C",
+      "previousPointer": "0xF38764",
+      "source": "dk-combined-barrel.json strip8:6",
+      "timestamp": "2026-07-28T22:04:09.1834390\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4D8",
+      "offset": "0x4227D2",
+      "length": "0x2D2",
+      "previousPointer": "0xF38958",
+      "source": "dk-combined-barrel.json strip8:7",
+      "timestamp": "2026-07-28T22:04:09.1855980\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4DC",
+      "offset": "0x422AA4",
+      "length": "0x2F4",
+      "previousPointer": "0xF38B90",
+      "source": "dk-combined-barrel.json strip8:8",
+      "timestamp": "2026-07-28T22:04:09.1877950\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4E0",
+      "offset": "0x422D98",
+      "length": "0x35A",
+      "previousPointer": "0xF38DEA",
+      "source": "dk-combined-barrel.json strip8:9",
+      "timestamp": "2026-07-28T22:04:09.1901920\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4EC",
+      "offset": "0x4230F2",
+      "length": "0x338",
+      "previousPointer": "0xF39558",
+      "source": "dk-combined-barrel.json strip8:10",
+      "timestamp": "2026-07-28T22:04:09.1924290\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x130",
+      "offset": "0x42342A",
+      "length": "0x39E",
+      "previousPointer": "0xF81688",
+      "source": "dk-combined-barrel.json strip10:0",
+      "timestamp": "2026-07-28T22:04:09.1947920\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x134",
+      "offset": "0x4237C8",
+      "length": "0x39E",
+      "previousPointer": "0xF81964",
+      "source": "dk-combined-barrel.json strip10:1",
+      "timestamp": "2026-07-28T22:04:09.1971850\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x138",
+      "offset": "0x423B66",
+      "length": "0x426",
+      "previousPointer": "0xF81C46",
+      "source": "dk-combined-barrel.json strip10:2",
+      "timestamp": "2026-07-28T22:04:09.1996750\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x13C",
+      "offset": "0x423F8C",
+      "length": "0x3C0",
+      "previousPointer": "0xF81F88",
+      "source": "dk-combined-barrel.json strip10:3",
+      "timestamp": "2026-07-28T22:04:09.2022230\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x140",
+      "offset": "0x42434C",
+      "length": "0x3E2",
+      "previousPointer": "0xF822CA",
+      "source": "dk-combined-barrel.json strip10:4",
+      "timestamp": "2026-07-28T22:04:09.2071870\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x144",
+      "offset": "0x42472E",
+      "length": "0x448",
+      "previousPointer": "0xF8262E",
+      "source": "dk-combined-barrel.json strip10:5",
+      "timestamp": "2026-07-28T22:04:09.2097880\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x148",
+      "offset": "0x424B76",
+      "length": "0x448",
+      "previousPointer": "0xF829B4",
+      "source": "dk-combined-barrel.json strip10:6",
+      "timestamp": "2026-07-28T22:04:09.2123990\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x14C",
+      "offset": "0x424FBE",
+      "length": "0x4AE",
+      "previousPointer": "0xF82D34",
+      "source": "dk-combined-barrel.json strip10:7",
+      "timestamp": "2026-07-28T22:04:09.2151540\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x150",
+      "offset": "0x42546C",
+      "length": "0x4D0",
+      "previousPointer": "0xF830B4",
+      "source": "dk-combined-barrel.json strip10:8",
+      "timestamp": "2026-07-28T22:04:09.2207560\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x154",
+      "offset": "0x42593C",
+      "length": "0x4F2",
+      "previousPointer": "0xF83434",
+      "source": "dk-combined-barrel.json strip10:9",
+      "timestamp": "2026-07-28T22:04:09.2234790\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x158",
+      "offset": "0x425E2E",
+      "length": "0x4AE",
+      "previousPointer": "0xF837BA",
+      "source": "dk-combined-barrel.json strip10:10",
+      "timestamp": "2026-07-28T22:04:09.2261030\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x15C",
+      "offset": "0x4262DC",
+      "length": "0x4D0",
+      "previousPointer": "0xF83B62",
+      "source": "dk-combined-barrel.json strip10:11",
+      "timestamp": "2026-07-28T22:04:09.2287090\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x160",
+      "offset": "0x4267AC",
+      "length": "0x4AE",
+      "previousPointer": "0xF83EE8",
+      "source": "dk-combined-barrel.json strip10:12",
+      "timestamp": "2026-07-28T22:04:09.2312610\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x164",
+      "offset": "0x426C5A",
+      "length": "0x46A",
+      "previousPointer": "0xF84224",
+      "source": "dk-combined-barrel.json strip10:13",
+      "timestamp": "2026-07-28T22:04:09.2336600\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x168",
+      "offset": "0x4270C4",
+      "length": "0x4AE",
+      "previousPointer": "0xF84500",
+      "source": "dk-combined-barrel.json strip10:14",
+      "timestamp": "2026-07-28T22:04:09.2359560\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x16C",
+      "offset": "0x427572",
+      "length": "0x426",
+      "previousPointer": "0xF8477C",
+      "source": "dk-combined-barrel.json strip10:15",
+      "timestamp": "2026-07-28T22:04:09.2383010\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x170",
+      "offset": "0x427998",
+      "length": "0x426",
+      "previousPointer": "0xF84A3C",
+      "source": "dk-combined-barrel.json strip10:16",
+      "timestamp": "2026-07-28T22:04:09.2407680\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x174",
+      "offset": "0x430000",
+      "length": "0x404",
+      "previousPointer": "0xF84CE0",
+      "source": "dk-combined-barrel.json strip10:17",
+      "timestamp": "2026-07-28T22:04:09.2430880\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x178",
+      "offset": "0x430404",
+      "length": "0x35A",
+      "previousPointer": "0xF84F9A",
+      "source": "dk-combined-barrel.json strip10:18",
+      "timestamp": "2026-07-28T22:04:09.2453560\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x17C",
+      "offset": "0x43075E",
+      "length": "0x3C0",
+      "previousPointer": "0xF85254",
+      "source": "dk-combined-barrel.json strip10:19",
+      "timestamp": "2026-07-28T22:04:09.2477080\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x8C",
+      "offset": "0x430B1E",
+      "length": "0x39E",
+      "previousPointer": "0xD8B1F0",
+      "source": "dk-combined-barrel.json strip0:0",
+      "timestamp": "2026-07-28T22:04:09.2499430\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x90",
+      "offset": "0x430EBC",
+      "length": "0x39E",
+      "previousPointer": "0xD8B46C",
+      "source": "dk-combined-barrel.json strip0:0",
+      "timestamp": "2026-07-28T22:04:09.2521710\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x94",
+      "offset": "0x43125A",
+      "length": "0x39E",
+      "previousPointer": "0xD8B6E8",
+      "source": "dk-combined-barrel.json strip0:1",
+      "timestamp": "2026-07-28T22:04:09.2561640\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x98",
+      "offset": "0x4315F8",
+      "length": "0x39E",
+      "previousPointer": "0xD8B964",
+      "source": "dk-combined-barrel.json strip0:1",
+      "timestamp": "2026-07-28T22:04:09.2584010\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x9C",
+      "offset": "0x431996",
+      "length": "0x39E",
+      "previousPointer": "0xD8BBE0",
+      "source": "dk-combined-barrel.json strip0:2",
+      "timestamp": "2026-07-28T22:04:09.2606970\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xA0",
+      "offset": "0x431D34",
+      "length": "0x39E",
+      "previousPointer": "0xD8BE9A",
+      "source": "dk-combined-barrel.json strip0:2",
+      "timestamp": "2026-07-28T22:04:09.2630030\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xA4",
+      "offset": "0x4320D2",
+      "length": "0x39E",
+      "previousPointer": "0xD8C154",
+      "source": "dk-combined-barrel.json strip0:3",
+      "timestamp": "2026-07-28T22:04:09.2653260\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xA8",
+      "offset": "0x432470",
+      "length": "0x39E",
+      "previousPointer": "0xD8C40E",
+      "source": "dk-combined-barrel.json strip0:3",
+      "timestamp": "2026-07-28T22:04:09.2675650\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xAC",
+      "offset": "0x43280E",
+      "length": "0x37C",
+      "previousPointer": "0xD8C684",
+      "source": "dk-combined-barrel.json strip0:4",
+      "timestamp": "2026-07-28T22:04:09.2698600\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xB0",
+      "offset": "0x432B8A",
+      "length": "0x37C",
+      "previousPointer": "0xD8C922",
+      "source": "dk-combined-barrel.json strip0:4",
+      "timestamp": "2026-07-28T22:04:09.2721360\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xB4",
+      "offset": "0x432F06",
+      "length": "0x39E",
+      "previousPointer": "0xD8CBA4",
+      "source": "dk-combined-barrel.json strip0:5",
+      "timestamp": "2026-07-28T22:04:09.2746290\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xB8",
+      "offset": "0x4332A4",
+      "length": "0x39E",
+      "previousPointer": "0xD8CE42",
+      "source": "dk-combined-barrel.json strip0:5",
+      "timestamp": "2026-07-28T22:04:09.2769250\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xBC",
+      "offset": "0x433642",
+      "length": "0x39E",
+      "previousPointer": "0xD8D0E0",
+      "source": "dk-combined-barrel.json strip0:6",
+      "timestamp": "2026-07-28T22:04:09.2792090\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xC0",
+      "offset": "0x4339E0",
+      "length": "0x39E",
+      "previousPointer": "0xD8D37E",
+      "source": "dk-combined-barrel.json strip0:6",
+      "timestamp": "2026-07-28T22:04:09.2814990\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xC4",
+      "offset": "0x433D7E",
+      "length": "0x39E",
+      "previousPointer": "0xD8D61C",
+      "source": "dk-combined-barrel.json strip0:7",
+      "timestamp": "2026-07-28T22:04:09.2837810\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xC8",
+      "offset": "0x43411C",
+      "length": "0x39E",
+      "previousPointer": "0xD8D8BA",
+      "source": "dk-combined-barrel.json strip0:7",
+      "timestamp": "2026-07-28T22:04:09.2860790\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xCC",
+      "offset": "0x4344BA",
+      "length": "0x39E",
+      "previousPointer": "0xD8DB58",
+      "source": "dk-combined-barrel.json strip0:8",
+      "timestamp": "2026-07-28T22:04:09.2883740\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xD0",
+      "offset": "0x434858",
+      "length": "0x39E",
+      "previousPointer": "0xD8DDF6",
+      "source": "dk-combined-barrel.json strip0:8",
+      "timestamp": "2026-07-28T22:04:09.2908160\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xD4",
+      "offset": "0x434BF6",
+      "length": "0x37C",
+      "previousPointer": "0xD8E094",
+      "source": "dk-combined-barrel.json strip0:9",
+      "timestamp": "2026-07-28T22:04:09.2936110\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xD8",
+      "offset": "0x434F72",
+      "length": "0x37C",
+      "previousPointer": "0xD8E332",
+      "source": "dk-combined-barrel.json strip0:9",
+      "timestamp": "2026-07-28T22:04:09.2959540\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xDC",
+      "offset": "0x4352EE",
+      "length": "0x35A",
+      "previousPointer": "0xD8E5D0",
+      "source": "dk-combined-barrel.json strip0:10",
+      "timestamp": "2026-07-28T22:04:09.2982780\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x200",
+      "offset": "0x435648",
+      "length": "0x404",
+      "previousPointer": "0xF640CE",
+      "source": "dk-combined-barrel.json strip3:10",
+      "timestamp": "2026-07-28T22:04:09.3005790\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x204",
+      "offset": "0x435A4C",
+      "length": "0x426",
+      "previousPointer": "0xF6436C",
+      "source": "dk-combined-barrel.json strip3:11",
+      "timestamp": "2026-07-28T22:04:09.3029600\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x208",
+      "offset": "0x435E72",
+      "length": "0x3E2",
+      "previousPointer": "0xF64648",
+      "source": "dk-combined-barrel.json strip3:12",
+      "timestamp": "2026-07-28T22:04:09.3078940\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x20C",
+      "offset": "0x436254",
+      "length": "0x48C",
+      "previousPointer": "0xF64902",
+      "source": "dk-combined-barrel.json strip3:13",
+      "timestamp": "2026-07-28T22:04:09.3109520\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x210",
+      "offset": "0x4366E0",
+      "length": "0x426",
+      "previousPointer": "0xF64BDE",
+      "source": "dk-combined-barrel.json strip3:14",
+      "timestamp": "2026-07-28T22:04:09.3132800\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x214",
+      "offset": "0x436B06",
+      "length": "0x426",
+      "previousPointer": "0xF64E98",
+      "source": "dk-combined-barrel.json strip5:0",
+      "timestamp": "2026-07-28T22:04:09.3155710\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x218",
+      "offset": "0x436F2C",
+      "length": "0x426",
+      "previousPointer": "0xF65136",
+      "source": "dk-combined-barrel.json strip5:1",
+      "timestamp": "2026-07-28T22:04:09.3178230\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x21C",
+      "offset": "0x437352",
+      "length": "0x4AE",
+      "previousPointer": "0xF653CE",
+      "source": "dk-combined-barrel.json strip5:2",
+      "timestamp": "2026-07-28T22:04:09.3200390\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x220",
+      "offset": "0x437800",
+      "length": "0x46A",
+      "previousPointer": "0xF6564A",
+      "source": "dk-combined-barrel.json strip5:3",
+      "timestamp": "2026-07-28T22:04:09.3223650\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x224",
+      "offset": "0x440000",
+      "length": "0x448",
+      "previousPointer": "0xF658E8",
+      "source": "dk-combined-barrel.json strip5:4",
+      "timestamp": "2026-07-28T22:04:09.3252630\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x228",
+      "offset": "0x440448",
+      "length": "0x404",
+      "previousPointer": "0xF65B86",
+      "source": "dk-combined-barrel.json strip5:5",
+      "timestamp": "2026-07-28T22:04:09.3276940\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x22C",
+      "offset": "0x44084C",
+      "length": "0x48C",
+      "previousPointer": "0xF65E24",
+      "source": "dk-combined-barrel.json strip5:6",
+      "timestamp": "2026-07-28T22:04:09.3300140\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x230",
+      "offset": "0x440CD8",
+      "length": "0x4F2",
+      "previousPointer": "0xF660C2",
+      "source": "dk-combined-barrel.json strip5:7",
+      "timestamp": "2026-07-28T22:04:09.3322630\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x234",
+      "offset": "0x4411CA",
+      "length": "0x448",
+      "previousPointer": "0xF6633E",
+      "source": "dk-combined-barrel.json strip5:8",
+      "timestamp": "2026-07-28T22:04:09.3345560\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x238",
+      "offset": "0x441612",
+      "length": "0x448",
+      "previousPointer": "0xF665FE",
+      "source": "dk-combined-barrel.json strip5:9",
+      "timestamp": "2026-07-28T22:04:09.3368780\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x23C",
+      "offset": "0x441A5A",
+      "length": "0x46A",
+      "previousPointer": "0xF668BE",
+      "source": "dk-combined-barrel.json strip5:10",
+      "timestamp": "2026-07-28T22:04:09.3393790\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x240",
+      "offset": "0x441EC4",
+      "length": "0x448",
+      "previousPointer": "0xF66B5C",
+      "source": "dk-combined-barrel.json strip5:11",
+      "timestamp": "2026-07-28T22:04:09.3418810\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x244",
+      "offset": "0x44230C",
+      "length": "0x3E2",
+      "previousPointer": "0xF66DFA",
+      "source": "dk-combined-barrel.json strip5:12",
+      "timestamp": "2026-07-28T22:04:09.3442090\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x248",
+      "offset": "0x4426EE",
+      "length": "0x3E2",
+      "previousPointer": "0xF67054",
+      "source": "dk-combined-barrel.json strip5:13",
+      "timestamp": "2026-07-28T22:04:09.3465220\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x24C",
+      "offset": "0x442AD0",
+      "length": "0x3E2",
+      "previousPointer": "0xF672AE",
+      "source": "dk-combined-barrel.json strip5:14",
+      "timestamp": "2026-07-28T22:04:09.3487700\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x250",
+      "offset": "0x442EB2",
+      "length": "0x3E2",
+      "previousPointer": "0xF67508",
+      "source": "dk-combined-barrel.json strip5:15",
+      "timestamp": "2026-07-28T22:04:09.3510200\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x254",
+      "offset": "0x443294",
+      "length": "0x404",
+      "previousPointer": "0xF67784",
+      "source": "dk-combined-barrel.json strip5:16",
+      "timestamp": "2026-07-28T22:04:09.3532730\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x258",
+      "offset": "0x443698",
+      "length": "0x404",
+      "previousPointer": "0xF67A00",
+      "source": "dk-combined-barrel.json strip5:17",
+      "timestamp": "2026-07-28T22:04:09.3578360\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x25C",
+      "offset": "0x443A9C",
+      "length": "0x404",
+      "previousPointer": "0xF67C98",
+      "source": "dk-combined-barrel.json strip5:18",
+      "timestamp": "2026-07-28T22:04:09.3602230\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x180",
+      "offset": "0x443EA0",
+      "length": "0x3E2",
+      "previousPointer": "0xF27696",
+      "source": "dk-combined-barrel.json strip1:0",
+      "timestamp": "2026-07-28T22:04:09.3625710\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x184",
+      "offset": "0x444282",
+      "length": "0x39E",
+      "previousPointer": "0xF27972",
+      "source": "dk-combined-barrel.json strip1:1",
+      "timestamp": "2026-07-28T22:04:09.3648200\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x184",
+      "offset": "0x444620",
+      "length": "0x39E",
+      "previousPointer": "0x444282",
+      "source": "dk-combined-barrel.json strip1:1",
+      "timestamp": "2026-07-28T22:04:09.3673190\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x180",
+      "offset": "0x4449BE",
+      "length": "0x3E2",
+      "previousPointer": "0x443EA0",
+      "source": "dk-combined-barrel.json strip1:0",
+      "timestamp": "2026-07-28T22:04:09.3698860\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x478",
+      "offset": "0x437C6A",
+      "length": "0x2D2",
+      "previousPointer": "0xCD3EEC",
+      "source": "dk-combined-barrel.json strip9:0",
+      "timestamp": "2026-07-28T22:04:09.3719900\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x47C",
+      "offset": "0x444DA0",
+      "length": "0x338",
+      "previousPointer": "0xCD4124",
+      "source": "dk-combined-barrel.json strip9:1",
+      "timestamp": "2026-07-28T22:04:09.3742470\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x480",
+      "offset": "0x4450D8",
+      "length": "0x2D2",
+      "previousPointer": "0xCD433A",
+      "source": "dk-combined-barrel.json strip9:2",
+      "timestamp": "2026-07-28T22:04:09.3763220\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x484",
+      "offset": "0x4453AA",
+      "length": "0x2B0",
+      "previousPointer": "0xCD4550",
+      "source": "dk-combined-barrel.json strip9:3",
+      "timestamp": "2026-07-28T22:04:09.3783980\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x488",
+      "offset": "0x44565A",
+      "length": "0x2B0",
+      "previousPointer": "0xCD476C",
+      "source": "dk-combined-barrel.json strip9:4",
+      "timestamp": "2026-07-28T22:04:09.3805960\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x48C",
+      "offset": "0x44590A",
+      "length": "0x2D2",
+      "previousPointer": "0xCD49C6",
+      "source": "dk-combined-barrel.json strip9:5",
+      "timestamp": "2026-07-28T22:04:09.3827730\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x490",
+      "offset": "0x445BDC",
+      "length": "0x2B0",
+      "previousPointer": "0xCD4C04",
+      "source": "dk-combined-barrel.json strip9:6",
+      "timestamp": "2026-07-28T22:04:09.3849490\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x494",
+      "offset": "0x445E8C",
+      "length": "0x28E",
+      "previousPointer": "0xCD4E58",
+      "source": "dk-combined-barrel.json strip9:7",
+      "timestamp": "2026-07-28T22:04:09.3871030\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x498",
+      "offset": "0x44611A",
+      "length": "0x2B0",
+      "previousPointer": "0xCD50AC",
+      "source": "dk-combined-barrel.json strip9:8",
+      "timestamp": "2026-07-28T22:04:09.3894510\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x49C",
+      "offset": "0x4463CA",
+      "length": "0x28E",
+      "previousPointer": "0xCD5300",
+      "source": "dk-combined-barrel.json strip9:9",
+      "timestamp": "2026-07-28T22:04:09.3916600\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4A0",
+      "offset": "0x446658",
+      "length": "0x2B0",
+      "previousPointer": "0xCD5538",
+      "source": "dk-combined-barrel.json strip9:10",
+      "timestamp": "2026-07-28T22:04:09.3944660\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4A4",
+      "offset": "0x446908",
+      "length": "0x26C",
+      "previousPointer": "0xCD5770",
+      "source": "dk-combined-barrel.json strip9:11",
+      "timestamp": "2026-07-28T22:04:09.3971430\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4A8",
+      "offset": "0x446B74",
+      "length": "0x26C",
+      "previousPointer": "0xCD5986",
+      "source": "dk-combined-barrel.json strip9:12",
+      "timestamp": "2026-07-28T22:04:09.3995330\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4AC",
+      "offset": "0x446DE0",
+      "length": "0x2B0",
+      "previousPointer": "0xCD5B9C",
+      "source": "dk-combined-barrel.json strip9:13",
+      "timestamp": "2026-07-28T22:04:09.4019020\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4B0",
+      "offset": "0x447090",
+      "length": "0x2D2",
+      "previousPointer": "0xCD5DF6",
+      "source": "dk-combined-barrel.json strip9:14",
+      "timestamp": "2026-07-28T22:04:09.4042490\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4B4",
+      "offset": "0x447362",
+      "length": "0x2F4",
+      "previousPointer": "0xCD602E",
+      "source": "dk-combined-barrel.json strip9:15",
+      "timestamp": "2026-07-28T22:04:09.4071600\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x748",
+      "offset": "0x447656",
+      "length": "0x37C",
+      "previousPointer": "0xE5775B",
+      "source": "dk-combined-barrel.json strip2:0",
+      "timestamp": "2026-07-28T22:04:09.4100040\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x74C",
+      "offset": "0x4479D2",
+      "length": "0x37C",
+      "previousPointer": "0xE57A37",
+      "source": "dk-combined-barrel.json strip2:1",
+      "timestamp": "2026-07-28T22:04:09.4153710\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x750",
+      "offset": "0x450000",
+      "length": "0x39E",
+      "previousPointer": "0xE57CF7",
+      "source": "dk-combined-barrel.json strip2:2",
+      "timestamp": "2026-07-28T22:04:09.4185910\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x754",
+      "offset": "0x45039E",
+      "length": "0x3C0",
+      "previousPointer": "0xE57FB1",
+      "source": "dk-combined-barrel.json strip2:3",
+      "timestamp": "2026-07-28T22:04:09.4210120\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x758",
+      "offset": "0x45075E",
+      "length": "0x3E2",
+      "previousPointer": "0xE58233",
+      "source": "dk-combined-barrel.json strip2:4",
+      "timestamp": "2026-07-28T22:04:09.4234480\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x75C",
+      "offset": "0x450B40",
+      "length": "0x404",
+      "previousPointer": "0xE584D1",
+      "source": "dk-combined-barrel.json strip2:5",
+      "timestamp": "2026-07-28T22:04:09.4258460\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x760",
+      "offset": "0x450F44",
+      "length": "0x404",
+      "previousPointer": "0xE587CF",
+      "source": "dk-combined-barrel.json strip2:6",
+      "timestamp": "2026-07-28T22:04:09.4282850\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x764",
+      "offset": "0x451348",
+      "length": "0x35A",
+      "previousPointer": "0xE58AE9",
+      "source": "dk-combined-barrel.json strip2:7",
+      "timestamp": "2026-07-28T22:04:09.4306510\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x768",
+      "offset": "0x4516A2",
+      "length": "0x37C",
+      "previousPointer": "0xE58DA3",
+      "source": "dk-combined-barrel.json strip2:8",
+      "timestamp": "2026-07-28T22:04:09.4328500\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x76C",
+      "offset": "0x451A1E",
+      "length": "0x3E2",
+      "previousPointer": "0xE58FFD",
+      "source": "dk-combined-barrel.json strip2:9",
+      "timestamp": "2026-07-28T22:04:09.4350990\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x770",
+      "offset": "0x451E00",
+      "length": "0x37C",
+      "previousPointer": "0xE56A07",
+      "source": "dk-combined-barrel.json strip4:0",
+      "timestamp": "2026-07-28T22:04:09.4372980\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x774",
+      "offset": "0x45217C",
+      "length": "0x39E",
+      "previousPointer": "0xE56C61",
+      "source": "dk-combined-barrel.json strip4:1",
+      "timestamp": "2026-07-28T22:04:09.4397790\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x778",
+      "offset": "0x45251A",
+      "length": "0x3C0",
+      "previousPointer": "0xE56EFF",
+      "source": "dk-combined-barrel.json strip4:2",
+      "timestamp": "2026-07-28T22:04:09.4421450\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x77C",
+      "offset": "0x4528DA",
+      "length": "0x404",
+      "previousPointer": "0xE571BF",
+      "source": "dk-combined-barrel.json strip4:3",
+      "timestamp": "2026-07-28T22:04:09.4445060\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x780",
+      "offset": "0x452CDE",
+      "length": "0x448",
+      "previousPointer": "0xE5747F",
+      "source": "dk-combined-barrel.json strip4:4",
+      "timestamp": "2026-07-28T22:04:09.4469230\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x77C",
+      "offset": "0x453126",
+      "length": "0x404",
+      "previousPointer": "0x4528DA",
+      "source": "dk-combined-barrel.json strip4:3",
+      "timestamp": "2026-07-28T22:04:09.4496260\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x714",
+      "offset": "0x45352A",
+      "length": "0x2F4",
+      "previousPointer": "0xDC869A",
+      "source": "dk-combined-barrel.json strip22:0",
+      "timestamp": "2026-07-28T22:04:09.4517480\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x718",
+      "offset": "0x45381E",
+      "length": "0x316",
+      "previousPointer": "0xDC888E",
+      "source": "dk-combined-barrel.json strip22:1",
+      "timestamp": "2026-07-28T22:04:09.4538340\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x71C",
+      "offset": "0x453B34",
+      "length": "0x2F4",
+      "previousPointer": "0xDC8A82",
+      "source": "dk-combined-barrel.json strip22:2",
+      "timestamp": "2026-07-28T22:04:09.4560230\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x720",
+      "offset": "0x453E28",
+      "length": "0x2F4",
+      "previousPointer": "0xDC8C76",
+      "source": "dk-combined-barrel.json strip22:3",
+      "timestamp": "2026-07-28T22:04:09.4581410\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x71C",
+      "offset": "0x45411C",
+      "length": "0x2F4",
+      "previousPointer": "0x453B34",
+      "source": "dk-combined-barrel.json strip22:2",
+      "timestamp": "2026-07-28T22:04:09.4604550\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x718",
+      "offset": "0x454410",
+      "length": "0x316",
+      "previousPointer": "0x45381E",
+      "source": "dk-combined-barrel.json strip22:1",
+      "timestamp": "2026-07-28T22:04:09.4628130\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x724",
+      "offset": "0x454726",
+      "length": "0x2D2",
+      "previousPointer": "0xDC8E6A",
+      "source": "dk-combined-barrel.json strip24:0",
+      "timestamp": "2026-07-28T22:04:09.4676010\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x728",
+      "offset": "0x4549F8",
+      "length": "0x2D2",
+      "previousPointer": "0xDC9080",
+      "source": "dk-combined-barrel.json strip24:1",
+      "timestamp": "2026-07-28T22:04:09.4698170\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x728",
+      "offset": "0x454CCA",
+      "length": "0x2D2",
+      "previousPointer": "0x4549F8",
+      "source": "dk-combined-barrel.json strip24:1",
+      "timestamp": "2026-07-28T22:04:09.4722570\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x724",
+      "offset": "0x454F9C",
+      "length": "0x2D2",
+      "previousPointer": "0x454726",
+      "source": "dk-combined-barrel.json strip24:0",
+      "timestamp": "2026-07-28T22:04:09.4750150\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x72C",
+      "offset": "0x45526E",
+      "length": "0x2F4",
+      "previousPointer": "0xDC7868",
+      "source": "dk-combined-barrel.json strip23:0",
+      "timestamp": "2026-07-28T22:04:09.4772530\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x730",
+      "offset": "0x455562",
+      "length": "0x316",
+      "previousPointer": "0xDC7A7E",
+      "source": "dk-combined-barrel.json strip23:1",
+      "timestamp": "2026-07-28T22:04:09.4794780\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x734",
+      "offset": "0x455878",
+      "length": "0x338",
+      "previousPointer": "0xDC7C94",
+      "source": "dk-combined-barrel.json strip23:2",
+      "timestamp": "2026-07-28T22:04:09.4817740\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x738",
+      "offset": "0x455BB0",
+      "length": "0x39E",
+      "previousPointer": "0xDC7ECC",
+      "source": "dk-combined-barrel.json strip23:3",
+      "timestamp": "2026-07-28T22:04:09.4841820\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x73C",
+      "offset": "0x455F4E",
+      "length": "0x39E",
+      "previousPointer": "0xDC8142",
+      "source": "dk-combined-barrel.json strip23:4",
+      "timestamp": "2026-07-28T22:04:09.4866770\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x740",
+      "offset": "0x4562EC",
+      "length": "0x3C0",
+      "previousPointer": "0xDC83FC",
+      "source": "dk-combined-barrel.json strip23:5",
+      "timestamp": "2026-07-28T22:04:09.4890010\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x73C",
+      "offset": "0x4566AC",
+      "length": "0x39E",
+      "previousPointer": "0x455F4E",
+      "source": "dk-combined-barrel.json strip23:4",
+      "timestamp": "2026-07-28T22:04:09.4917900\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x738",
+      "offset": "0x456A4A",
+      "length": "0x39E",
+      "previousPointer": "0x455BB0",
+      "source": "dk-combined-barrel.json strip23:3",
+      "timestamp": "2026-07-28T22:04:09.4944430\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x734",
+      "offset": "0x456DE8",
+      "length": "0x338",
+      "previousPointer": "0x455878",
+      "source": "dk-combined-barrel.json strip23:2",
+      "timestamp": "2026-07-28T22:04:09.4969030\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x730",
+      "offset": "0x457120",
+      "length": "0x316",
+      "previousPointer": "0x455562",
+      "source": "dk-combined-barrel.json strip23:1",
+      "timestamp": "2026-07-28T22:04:09.4992610\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x28C",
+      "offset": "0x457436",
+      "length": "0x338",
+      "previousPointer": "0xD70000",
+      "source": "dk-combined-barrel.json strip15:0",
+      "timestamp": "2026-07-28T22:04:09.5014540\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x290",
+      "offset": "0x45776E",
+      "length": "0x3E2",
+      "previousPointer": "0xD70254",
+      "source": "dk-combined-barrel.json strip15:1",
+      "timestamp": "2026-07-28T22:04:09.5036400\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x294",
+      "offset": "0x457B50",
+      "length": "0x3E2",
+      "previousPointer": "0xD704AE",
+      "source": "dk-combined-barrel.json strip15:2",
+      "timestamp": "2026-07-28T22:04:09.5058800\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x298",
+      "offset": "0x460000",
+      "length": "0x404",
+      "previousPointer": "0xD70708",
+      "source": "dk-combined-barrel.json strip15:3",
+      "timestamp": "2026-07-28T22:04:09.5083150\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x29C",
+      "offset": "0x460404",
+      "length": "0x3E2",
+      "previousPointer": "0xD709EA",
+      "source": "dk-combined-barrel.json strip15:4",
+      "timestamp": "2026-07-28T22:04:09.5106500\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x2A0",
+      "offset": "0x4607E6",
+      "length": "0x35A",
+      "previousPointer": "0xD70CAA",
+      "source": "dk-combined-barrel.json strip15:5",
+      "timestamp": "2026-07-28T22:04:09.5129650\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x2A4",
+      "offset": "0x460B40",
+      "length": "0x39E",
+      "previousPointer": "0xD70F6A",
+      "source": "dk-combined-barrel.json strip15:6",
+      "timestamp": "2026-07-28T22:04:09.5154640\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4F0",
+      "offset": "0x460EDE",
+      "length": "0x39E",
+      "previousPointer": "0xCC091C",
+      "source": "dk-combined-barrel.json strip15:10",
+      "timestamp": "2026-07-28T22:04:09.5214840\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4F4",
+      "offset": "0x46127C",
+      "length": "0x39E",
+      "previousPointer": "0xCC0C20",
+      "source": "dk-combined-barrel.json strip15:11",
+      "timestamp": "2026-07-28T22:04:09.5239800\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4F8",
+      "offset": "0x46161A",
+      "length": "0x404",
+      "previousPointer": "0xCC0EE0",
+      "source": "dk-combined-barrel.json strip15:12",
+      "timestamp": "2026-07-28T22:04:09.5262460\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4FC",
+      "offset": "0x461A1E",
+      "length": "0x3C0",
+      "previousPointer": "0xCC1184",
+      "source": "dk-combined-barrel.json strip15:13",
+      "timestamp": "2026-07-28T22:04:09.5285130\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x500",
+      "offset": "0x461DDE",
+      "length": "0x426",
+      "previousPointer": "0xCC1400",
+      "source": "dk-combined-barrel.json strip15:14",
+      "timestamp": "2026-07-28T22:04:09.5308880\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x504",
+      "offset": "0x462204",
+      "length": "0x448",
+      "previousPointer": "0xCC16BA",
+      "source": "dk-combined-barrel.json strip15:15",
+      "timestamp": "2026-07-28T22:04:09.5333420\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x508",
+      "offset": "0x46264C",
+      "length": "0x404",
+      "previousPointer": "0xCC19DA",
+      "source": "dk-combined-barrel.json strip15:16",
+      "timestamp": "2026-07-28T22:04:09.5356680\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x50C",
+      "offset": "0x462A50",
+      "length": "0x3C0",
+      "previousPointer": "0xCC1C9A",
+      "source": "dk-combined-barrel.json strip15:17",
+      "timestamp": "2026-07-28T22:04:09.5379970\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x510",
+      "offset": "0x462E10",
+      "length": "0x3E2",
+      "previousPointer": "0xCC1F5A",
+      "source": "dk-combined-barrel.json strip15:18",
+      "timestamp": "2026-07-28T22:04:09.5406270\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x514",
+      "offset": "0x4631F2",
+      "length": "0x404",
+      "previousPointer": "0xCC223C",
+      "source": "dk-combined-barrel.json strip15:19",
+      "timestamp": "2026-07-28T22:04:09.5430080\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x518",
+      "offset": "0x4635F6",
+      "length": "0x448",
+      "previousPointer": "0xCC2518",
+      "source": "dk-combined-barrel.json strip15:20",
+      "timestamp": "2026-07-28T22:04:09.5452440\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x51C",
+      "offset": "0x463A3E",
+      "length": "0x3C0",
+      "previousPointer": "0xCC279A",
+      "source": "dk-combined-barrel.json strip15:21",
+      "timestamp": "2026-07-28T22:04:09.5476200\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x520",
+      "offset": "0x463DFE",
+      "length": "0x3E2",
+      "previousPointer": "0xCC2A7C",
+      "source": "dk-combined-barrel.json strip15:22",
+      "timestamp": "2026-07-28T22:04:09.5502320\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x524",
+      "offset": "0x4641E0",
+      "length": "0x404",
+      "previousPointer": "0xCC2DB8",
+      "source": "dk-combined-barrel.json strip15:23",
+      "timestamp": "2026-07-28T22:04:09.5528360\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x528",
+      "offset": "0x4645E4",
+      "length": "0x404",
+      "previousPointer": "0xCC30FA",
+      "source": "dk-combined-barrel.json strip15:24",
+      "timestamp": "2026-07-28T22:04:09.5553140\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x2E4",
+      "offset": "0x4649E8",
+      "length": "0x46A",
+      "previousPointer": "0xC9BAC7",
+      "source": "dk-combined-barrel.json strip16:0",
+      "timestamp": "2026-07-28T22:04:09.5579120\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x2E8",
+      "offset": "0x464E52",
+      "length": "0x48C",
+      "previousPointer": "0xC9BDA9",
+      "source": "dk-combined-barrel.json strip16:1",
+      "timestamp": "2026-07-28T22:04:09.5604240\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x2EC",
+      "offset": "0x4652DE",
+      "length": "0x448",
+      "previousPointer": "0xC9C0AD",
+      "source": "dk-combined-barrel.json strip16:2",
+      "timestamp": "2026-07-28T22:04:09.5628550\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x2F0",
+      "offset": "0x465726",
+      "length": "0x448",
+      "previousPointer": "0xC9C3CD",
+      "source": "dk-combined-barrel.json strip16:3",
+      "timestamp": "2026-07-28T22:04:09.5674530\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x2F4",
+      "offset": "0x465B6E",
+      "length": "0x426",
+      "previousPointer": "0xC9C6AF",
+      "source": "dk-combined-barrel.json strip16:4",
+      "timestamp": "2026-07-28T22:04:09.5698890\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x2F8",
+      "offset": "0x465F94",
+      "length": "0x426",
+      "previousPointer": "0xC9C9D5",
+      "source": "dk-combined-barrel.json strip16:5",
+      "timestamp": "2026-07-28T22:04:09.5729020\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x2FC",
+      "offset": "0x4663BA",
+      "length": "0x426",
+      "previousPointer": "0xC9CD5B",
+      "source": "dk-combined-barrel.json strip16:6",
+      "timestamp": "2026-07-28T22:04:09.5754210\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x300",
+      "offset": "0x4667E0",
+      "length": "0x404",
+      "previousPointer": "0xC9D0A9",
+      "source": "dk-combined-barrel.json strip16:7",
+      "timestamp": "2026-07-28T22:04:09.5780600\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x304",
+      "offset": "0x466BE4",
+      "length": "0x3C0",
+      "previousPointer": "0xC9D46D",
+      "source": "dk-combined-barrel.json strip16:8",
+      "timestamp": "2026-07-28T22:04:09.5806460\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x308",
+      "offset": "0x466FA4",
+      "length": "0x3C0",
+      "previousPointer": "0xC9D7D1",
+      "source": "dk-combined-barrel.json strip16:9",
+      "timestamp": "2026-07-28T22:04:09.5832550\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x30C",
+      "offset": "0x467364",
+      "length": "0x39E",
+      "previousPointer": "0xC9DB3B",
+      "source": "dk-combined-barrel.json strip16:10",
+      "timestamp": "2026-07-28T22:04:09.5859410\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x310",
+      "offset": "0x467702",
+      "length": "0x37C",
+      "previousPointer": "0xC9DEBB",
+      "source": "dk-combined-barrel.json strip16:11",
+      "timestamp": "2026-07-28T22:04:09.5883470\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x314",
+      "offset": "0x467A7E",
+      "length": "0x3C0",
+      "previousPointer": "0xC9E1E7",
+      "source": "dk-combined-barrel.json strip16:12",
+      "timestamp": "2026-07-28T22:04:09.5908930\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x318",
+      "offset": "0x470000",
+      "length": "0x404",
+      "previousPointer": "0xC9E50D",
+      "source": "dk-combined-barrel.json strip16:13",
+      "timestamp": "2026-07-28T22:04:09.5933370\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x31C",
+      "offset": "0x470404",
+      "length": "0x404",
+      "previousPointer": "0xC9E85B",
+      "source": "dk-combined-barrel.json strip16:14",
+      "timestamp": "2026-07-28T22:04:09.5958790\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x320",
+      "offset": "0x470808",
+      "length": "0x3C0",
+      "previousPointer": "0xC9EC03",
+      "source": "dk-combined-barrel.json strip16:15",
+      "timestamp": "2026-07-28T22:04:09.5984280\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x324",
+      "offset": "0x470BC8",
+      "length": "0x37C",
+      "previousPointer": "0xC9EFA5",
+      "source": "dk-combined-barrel.json strip16:16",
+      "timestamp": "2026-07-28T22:04:09.6009790\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x328",
+      "offset": "0x470F44",
+      "length": "0x3C0",
+      "previousPointer": "0xC9F309",
+      "source": "dk-combined-barrel.json strip16:17",
+      "timestamp": "2026-07-28T22:04:09.6033870\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x32C",
+      "offset": "0x471304",
+      "length": "0x3C0",
+      "previousPointer": "0xC9F607",
+      "source": "dk-combined-barrel.json strip16:18",
+      "timestamp": "2026-07-28T22:04:09.6057830\u002B00:00",
+      "fillByte": "0x00"
+    }
+  ],
+  "expansion": {
+    "originalSize": "0x400000",
+    "originalSha256": "628147468c3539283197f58f03b94df49758a332831857481ea9cc31645f0527",
+    "originalMapMode": "0x31",
+    "originalSizeByte": "0x0C",
+    "originalChecksum": "0x2BCC",
+    "originalComplement": "0xD433",
+    "targetSize": "0x800000",
+    "mapMode": "0x35",
+    "mirrorLowBank": true,
+    "timestamp": "2026-07-27T00:15:45.1018230\u002B00:00"
+  }
+}

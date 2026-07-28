@@ -2097,6 +2097,55 @@ operator sentence, and both times the sentence had been read backwards or too st
 screenshots cost the operator a minute and overturned a conclusion that had already been committed
 to the durable record. **When about to write "this cannot be fixed", get the reference image first.**
 
+### A.34 A slicer strip is not a captioned run — sectors are the real unit
+
+Spotted by the operator, and it invalidates an assumption every mapping in A.33 rested on: **the
+sheet is divided into captioned *sectors*, and one slicer strip can hold several of them.**
+
+Strip 15's 25 poses are three runs, split by drawn rules, each with its own black caption:
+
+| sector | poses | |
+|---|---|---|
+| **Barrel Pick Up** | 0..6 | 7 |
+| **Barrel Idle** | 7..9 | 3 |
+| **Barrel Walk** | 10..24 | 15 |
+
+`--captions` shows only a strip's *first* caption, which is why the survey read strip 15 as "Barrel
+Pick Up" full stop and the strip→caption table built from it (A.33) is **incomplete rather than
+wrong**. The same applies to strip 14 ("Hit" | "Death") and strip 18 ("Ride Look" | "Ride Attack" |
+"Ride Idle") at minimum.
+
+**The sectors are what the ROM's animations correspond to**, and the counts fall out immediately:
+
+| sector | poses | animation | distinct |
+|---|---|---|---|
+| Barrel Pick Up | 7 | **71/75** `0x28C..0x2A4` | 7 |
+| Barrel Walk | 15 | **15/96** `0x4F0..0x528` | 15 |
+
+Both *pairs*, both exact, both in the chunk A.22 attributed to barrel work.
+
+#### This identifies the animation A.28 could not place
+
+`0x4F0..0x528` is **Barrel Walk**. That range was tested by complement paint while hunting the
+barrel-blast roll and came back **white** — DK unpainted through the blast — which falsified it as
+the blast and left anims 15/96 as "15 sequential indices, a pair, the shape a real move has, but not
+the blast". It was the barrel *carry* all along. A negative result held its answer for two sections
+because the question asked of it was the wrong one.
+
+#### And it reframes the prop failures
+
+The barrel sectors were **never imported**, so DK carried the barrel with stock art and threw it with
+new art. The throw was judged in isolation against a stock carry. Whether it still reads wrong with
+Pick Up and Walk imported alongside it is a different question from the one that produced A.33's
+"irreconcilable" verdict — and the operator, looking at the sheet directly, reports the author *does*
+draw DK holding the barrel overhead, matching stock. **The mockup screenshots were a red herring
+twice over**: not the game, and not even representative of the sheet.
+
+**Method.** Three wrong conclusions about the barrel came from three different substitutes for
+looking at the source: an operator sentence, a screenshot of a mockup, and a caption survey that
+showed one caption per strip. The sheet answered it in ten seconds once someone looked at the right
+part of it.
+
 ### A.13 `0x858..0x8A8` is **not** DK — it is a foreign island (corrected)
 
 > **This section previously concluded "DK at reduced scale". That was wrong**, and it was wrong in

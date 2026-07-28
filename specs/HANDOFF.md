@@ -249,6 +249,15 @@ answers it in one command. Two successive wrong conclusions about the barrel thr
 reasoning about screenshots — one of them the sprite author's own mockup, mistaken for the game —
 while the primary source sat locally unrendered (A.33).
 
+⚠️ **A slicer strip can hold several captioned sectors** (A.34) — strip 15 is Barrel Pick Up (0..6) |
+Barrel Idle (7..9) | Barrel Walk (10..24), split by drawn rules. `--captions` shows only the *first*
+caption per strip, so the A.33 strip→caption table is incomplete; strips 14 and 18 are known to be
+multi-sector too. **Check for rules before mapping a strip as one run**, and use `"poses": "lo..hi"`
+to address a sector.
+
+⚠️ **`0x4F0..0x528` is Barrel Walk** (anims 15/96) — the pair A.28 could not place. It came back
+white in the barrel-blast paint test because it is the barrel *carry*, not the blast.
+
 ⚠️ **Prop and mount runs are excluded from the manifest** (A.33) — `port/dk-combined-noprops.json`
 is the good build, 14 runs / 172 poses. Barrel Throw and Steel Keg Ride both map correctly and both
 look wrong, because the sheet draws its own composition (hip throw, standing balance) while the game
