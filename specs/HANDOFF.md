@@ -240,6 +240,10 @@ Look in `0x538..0x594`, which is DK's mounted/riding pose set.
 exactly, all three loop-and-reverse just as the sheet's annotation says. Ledge and swing are still
 open.
 
+⚠️ **A run not standing on the floor needs `"groundRef": "self"`** — rope, swim, ledge, every mount.
+The rope strips got it and Steel Keg Ride did not, in the same commit, which put DK 9 px low and
+11 px right of the keg (A.33). Check it whenever a strip's feet are not on the ground.
+
 ⚠️ **Held props break on import** (A.33). Barrel Throw landed correctly and the *barrel* floats up
 and to the side, because the game composites it against **stock** DK's overhead hands while the
 sheet draws a hip throw with no barrel at all. No importer setting fixes it — the character is where

@@ -1963,8 +1963,12 @@ confirmed in play:
 | 24 "Rope Turn" | 2 | 95 | `0x724..0x728` | ✅ |
 | 23 "Rope Climb" | 6 | 92/93 | `0x72C..0x740` | ✅ |
 | 16 "Barrel Throw" | 19 | 74 | `0x2E4..0x32C` | ✅ |
+| 17 "Steel Keg Ride" | 12 | 78 | `0x55C..0x588` | ✅ — **falsifies A.15** |
 
-**Static identification was 0 for 4 before today and is now 7 for 7.** The method did not change; the
+**Static identification was 0 for 4 before today and is now 8 for 8.** The Steel Keg Ride pairing
+also falsifies A.15's claim that the ride animations *cannot* be matched through the animation table
+— they can; A.15 was right that the game composites the vehicle, and wrong that this makes the DK
+poses unreachable. The method did not change; the
 *inputs* did. Pose counts became correct (A.25), the captions supplied identity **and** structure
 (A.29), `--anims-in` supplies the real draw order rather than a range, and the length check refuses a
 wrong pairing before it can ship (A.26). Match on **distinct-index count against draw order**, inside
@@ -1998,6 +2002,36 @@ are elsewhere:
 2. **ROM-side** — find where the prop offset comes from (animation-script operands or game code) and
    move the barrel to the new hands. That is M5-adjacent but a different capability from frame-count
    editing.
+
+#### Two kinds of prop breakage, and only one is the importer's fault
+
+The Steel Keg Ride landed in the same batch and showed a *milder* version — DK riding slightly
+behind and above the keg (operator screenshot, `port/barrel-roll1.png`). That one **was** the
+importer's fault, and it was mine specifically: the three rope strips got `"groundRef": "self"` and
+the ride strip did not, so it inherited the manifest's shared floor and was placed against the walk's
+ground line.
+
+| | bottom edge | centre X |
+|---|---|---|
+| stock ride | 117..123 | 116..122 |
+| inherited `groundRef` | 127..131 | 130..130 |
+| `groundRef: self`, `flatX: off` | **120..124** | **116..122** |
+
+Centre X returns to stock exactly; 3 px of bottom-edge residual is the art difference, below what
+play resolves. **A run that is not standing on the floor needs `groundRef: "self"`** — swim, rope,
+ledge, every mount. Getting that right on three strips and wrong on the fourth in the same commit is
+the argument for making it a property of the *kind* of run rather than a per-strip flag someone must
+remember.
+
+So the two failures look alike and are not:
+
+- **Keg** — the character was in the wrong place. Fixable, and fixed, with existing knobs.
+- **Barrel** — the character is in the *right* place and the prop assumes different anatomy.
+  Unfixable by placement, because there is no placement that is simultaneously correct for DK's feet
+  and for hands the artist drew somewhere else.
+
+Distinguish them by asking whether stock and imported *agree on the character's* box: if they do, it
+is the prop; if they do not, it is the anchor.
 
 **This generalises, and it is a scope finding.** Every prop and mount run has the same exposure:
 Barrel Pick Up / Idle / Walk, Steel Keg Ride, Minecart ×2, the rhino, and anything else where the
