@@ -244,11 +244,11 @@ open.
 The rope strips got it and Steel Keg Ride did not, in the same commit, which put DK 9 px low and
 11 px right of the keg (A.33). Check it whenever a strip's feet are not on the ground.
 
-⚠️ **Held props break on import** (A.33). Barrel Throw landed correctly and the *barrel* floats up
-and to the side, because the game composites it against **stock** DK's overhead hands while the
-sheet draws a hip throw with no barrel at all. No importer setting fixes it — the character is where
-it should be. Exposure: Barrel Pick Up / Idle / Walk, Steel Keg Ride, Minecart ×2, rhino. **Replacing
-DK's sprites alone cannot give a faithful import of any run where he holds something.**
+⚠️ **Never `flatX` a run that holds something** (A.33). The game composites a prop against DK's
+position, so the replaced animation's horizontal travel is load-bearing. Stock's barrel throw lunges
+**29 px** — the largest in the game — and flattening it left the barrel swinging away from a
+stationary DK. Both prop failures this batch (barrel, keg) looked structural and were both knob
+errors: `flatX` on the throw, missing `groundRef: "self"` on the ride.
 
 **Where I was blind:** rope / ledge / swing on the **ROM** side. The *sheet* side is settled — strips
 22/23/24 are captioned "Rope Idle", "Rope Climb", "Rope Turn" (A.28). Matching them to index ranges

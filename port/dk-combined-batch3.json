@@ -192,8 +192,8 @@
     {
       "strip": 16,
       "animation": "0x4A",
-      "flatX": true,
-      "name": "Barrel Throw, 19 poses -> anim 74 (0x2E4..0x32C, 19). A.22 puts \"walk+throw barrel\" in 0x180..0x32C. NOTE this competes with the handoff's provisional \"Ground Slap -> 0x2E4..0x32C\"; Ground Slap is strip 20 with 17 poses, which does not fit 19, so the count favours Barrel Throw."
+      "flatX": false,
+      "name": "Barrel Throw, 19 poses -> anim 74 (0x2E4..0x32C, 19). A.22 puts \"walk+throw barrel\" in 0x180..0x32C. NOTE this competes with the handoff's provisional \"Ground Slap -> 0x2E4..0x32C\"; Ground Slap is strip 20 with 17 poses, which does not fit 19, so the count favours Barrel Throw. flatX OFF: stock throw lunges 29px of centre-X -- the largest in the game -- and the barrel is composited against DK, so flattening it strands the prop. Per-pose centring reproduces stock horizontal travel exactly, which is what the prop offset assumes."
     },
     {
       "strip": 17,

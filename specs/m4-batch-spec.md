@@ -1982,28 +1982,36 @@ appearing in the ROM exactly as A.29 predicted.
 falsified — Ground Slap was reported *unchanged* in the same boot, and it is strip 20 with 17 poses,
 which cannot fit 19 indices. **The provisional tier is now 0 for 5 whenever tested.**
 
-#### The barrel floats: held props are composited against *stock* anatomy
+#### The barrel floats — and the first explanation for it was wrong
 
-Barrel Throw imported correctly and reads well — *and the barrel is in the wrong place*, floating up
-and to the side of DK instead of in his hands.
+> ⚠️ **This section originally concluded that stock DK throws the barrel *overhead* while the sheet
+> draws a *hip* throw, making the two irreconcilable without redrawing the art. That was wrong**, and
+> it was wrong because the operator's report was read backwards. They wrote that stock throws *from
+> the hip* and that the imported build put the barrel *above* DK; it was recorded as the opposite.
+> Reference screenshots (`port/barrel-throw1..4.png`) show stock DK holding the barrel at chest, then
+> waist, then low — never overhead. **The sheet and stock agree on the pose.**
 
-The cause is not placement. The sheet's throw strip draws DK **with no barrel at all**, hands at
-hip/chest height; stock DK holds the barrel **overhead**. The barrel is a separate object the game
-composites at an offset matching *stock* DK's hands, so correct art in the correct slot still
-produces a floating prop.
+The real cause is the same class as the keg below: a knob I chose wrongly.
 
-**No importer setting fixes this.** `--flat-x`, `groundRef` and `offsetX` all move the *character*;
-moving DK to meet the barrel would break his ground line and centre for the sake of a prop. The fixes
-are elsewhere:
+| `0x2E4..0x32C` | top | bottom | centre X |
+|---|---|---|---|
+| stock | 63..86 (23) | 124..128 | **102..131 — spread 29 px** |
+| `flatX: true` (as shipped) | 72..82 (10) | 126..127 | **130..130 — spread 0** |
+| `flatX: false` | — | 126..127 | **102..131 — spread 29** |
 
-1. **Art-side** — redraw the throw poses with the barrel overhead, matching the anatomy the game
-   assumes. The operator notes the sheet's author deliberately drew a hip throw, so this is a design
-   change, not a correction.
-2. **ROM-side** — find where the prop offset comes from (animation-script operands or game code) and
-   move the barrel to the new hands. That is M5-adjacent but a different capability from frame-count
-   editing.
+**Stock's throw lunges 29 px of centre-X, the largest horizontal travel in the game** — against the
+run's 9 px and the roll's 15 px. `flatX` flattened all of it, so DK stood still through the throw
+while the barrel, composited against his position, swung away from him. Turning it off reproduces
+stock's travel exactly.
 
-#### Two kinds of prop breakage, and only one is the importer's fault
+**The lesson about `flatX`, which the handoff had half-stated.** The existing rule is "use it when
+the imported art does not lunge and the replaced animation does". A prop makes that rule wrong: when
+the game composites a second object against the character, the replaced animation's horizontal travel
+is **load-bearing**, because the prop's offset is computed from it. **Never flatten a run that holds
+something.** Both prop failures in this batch came from applying character-only reasoning to runs
+with props.
+
+#### Two kinds of prop breakage, and only one is the importer's fault#### Two kinds of prop breakage, and only one is the importer's fault
 
 The Steel Keg Ride landed in the same batch and showed a *milder* version — DK riding slightly
 behind and above the keg (operator screenshot, `port/barrel-roll1.png`). That one **was** the
@@ -2026,21 +2034,24 @@ remember.
 So the two failures look alike and are not:
 
 - **Keg** — the character was in the wrong place. Fixable, and fixed, with existing knobs.
-- **Barrel** — the character is in the *right* place and the prop assumes different anatomy.
-  Unfixable by placement, because there is no placement that is simultaneously correct for DK's feet
-  and for hands the artist drew somewhere else.
+- **Barrel** — the character was flattened out of a 29 px lunge the prop depends on. Also fixable,
+  also mine.
 
-Distinguish them by asking whether stock and imported *agree on the character's* box: if they do, it
-is the prop; if they do not, it is the anchor.
+Distinguish them by asking whether stock and imported *agree on the character's* box — bottom edge
+**and** centre-X spread. If they do, suspect the prop; if they do not, it is the anchor or `flatX`,
+and it is yours to fix. Both failures this batch looked like "the prop is broken" and neither was.
 
-**This generalises, and it is a scope finding.** Every prop and mount run has the same exposure:
-Barrel Pick Up / Idle / Walk, Steel Keg Ride, Minecart ×2, the rhino, and anything else where the
-game draws a second object against DK. A.15 already noted the game composites these — this is the
-first evidence of what that costs an importer. **A faithful full-character import cannot be achieved
-by replacing DK's sprites alone** for any run where he holds something.
+**What generalises is milder than first recorded.** Every prop and mount run needs `groundRef` and
+`flatX` chosen against *stock's own numbers* rather than by character-only reasoning — Barrel Pick Up
+/ Idle / Walk, Steel Keg Ride, Minecart ×2, the rhino. That is a discipline, not a blocker. The
+earlier claim that "replacing DK's sprites alone cannot give a faithful import of any run where he
+holds something" is **withdrawn**: nothing measured so far supports it, and both cases that prompted
+it were knob errors.
 
-Related and unresolved: whether the *sheet* even intends prop compatibility. A hip throw and an
-overhead throw are different animations, not different drawings of one.
+**Method note.** Two consecutive sections asserted a structural impossibility from a single
+operator sentence, and both times the sentence had been read backwards or too strongly. The
+screenshots cost the operator a minute and overturned a conclusion that had already been committed
+to the durable record. **When about to write "this cannot be fixed", get the reference image first.**
 
 ### A.13 `0x858..0x8A8` is **not** DK — it is a foreign island (corrected)
 
