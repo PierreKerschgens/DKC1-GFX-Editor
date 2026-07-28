@@ -1949,6 +1949,65 @@ keeping: a search for "where does X appear" cannot see the places that still hol
 for the value you expect makes the stale copy invisible precisely when staleness is the bug. The
 untouched controls are what made it visible.
 
+### A.33 Desk mapping works now — 7 for 7 — and held props do not
+
+Two batches mapped purely from A.29's captions plus `--anims-in`, no paint round and no bisection,
+confirmed in play:
+
+| sheet strip | poses | animation | indices | verdict |
+|---|---|---|---|---|
+| 9 "Flip" | 16 | 23/101 | `0x478..0x4B4` | ✅ the enemy bounce |
+| 2 "Swap (Partner)" | 10 | 79 | `0x748..0x76C` | ✅ |
+| 4 "Swap (Leader)" | 5 | 80 | `0x770..0x780` | ✅ |
+| 22 "Rope Idle" | 4 | 94 | `0x714..0x720` | ✅ |
+| 24 "Rope Turn" | 2 | 95 | `0x724..0x728` | ✅ |
+| 23 "Rope Climb" | 6 | 92/93 | `0x72C..0x740` | ✅ |
+| 16 "Barrel Throw" | 19 | 74 | `0x2E4..0x32C` | ✅ |
+
+**Static identification was 0 for 4 before today and is now 7 for 7.** The method did not change; the
+*inputs* did. Pose counts became correct (A.25), the captions supplied identity **and** structure
+(A.29), `--anims-in` supplies the real draw order rather than a range, and the length check refuses a
+wrong pairing before it can ship (A.26). Match on **distinct-index count against draw order**, inside
+a chunk the paint survey supports, then confirm a whole batch with one boot.
+
+The rope three close a blind spot open since A.14, and carry their own corroboration: all three are
+**loop-and-reverse** (`0x714 0x718 0x71C 0x720 0x71C 0x718`), which is the sheet's own annotation
+appearing in the ROM exactly as A.29 predicted.
+
+⚠️ **`0x2E4..0x32C` is Barrel Throw, not Ground Slap.** The handoff's provisional pairing is
+falsified — Ground Slap was reported *unchanged* in the same boot, and it is strip 20 with 17 poses,
+which cannot fit 19 indices. **The provisional tier is now 0 for 5 whenever tested.**
+
+#### The barrel floats: held props are composited against *stock* anatomy
+
+Barrel Throw imported correctly and reads well — *and the barrel is in the wrong place*, floating up
+and to the side of DK instead of in his hands.
+
+The cause is not placement. The sheet's throw strip draws DK **with no barrel at all**, hands at
+hip/chest height; stock DK holds the barrel **overhead**. The barrel is a separate object the game
+composites at an offset matching *stock* DK's hands, so correct art in the correct slot still
+produces a floating prop.
+
+**No importer setting fixes this.** `--flat-x`, `groundRef` and `offsetX` all move the *character*;
+moving DK to meet the barrel would break his ground line and centre for the sake of a prop. The fixes
+are elsewhere:
+
+1. **Art-side** — redraw the throw poses with the barrel overhead, matching the anatomy the game
+   assumes. The operator notes the sheet's author deliberately drew a hip throw, so this is a design
+   change, not a correction.
+2. **ROM-side** — find where the prop offset comes from (animation-script operands or game code) and
+   move the barrel to the new hands. That is M5-adjacent but a different capability from frame-count
+   editing.
+
+**This generalises, and it is a scope finding.** Every prop and mount run has the same exposure:
+Barrel Pick Up / Idle / Walk, Steel Keg Ride, Minecart ×2, the rhino, and anything else where the
+game draws a second object against DK. A.15 already noted the game composites these — this is the
+first evidence of what that costs an importer. **A faithful full-character import cannot be achieved
+by replacing DK's sprites alone** for any run where he holds something.
+
+Related and unresolved: whether the *sheet* even intends prop compatibility. A hip throw and an
+overhead throw are different animations, not different drawings of one.
+
 ### A.13 `0x858..0x8A8` is **not** DK — it is a foreign island (corrected)
 
 > **This section previously concluded "DK at reduced scale". That was wrong**, and it was wrong in

@@ -126,9 +126,10 @@ what to check a report against before investigating it:
 **Known un-imported and already reported:** enemy bounce `0x478..0x4B4` (anims 23/101), barrel-blast
 roll `0x4F0..0x528` (anims 15/96), duck, crawl, swim, ledge, rope, minecart, victory, death.
 
-**Provisional** (identified from draw-order montages, *never observed in motion*): Ground Slap →
-`0x2E4..0x32C`, Swim → `0x3A4..0x3DC`, Death → anim 16. Treat as unverified — **three** pairings in
-this tier have now been falsified, including Roll.
+**Provisional** (identified from draw-order montages, *never observed in motion*): Swim →
+`0x3A4..0x3DC`, Death → anim 16. Treat as unverified — the tier is **0 for 5** whenever tested.
+~~Ground Slap → `0x2E4..0x32C`~~ is **falsified**: that range is **Barrel Throw** (A.33), confirmed
+in play, and Ground Slap was reported unchanged in the same boot.
 
 **Localised by the A.22 paint survey** (one boot, ~15 animations — chunk-level, not exact yet):
 
@@ -234,10 +235,16 @@ positive without a bisection.
 table — no script draws both DK and a vehicle (A.15). Their DK poses are composited by game code.
 Look in `0x538..0x594`, which is DK's mounted/riding pose set.
 
-**Rope is mapped** (A.33, awaiting one boot): idle `0x714..0x720` (anim 94), turn `0x724..0x728`
+**Rope is mapped and confirmed in play** (A.33): idle `0x714..0x720` (anim 94), turn `0x724..0x728`
 (anim 95), climb `0x72C..0x740` (anims 92/93) — three contiguous animations, sheet poses 4/2/6
 exactly, all three loop-and-reverse just as the sheet's annotation says. Ledge and swing are still
 open.
+
+⚠️ **Held props break on import** (A.33). Barrel Throw landed correctly and the *barrel* floats up
+and to the side, because the game composites it against **stock** DK's overhead hands while the
+sheet draws a hip throw with no barrel at all. No importer setting fixes it — the character is where
+it should be. Exposure: Barrel Pick Up / Idle / Walk, Steel Keg Ride, Minecart ×2, rhino. **Replacing
+DK's sprites alone cannot give a faithful import of any run where he holds something.**
 
 **Where I was blind:** rope / ledge / swing on the **ROM** side. The *sheet* side is settled — strips
 22/23/24 are captioned "Rope Idle", "Rope Climb", "Rope Turn" (A.28). Matching them to index ranges
