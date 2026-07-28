@@ -1,0 +1,1800 @@
+{
+  "version": 1,
+  "sourceRomSha256": "628147468c3539283197f58f03b94df49758a332831857481ea9cc31645f0527",
+  "allocations": [
+    {
+      "imageIndex": "0xE0",
+      "offset": "0x410000",
+      "length": "0x3E2",
+      "previousPointer": "0xCD0000",
+      "source": "dk-combined-carry.json strip6:0",
+      "timestamp": "2026-07-28T22:14:09.1294000\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xE4",
+      "offset": "0x4103E2",
+      "length": "0x37C",
+      "previousPointer": "0xCD02BA",
+      "source": "dk-combined-carry.json strip6:1",
+      "timestamp": "2026-07-28T22:14:09.1319330\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xE8",
+      "offset": "0x41075E",
+      "length": "0x35A",
+      "previousPointer": "0xCD0574",
+      "source": "dk-combined-carry.json strip6:2",
+      "timestamp": "2026-07-28T22:14:09.1342970\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xEC",
+      "offset": "0x410AB8",
+      "length": "0x39E",
+      "previousPointer": "0xCD0850",
+      "source": "dk-combined-carry.json strip6:3",
+      "timestamp": "2026-07-28T22:14:09.1366570\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xF0",
+      "offset": "0x410E56",
+      "length": "0x404",
+      "previousPointer": "0xCD0B2C",
+      "source": "dk-combined-carry.json strip6:4",
+      "timestamp": "2026-07-28T22:14:09.1414380\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xF4",
+      "offset": "0x41125A",
+      "length": "0x448",
+      "previousPointer": "0xCD0E08",
+      "source": "dk-combined-carry.json strip6:5",
+      "timestamp": "2026-07-28T22:14:09.1438280\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xF8",
+      "offset": "0x4116A2",
+      "length": "0x3E2",
+      "previousPointer": "0xCD1106",
+      "source": "dk-combined-carry.json strip6:6",
+      "timestamp": "2026-07-28T22:14:09.1461810\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xFC",
+      "offset": "0x411A84",
+      "length": "0x3C0",
+      "previousPointer": "0xCD13E8",
+      "source": "dk-combined-carry.json strip6:7",
+      "timestamp": "2026-07-28T22:14:09.1485730\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x100",
+      "offset": "0x411E44",
+      "length": "0x39E",
+      "previousPointer": "0xCD16C4",
+      "source": "dk-combined-carry.json strip6:8",
+      "timestamp": "2026-07-28T22:14:09.1509650\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x104",
+      "offset": "0x4121E2",
+      "length": "0x37C",
+      "previousPointer": "0xCD197E",
+      "source": "dk-combined-carry.json strip6:9",
+      "timestamp": "2026-07-28T22:14:09.1533370\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x108",
+      "offset": "0x41255E",
+      "length": "0x37C",
+      "previousPointer": "0xCD1C38",
+      "source": "dk-combined-carry.json strip6:10",
+      "timestamp": "2026-07-28T22:14:09.1556770\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x10C",
+      "offset": "0x4128DA",
+      "length": "0x316",
+      "previousPointer": "0xCD1ED6",
+      "source": "dk-combined-carry.json strip6:11",
+      "timestamp": "2026-07-28T22:14:09.1581380\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x110",
+      "offset": "0x412BF0",
+      "length": "0x338",
+      "previousPointer": "0xCD2196",
+      "source": "dk-combined-carry.json strip6:12",
+      "timestamp": "2026-07-28T22:14:09.1605730\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x114",
+      "offset": "0x412F28",
+      "length": "0x338",
+      "previousPointer": "0xCD2472",
+      "source": "dk-combined-carry.json strip6:13",
+      "timestamp": "2026-07-28T22:14:09.1629500\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x118",
+      "offset": "0x413260",
+      "length": "0x37C",
+      "previousPointer": "0xCD272C",
+      "source": "dk-combined-carry.json strip6:14",
+      "timestamp": "2026-07-28T22:14:09.1653600\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x11C",
+      "offset": "0x4135DC",
+      "length": "0x3E2",
+      "previousPointer": "0xCD29E6",
+      "source": "dk-combined-carry.json strip6:15",
+      "timestamp": "2026-07-28T22:14:09.1677920\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x120",
+      "offset": "0x4139BE",
+      "length": "0x426",
+      "previousPointer": "0xCD2CA0",
+      "source": "dk-combined-carry.json strip6:16",
+      "timestamp": "2026-07-28T22:14:09.1702540\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x124",
+      "offset": "0x413DE4",
+      "length": "0x3C0",
+      "previousPointer": "0xCD2F7C",
+      "source": "dk-combined-carry.json strip6:17",
+      "timestamp": "2026-07-28T22:14:09.1727480\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x128",
+      "offset": "0x4141A4",
+      "length": "0x3C0",
+      "previousPointer": "0xCD327A",
+      "source": "dk-combined-carry.json strip6:18",
+      "timestamp": "2026-07-28T22:14:09.1751660\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x12C",
+      "offset": "0x414564",
+      "length": "0x3C0",
+      "previousPointer": "0xCD3534",
+      "source": "dk-combined-carry.json strip6:19",
+      "timestamp": "2026-07-28T22:14:09.1775990\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x330",
+      "offset": "0x414924",
+      "length": "0x3C0",
+      "previousPointer": "0xD7620A",
+      "source": "dk-combined-carry.json strip7:0",
+      "timestamp": "2026-07-28T22:14:09.1799200\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x334",
+      "offset": "0x414CE4",
+      "length": "0x35A",
+      "previousPointer": "0xD7646A",
+      "source": "dk-combined-carry.json strip7:1",
+      "timestamp": "2026-07-28T22:14:09.1822520\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x338",
+      "offset": "0x41503E",
+      "length": "0x39E",
+      "previousPointer": "0xD766E6",
+      "source": "dk-combined-carry.json strip7:2",
+      "timestamp": "2026-07-28T22:14:09.1846120\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x33C",
+      "offset": "0x4153DC",
+      "length": "0x35A",
+      "previousPointer": "0xD76984",
+      "source": "dk-combined-carry.json strip7:3",
+      "timestamp": "2026-07-28T22:14:09.1900340\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x340",
+      "offset": "0x415736",
+      "length": "0x35A",
+      "previousPointer": "0xD76C82",
+      "source": "dk-combined-carry.json strip7:4",
+      "timestamp": "2026-07-28T22:14:09.1929000\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x344",
+      "offset": "0x415A90",
+      "length": "0x404",
+      "previousPointer": "0xD76FE6",
+      "source": "dk-combined-carry.json strip7:5",
+      "timestamp": "2026-07-28T22:14:09.1953610\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x348",
+      "offset": "0x415E94",
+      "length": "0x3C0",
+      "previousPointer": "0xD772F0",
+      "source": "dk-combined-carry.json strip7:6",
+      "timestamp": "2026-07-28T22:14:09.1980390\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x34C",
+      "offset": "0x416254",
+      "length": "0x3C0",
+      "previousPointer": "0xD77632",
+      "source": "dk-combined-carry.json strip7:7",
+      "timestamp": "2026-07-28T22:14:09.2006120\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x350",
+      "offset": "0x416614",
+      "length": "0x3C0",
+      "previousPointer": "0xD77952",
+      "source": "dk-combined-carry.json strip7:8",
+      "timestamp": "2026-07-28T22:14:09.2032300\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x354",
+      "offset": "0x4169D4",
+      "length": "0x3C0",
+      "previousPointer": "0xD77CB6",
+      "source": "dk-combined-carry.json strip7:9",
+      "timestamp": "2026-07-28T22:14:09.2057610\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x358",
+      "offset": "0x416D94",
+      "length": "0x404",
+      "previousPointer": "0xD77FD6",
+      "source": "dk-combined-carry.json strip7:10",
+      "timestamp": "2026-07-28T22:14:09.2082970\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x35C",
+      "offset": "0x417198",
+      "length": "0x404",
+      "previousPointer": "0xD782FC",
+      "source": "dk-combined-carry.json strip7:11",
+      "timestamp": "2026-07-28T22:14:09.2107670\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x360",
+      "offset": "0x41759C",
+      "length": "0x404",
+      "previousPointer": "0xD78600",
+      "source": "dk-combined-carry.json strip7:12",
+      "timestamp": "2026-07-28T22:14:09.2133560\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x364",
+      "offset": "0x4179A0",
+      "length": "0x3E2",
+      "previousPointer": "0xD78948",
+      "source": "dk-combined-carry.json strip7:13",
+      "timestamp": "2026-07-28T22:14:09.2159420\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x368",
+      "offset": "0x420000",
+      "length": "0x448",
+      "previousPointer": "0xD78C2A",
+      "source": "dk-combined-carry.json strip7:14",
+      "timestamp": "2026-07-28T22:14:09.2184660\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x36C",
+      "offset": "0x420448",
+      "length": "0x39E",
+      "previousPointer": "0xD78EEA",
+      "source": "dk-combined-carry.json strip7:15",
+      "timestamp": "2026-07-28T22:14:09.2209230\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x370",
+      "offset": "0x4207E6",
+      "length": "0x35A",
+      "previousPointer": "0xD79188",
+      "source": "dk-combined-carry.json strip7:16",
+      "timestamp": "2026-07-28T22:14:09.2233490\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x374",
+      "offset": "0x420B40",
+      "length": "0x39E",
+      "previousPointer": "0xD79426",
+      "source": "dk-combined-carry.json strip7:17",
+      "timestamp": "2026-07-28T22:14:09.2257430\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x378",
+      "offset": "0x420EDE",
+      "length": "0x39E",
+      "previousPointer": "0xD796E0",
+      "source": "dk-combined-carry.json strip7:18",
+      "timestamp": "2026-07-28T22:14:09.2280380\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x37C",
+      "offset": "0x42127C",
+      "length": "0x3C0",
+      "previousPointer": "0xD7995C",
+      "source": "dk-combined-carry.json strip7:19",
+      "timestamp": "2026-07-28T22:14:09.2302880\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4B8",
+      "offset": "0x42163C",
+      "length": "0x37C",
+      "previousPointer": "0xF376FA",
+      "source": "dk-combined-carry.json strip8:0",
+      "timestamp": "2026-07-28T22:14:09.2326390\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4C0",
+      "offset": "0x4219B8",
+      "length": "0x338",
+      "previousPointer": "0xF37BE6",
+      "source": "dk-combined-carry.json strip8:1",
+      "timestamp": "2026-07-28T22:14:09.2348520\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4C4",
+      "offset": "0x421CF0",
+      "length": "0x2D2",
+      "previousPointer": "0xF37E3A",
+      "source": "dk-combined-carry.json strip8:2",
+      "timestamp": "2026-07-28T22:14:09.2370920\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4C8",
+      "offset": "0x421FC2",
+      "length": "0x28E",
+      "previousPointer": "0xF380B6",
+      "source": "dk-combined-carry.json strip8:3",
+      "timestamp": "2026-07-28T22:14:09.2392860\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4CC",
+      "offset": "0x422250",
+      "length": "0x2B0",
+      "previousPointer": "0xF3830A",
+      "source": "dk-combined-carry.json strip8:4",
+      "timestamp": "2026-07-28T22:14:09.2437030\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4D0",
+      "offset": "0x422500",
+      "length": "0x2D2",
+      "previousPointer": "0xF38542",
+      "source": "dk-combined-carry.json strip8:5",
+      "timestamp": "2026-07-28T22:14:09.2458300\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4D4",
+      "offset": "0x417D82",
+      "length": "0x26C",
+      "previousPointer": "0xF38764",
+      "source": "dk-combined-carry.json strip8:6",
+      "timestamp": "2026-07-28T22:14:09.2479340\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4D8",
+      "offset": "0x4227D2",
+      "length": "0x2D2",
+      "previousPointer": "0xF38958",
+      "source": "dk-combined-carry.json strip8:7",
+      "timestamp": "2026-07-28T22:14:09.2501440\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4DC",
+      "offset": "0x422AA4",
+      "length": "0x2F4",
+      "previousPointer": "0xF38B90",
+      "source": "dk-combined-carry.json strip8:8",
+      "timestamp": "2026-07-28T22:14:09.2523500\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4E0",
+      "offset": "0x422D98",
+      "length": "0x35A",
+      "previousPointer": "0xF38DEA",
+      "source": "dk-combined-carry.json strip8:9",
+      "timestamp": "2026-07-28T22:14:09.2545640\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4EC",
+      "offset": "0x4230F2",
+      "length": "0x338",
+      "previousPointer": "0xF39558",
+      "source": "dk-combined-carry.json strip8:10",
+      "timestamp": "2026-07-28T22:14:09.2568050\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x130",
+      "offset": "0x42342A",
+      "length": "0x39E",
+      "previousPointer": "0xF81688",
+      "source": "dk-combined-carry.json strip10:0",
+      "timestamp": "2026-07-28T22:14:09.2591980\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x134",
+      "offset": "0x4237C8",
+      "length": "0x39E",
+      "previousPointer": "0xF81964",
+      "source": "dk-combined-carry.json strip10:1",
+      "timestamp": "2026-07-28T22:14:09.2615930\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x138",
+      "offset": "0x423B66",
+      "length": "0x426",
+      "previousPointer": "0xF81C46",
+      "source": "dk-combined-carry.json strip10:2",
+      "timestamp": "2026-07-28T22:14:09.2641130\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x13C",
+      "offset": "0x423F8C",
+      "length": "0x3C0",
+      "previousPointer": "0xF81F88",
+      "source": "dk-combined-carry.json strip10:3",
+      "timestamp": "2026-07-28T22:14:09.2666690\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x140",
+      "offset": "0x42434C",
+      "length": "0x3E2",
+      "previousPointer": "0xF822CA",
+      "source": "dk-combined-carry.json strip10:4",
+      "timestamp": "2026-07-28T22:14:09.2692210\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x144",
+      "offset": "0x42472E",
+      "length": "0x448",
+      "previousPointer": "0xF8262E",
+      "source": "dk-combined-carry.json strip10:5",
+      "timestamp": "2026-07-28T22:14:09.2717920\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x148",
+      "offset": "0x424B76",
+      "length": "0x448",
+      "previousPointer": "0xF829B4",
+      "source": "dk-combined-carry.json strip10:6",
+      "timestamp": "2026-07-28T22:14:09.2743920\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x14C",
+      "offset": "0x424FBE",
+      "length": "0x4AE",
+      "previousPointer": "0xF82D34",
+      "source": "dk-combined-carry.json strip10:7",
+      "timestamp": "2026-07-28T22:14:09.2769710\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x150",
+      "offset": "0x42546C",
+      "length": "0x4D0",
+      "previousPointer": "0xF830B4",
+      "source": "dk-combined-carry.json strip10:8",
+      "timestamp": "2026-07-28T22:14:09.2795540\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x154",
+      "offset": "0x42593C",
+      "length": "0x4F2",
+      "previousPointer": "0xF83434",
+      "source": "dk-combined-carry.json strip10:9",
+      "timestamp": "2026-07-28T22:14:09.2821550\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x158",
+      "offset": "0x425E2E",
+      "length": "0x4AE",
+      "previousPointer": "0xF837BA",
+      "source": "dk-combined-carry.json strip10:10",
+      "timestamp": "2026-07-28T22:14:09.2848200\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x15C",
+      "offset": "0x4262DC",
+      "length": "0x4D0",
+      "previousPointer": "0xF83B62",
+      "source": "dk-combined-carry.json strip10:11",
+      "timestamp": "2026-07-28T22:14:09.2897700\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x160",
+      "offset": "0x4267AC",
+      "length": "0x4AE",
+      "previousPointer": "0xF83EE8",
+      "source": "dk-combined-carry.json strip10:12",
+      "timestamp": "2026-07-28T22:14:09.2923940\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x164",
+      "offset": "0x426C5A",
+      "length": "0x46A",
+      "previousPointer": "0xF84224",
+      "source": "dk-combined-carry.json strip10:13",
+      "timestamp": "2026-07-28T22:14:09.2948400\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x168",
+      "offset": "0x4270C4",
+      "length": "0x4AE",
+      "previousPointer": "0xF84500",
+      "source": "dk-combined-carry.json strip10:14",
+      "timestamp": "2026-07-28T22:14:09.2971380\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x16C",
+      "offset": "0x427572",
+      "length": "0x426",
+      "previousPointer": "0xF8477C",
+      "source": "dk-combined-carry.json strip10:15",
+      "timestamp": "2026-07-28T22:14:09.2995640\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x170",
+      "offset": "0x427998",
+      "length": "0x426",
+      "previousPointer": "0xF84A3C",
+      "source": "dk-combined-carry.json strip10:16",
+      "timestamp": "2026-07-28T22:14:09.3019100\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x174",
+      "offset": "0x430000",
+      "length": "0x404",
+      "previousPointer": "0xF84CE0",
+      "source": "dk-combined-carry.json strip10:17",
+      "timestamp": "2026-07-28T22:14:09.3042500\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x178",
+      "offset": "0x430404",
+      "length": "0x35A",
+      "previousPointer": "0xF84F9A",
+      "source": "dk-combined-carry.json strip10:18",
+      "timestamp": "2026-07-28T22:14:09.3066000\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x17C",
+      "offset": "0x43075E",
+      "length": "0x3C0",
+      "previousPointer": "0xF85254",
+      "source": "dk-combined-carry.json strip10:19",
+      "timestamp": "2026-07-28T22:14:09.3089420\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x8C",
+      "offset": "0x430B1E",
+      "length": "0x39E",
+      "previousPointer": "0xD8B1F0",
+      "source": "dk-combined-carry.json strip0:0",
+      "timestamp": "2026-07-28T22:14:09.3111750\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x90",
+      "offset": "0x430EBC",
+      "length": "0x39E",
+      "previousPointer": "0xD8B46C",
+      "source": "dk-combined-carry.json strip0:0",
+      "timestamp": "2026-07-28T22:14:09.3136600\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x94",
+      "offset": "0x43125A",
+      "length": "0x39E",
+      "previousPointer": "0xD8B6E8",
+      "source": "dk-combined-carry.json strip0:1",
+      "timestamp": "2026-07-28T22:14:09.3160360\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x98",
+      "offset": "0x4315F8",
+      "length": "0x39E",
+      "previousPointer": "0xD8B964",
+      "source": "dk-combined-carry.json strip0:1",
+      "timestamp": "2026-07-28T22:14:09.3183380\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x9C",
+      "offset": "0x431996",
+      "length": "0x39E",
+      "previousPointer": "0xD8BBE0",
+      "source": "dk-combined-carry.json strip0:2",
+      "timestamp": "2026-07-28T22:14:09.3207320\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xA0",
+      "offset": "0x431D34",
+      "length": "0x39E",
+      "previousPointer": "0xD8BE9A",
+      "source": "dk-combined-carry.json strip0:2",
+      "timestamp": "2026-07-28T22:14:09.3230750\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xA4",
+      "offset": "0x4320D2",
+      "length": "0x39E",
+      "previousPointer": "0xD8C154",
+      "source": "dk-combined-carry.json strip0:3",
+      "timestamp": "2026-07-28T22:14:09.3254720\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xA8",
+      "offset": "0x432470",
+      "length": "0x39E",
+      "previousPointer": "0xD8C40E",
+      "source": "dk-combined-carry.json strip0:3",
+      "timestamp": "2026-07-28T22:14:09.3278040\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xAC",
+      "offset": "0x43280E",
+      "length": "0x37C",
+      "previousPointer": "0xD8C684",
+      "source": "dk-combined-carry.json strip0:4",
+      "timestamp": "2026-07-28T22:14:09.3301130\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xB0",
+      "offset": "0x432B8A",
+      "length": "0x37C",
+      "previousPointer": "0xD8C922",
+      "source": "dk-combined-carry.json strip0:4",
+      "timestamp": "2026-07-28T22:14:09.3323760\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xB4",
+      "offset": "0x432F06",
+      "length": "0x39E",
+      "previousPointer": "0xD8CBA4",
+      "source": "dk-combined-carry.json strip0:5",
+      "timestamp": "2026-07-28T22:14:09.3346540\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xB8",
+      "offset": "0x4332A4",
+      "length": "0x39E",
+      "previousPointer": "0xD8CE42",
+      "source": "dk-combined-carry.json strip0:5",
+      "timestamp": "2026-07-28T22:14:09.3369320\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xBC",
+      "offset": "0x433642",
+      "length": "0x39E",
+      "previousPointer": "0xD8D0E0",
+      "source": "dk-combined-carry.json strip0:6",
+      "timestamp": "2026-07-28T22:14:09.3415400\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xC0",
+      "offset": "0x4339E0",
+      "length": "0x39E",
+      "previousPointer": "0xD8D37E",
+      "source": "dk-combined-carry.json strip0:6",
+      "timestamp": "2026-07-28T22:14:09.3438270\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xC4",
+      "offset": "0x433D7E",
+      "length": "0x39E",
+      "previousPointer": "0xD8D61C",
+      "source": "dk-combined-carry.json strip0:7",
+      "timestamp": "2026-07-28T22:14:09.3462590\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xC8",
+      "offset": "0x43411C",
+      "length": "0x39E",
+      "previousPointer": "0xD8D8BA",
+      "source": "dk-combined-carry.json strip0:7",
+      "timestamp": "2026-07-28T22:14:09.3485920\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xCC",
+      "offset": "0x4344BA",
+      "length": "0x39E",
+      "previousPointer": "0xD8DB58",
+      "source": "dk-combined-carry.json strip0:8",
+      "timestamp": "2026-07-28T22:14:09.3508800\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xD0",
+      "offset": "0x434858",
+      "length": "0x39E",
+      "previousPointer": "0xD8DDF6",
+      "source": "dk-combined-carry.json strip0:8",
+      "timestamp": "2026-07-28T22:14:09.3531810\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xD4",
+      "offset": "0x434BF6",
+      "length": "0x37C",
+      "previousPointer": "0xD8E094",
+      "source": "dk-combined-carry.json strip0:9",
+      "timestamp": "2026-07-28T22:14:09.3555010\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xD8",
+      "offset": "0x434F72",
+      "length": "0x37C",
+      "previousPointer": "0xD8E332",
+      "source": "dk-combined-carry.json strip0:9",
+      "timestamp": "2026-07-28T22:14:09.3578020\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0xDC",
+      "offset": "0x4352EE",
+      "length": "0x35A",
+      "previousPointer": "0xD8E5D0",
+      "source": "dk-combined-carry.json strip0:10",
+      "timestamp": "2026-07-28T22:14:09.3602220\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x200",
+      "offset": "0x435648",
+      "length": "0x404",
+      "previousPointer": "0xF640CE",
+      "source": "dk-combined-carry.json strip3:10",
+      "timestamp": "2026-07-28T22:14:09.3625530\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x204",
+      "offset": "0x435A4C",
+      "length": "0x426",
+      "previousPointer": "0xF6436C",
+      "source": "dk-combined-carry.json strip3:11",
+      "timestamp": "2026-07-28T22:14:09.3651130\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x208",
+      "offset": "0x435E72",
+      "length": "0x3E2",
+      "previousPointer": "0xF64648",
+      "source": "dk-combined-carry.json strip3:12",
+      "timestamp": "2026-07-28T22:14:09.3675150\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x20C",
+      "offset": "0x436254",
+      "length": "0x48C",
+      "previousPointer": "0xF64902",
+      "source": "dk-combined-carry.json strip3:13",
+      "timestamp": "2026-07-28T22:14:09.3699850\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x210",
+      "offset": "0x4366E0",
+      "length": "0x426",
+      "previousPointer": "0xF64BDE",
+      "source": "dk-combined-carry.json strip3:14",
+      "timestamp": "2026-07-28T22:14:09.3723590\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x214",
+      "offset": "0x436B06",
+      "length": "0x426",
+      "previousPointer": "0xF64E98",
+      "source": "dk-combined-carry.json strip5:0",
+      "timestamp": "2026-07-28T22:14:09.3747530\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x218",
+      "offset": "0x436F2C",
+      "length": "0x426",
+      "previousPointer": "0xF65136",
+      "source": "dk-combined-carry.json strip5:1",
+      "timestamp": "2026-07-28T22:14:09.3772250\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x21C",
+      "offset": "0x437352",
+      "length": "0x4AE",
+      "previousPointer": "0xF653CE",
+      "source": "dk-combined-carry.json strip5:2",
+      "timestamp": "2026-07-28T22:14:09.3795600\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x220",
+      "offset": "0x437800",
+      "length": "0x46A",
+      "previousPointer": "0xF6564A",
+      "source": "dk-combined-carry.json strip5:3",
+      "timestamp": "2026-07-28T22:14:09.3818890\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x224",
+      "offset": "0x440000",
+      "length": "0x448",
+      "previousPointer": "0xF658E8",
+      "source": "dk-combined-carry.json strip5:4",
+      "timestamp": "2026-07-28T22:14:09.3842470\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x228",
+      "offset": "0x440448",
+      "length": "0x404",
+      "previousPointer": "0xF65B86",
+      "source": "dk-combined-carry.json strip5:5",
+      "timestamp": "2026-07-28T22:14:09.3865950\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x22C",
+      "offset": "0x44084C",
+      "length": "0x48C",
+      "previousPointer": "0xF65E24",
+      "source": "dk-combined-carry.json strip5:6",
+      "timestamp": "2026-07-28T22:14:09.3912840\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x230",
+      "offset": "0x440CD8",
+      "length": "0x4F2",
+      "previousPointer": "0xF660C2",
+      "source": "dk-combined-carry.json strip5:7",
+      "timestamp": "2026-07-28T22:14:09.3936360\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x234",
+      "offset": "0x4411CA",
+      "length": "0x448",
+      "previousPointer": "0xF6633E",
+      "source": "dk-combined-carry.json strip5:8",
+      "timestamp": "2026-07-28T22:14:09.3961110\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x238",
+      "offset": "0x441612",
+      "length": "0x448",
+      "previousPointer": "0xF665FE",
+      "source": "dk-combined-carry.json strip5:9",
+      "timestamp": "2026-07-28T22:14:09.3987200\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x23C",
+      "offset": "0x441A5A",
+      "length": "0x46A",
+      "previousPointer": "0xF668BE",
+      "source": "dk-combined-carry.json strip5:10",
+      "timestamp": "2026-07-28T22:14:09.4012940\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x240",
+      "offset": "0x441EC4",
+      "length": "0x448",
+      "previousPointer": "0xF66B5C",
+      "source": "dk-combined-carry.json strip5:11",
+      "timestamp": "2026-07-28T22:14:09.4037980\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x244",
+      "offset": "0x44230C",
+      "length": "0x3E2",
+      "previousPointer": "0xF66DFA",
+      "source": "dk-combined-carry.json strip5:12",
+      "timestamp": "2026-07-28T22:14:09.4061770\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x248",
+      "offset": "0x4426EE",
+      "length": "0x3E2",
+      "previousPointer": "0xF67054",
+      "source": "dk-combined-carry.json strip5:13",
+      "timestamp": "2026-07-28T22:14:09.4084670\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x24C",
+      "offset": "0x442AD0",
+      "length": "0x3E2",
+      "previousPointer": "0xF672AE",
+      "source": "dk-combined-carry.json strip5:14",
+      "timestamp": "2026-07-28T22:14:09.4107670\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x250",
+      "offset": "0x442EB2",
+      "length": "0x3E2",
+      "previousPointer": "0xF67508",
+      "source": "dk-combined-carry.json strip5:15",
+      "timestamp": "2026-07-28T22:14:09.4131310\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x254",
+      "offset": "0x443294",
+      "length": "0x404",
+      "previousPointer": "0xF67784",
+      "source": "dk-combined-carry.json strip5:16",
+      "timestamp": "2026-07-28T22:14:09.4154450\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x258",
+      "offset": "0x443698",
+      "length": "0x404",
+      "previousPointer": "0xF67A00",
+      "source": "dk-combined-carry.json strip5:17",
+      "timestamp": "2026-07-28T22:14:09.4179880\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x25C",
+      "offset": "0x443A9C",
+      "length": "0x404",
+      "previousPointer": "0xF67C98",
+      "source": "dk-combined-carry.json strip5:18",
+      "timestamp": "2026-07-28T22:14:09.4206180\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x180",
+      "offset": "0x443EA0",
+      "length": "0x3E2",
+      "previousPointer": "0xF27696",
+      "source": "dk-combined-carry.json strip1:0",
+      "timestamp": "2026-07-28T22:14:09.4230650\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x184",
+      "offset": "0x444282",
+      "length": "0x39E",
+      "previousPointer": "0xF27972",
+      "source": "dk-combined-carry.json strip1:1",
+      "timestamp": "2026-07-28T22:14:09.4253640\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x184",
+      "offset": "0x444620",
+      "length": "0x39E",
+      "previousPointer": "0x444282",
+      "source": "dk-combined-carry.json strip1:1",
+      "timestamp": "2026-07-28T22:14:09.4279220\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x180",
+      "offset": "0x4449BE",
+      "length": "0x3E2",
+      "previousPointer": "0x443EA0",
+      "source": "dk-combined-carry.json strip1:0",
+      "timestamp": "2026-07-28T22:14:09.4306270\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x478",
+      "offset": "0x437C6A",
+      "length": "0x2D2",
+      "previousPointer": "0xCD3EEC",
+      "source": "dk-combined-carry.json strip9:0",
+      "timestamp": "2026-07-28T22:14:09.4329760\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x47C",
+      "offset": "0x444DA0",
+      "length": "0x338",
+      "previousPointer": "0xCD4124",
+      "source": "dk-combined-carry.json strip9:1",
+      "timestamp": "2026-07-28T22:14:09.4351770\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x480",
+      "offset": "0x4450D8",
+      "length": "0x2D2",
+      "previousPointer": "0xCD433A",
+      "source": "dk-combined-carry.json strip9:2",
+      "timestamp": "2026-07-28T22:14:09.4373610\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x484",
+      "offset": "0x4453AA",
+      "length": "0x2B0",
+      "previousPointer": "0xCD4550",
+      "source": "dk-combined-carry.json strip9:3",
+      "timestamp": "2026-07-28T22:14:09.4395250\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x488",
+      "offset": "0x44565A",
+      "length": "0x2B0",
+      "previousPointer": "0xCD476C",
+      "source": "dk-combined-carry.json strip9:4",
+      "timestamp": "2026-07-28T22:14:09.4445290\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x48C",
+      "offset": "0x44590A",
+      "length": "0x2D2",
+      "previousPointer": "0xCD49C6",
+      "source": "dk-combined-carry.json strip9:5",
+      "timestamp": "2026-07-28T22:14:09.4467580\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x490",
+      "offset": "0x445BDC",
+      "length": "0x2B0",
+      "previousPointer": "0xCD4C04",
+      "source": "dk-combined-carry.json strip9:6",
+      "timestamp": "2026-07-28T22:14:09.4490970\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x494",
+      "offset": "0x445E8C",
+      "length": "0x28E",
+      "previousPointer": "0xCD4E58",
+      "source": "dk-combined-carry.json strip9:7",
+      "timestamp": "2026-07-28T22:14:09.4513990\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x498",
+      "offset": "0x44611A",
+      "length": "0x2B0",
+      "previousPointer": "0xCD50AC",
+      "source": "dk-combined-carry.json strip9:8",
+      "timestamp": "2026-07-28T22:14:09.4536500\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x49C",
+      "offset": "0x4463CA",
+      "length": "0x28E",
+      "previousPointer": "0xCD5300",
+      "source": "dk-combined-carry.json strip9:9",
+      "timestamp": "2026-07-28T22:14:09.4560270\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4A0",
+      "offset": "0x446658",
+      "length": "0x2B0",
+      "previousPointer": "0xCD5538",
+      "source": "dk-combined-carry.json strip9:10",
+      "timestamp": "2026-07-28T22:14:09.4584100\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4A4",
+      "offset": "0x446908",
+      "length": "0x26C",
+      "previousPointer": "0xCD5770",
+      "source": "dk-combined-carry.json strip9:11",
+      "timestamp": "2026-07-28T22:14:09.4608060\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4A8",
+      "offset": "0x446B74",
+      "length": "0x26C",
+      "previousPointer": "0xCD5986",
+      "source": "dk-combined-carry.json strip9:12",
+      "timestamp": "2026-07-28T22:14:09.4631620\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4AC",
+      "offset": "0x446DE0",
+      "length": "0x2B0",
+      "previousPointer": "0xCD5B9C",
+      "source": "dk-combined-carry.json strip9:13",
+      "timestamp": "2026-07-28T22:14:09.4655980\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4B0",
+      "offset": "0x447090",
+      "length": "0x2D2",
+      "previousPointer": "0xCD5DF6",
+      "source": "dk-combined-carry.json strip9:14",
+      "timestamp": "2026-07-28T22:14:09.4678470\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x4B4",
+      "offset": "0x447362",
+      "length": "0x2F4",
+      "previousPointer": "0xCD602E",
+      "source": "dk-combined-carry.json strip9:15",
+      "timestamp": "2026-07-28T22:14:09.4701350\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x748",
+      "offset": "0x447656",
+      "length": "0x37C",
+      "previousPointer": "0xE5775B",
+      "source": "dk-combined-carry.json strip2:0",
+      "timestamp": "2026-07-28T22:14:09.4726370\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x74C",
+      "offset": "0x4479D2",
+      "length": "0x37C",
+      "previousPointer": "0xE57A37",
+      "source": "dk-combined-carry.json strip2:1",
+      "timestamp": "2026-07-28T22:14:09.4751740\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x750",
+      "offset": "0x450000",
+      "length": "0x39E",
+      "previousPointer": "0xE57CF7",
+      "source": "dk-combined-carry.json strip2:2",
+      "timestamp": "2026-07-28T22:14:09.4776140\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x754",
+      "offset": "0x45039E",
+      "length": "0x3C0",
+      "previousPointer": "0xE57FB1",
+      "source": "dk-combined-carry.json strip2:3",
+      "timestamp": "2026-07-28T22:14:09.4799430\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x758",
+      "offset": "0x45075E",
+      "length": "0x3E2",
+      "previousPointer": "0xE58233",
+      "source": "dk-combined-carry.json strip2:4",
+      "timestamp": "2026-07-28T22:14:09.4823690\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x75C",
+      "offset": "0x450B40",
+      "length": "0x404",
+      "previousPointer": "0xE584D1",
+      "source": "dk-combined-carry.json strip2:5",
+      "timestamp": "2026-07-28T22:14:09.4849680\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x760",
+      "offset": "0x450F44",
+      "length": "0x404",
+      "previousPointer": "0xE587CF",
+      "source": "dk-combined-carry.json strip2:6",
+      "timestamp": "2026-07-28T22:14:09.4875910\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x764",
+      "offset": "0x451348",
+      "length": "0x35A",
+      "previousPointer": "0xE58AE9",
+      "source": "dk-combined-carry.json strip2:7",
+      "timestamp": "2026-07-28T22:14:09.4900760\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x768",
+      "offset": "0x4516A2",
+      "length": "0x37C",
+      "previousPointer": "0xE58DA3",
+      "source": "dk-combined-carry.json strip2:8",
+      "timestamp": "2026-07-28T22:14:09.4924210\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x76C",
+      "offset": "0x451A1E",
+      "length": "0x3E2",
+      "previousPointer": "0xE58FFD",
+      "source": "dk-combined-carry.json strip2:9",
+      "timestamp": "2026-07-28T22:14:09.4948060\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x770",
+      "offset": "0x451E00",
+      "length": "0x37C",
+      "previousPointer": "0xE56A07",
+      "source": "dk-combined-carry.json strip4:0",
+      "timestamp": "2026-07-28T22:14:09.4971220\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x774",
+      "offset": "0x45217C",
+      "length": "0x39E",
+      "previousPointer": "0xE56C61",
+      "source": "dk-combined-carry.json strip4:1",
+      "timestamp": "2026-07-28T22:14:09.5019750\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x778",
+      "offset": "0x45251A",
+      "length": "0x3C0",
+      "previousPointer": "0xE56EFF",
+      "source": "dk-combined-carry.json strip4:2",
+      "timestamp": "2026-07-28T22:14:09.5044380\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x77C",
+      "offset": "0x4528DA",
+      "length": "0x404",
+      "previousPointer": "0xE571BF",
+      "source": "dk-combined-carry.json strip4:3",
+      "timestamp": "2026-07-28T22:14:09.5069270\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x780",
+      "offset": "0x452CDE",
+      "length": "0x448",
+      "previousPointer": "0xE5747F",
+      "source": "dk-combined-carry.json strip4:4",
+      "timestamp": "2026-07-28T22:14:09.5094500\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x77C",
+      "offset": "0x453126",
+      "length": "0x404",
+      "previousPointer": "0x4528DA",
+      "source": "dk-combined-carry.json strip4:3",
+      "timestamp": "2026-07-28T22:14:09.5122610\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x714",
+      "offset": "0x45352A",
+      "length": "0x2F4",
+      "previousPointer": "0xDC869A",
+      "source": "dk-combined-carry.json strip22:0",
+      "timestamp": "2026-07-28T22:14:09.5144440\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x718",
+      "offset": "0x45381E",
+      "length": "0x316",
+      "previousPointer": "0xDC888E",
+      "source": "dk-combined-carry.json strip22:1",
+      "timestamp": "2026-07-28T22:14:09.5166260\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x71C",
+      "offset": "0x453B34",
+      "length": "0x2F4",
+      "previousPointer": "0xDC8A82",
+      "source": "dk-combined-carry.json strip22:2",
+      "timestamp": "2026-07-28T22:14:09.5187840\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x720",
+      "offset": "0x453E28",
+      "length": "0x2F4",
+      "previousPointer": "0xDC8C76",
+      "source": "dk-combined-carry.json strip22:3",
+      "timestamp": "2026-07-28T22:14:09.5209690\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x71C",
+      "offset": "0x45411C",
+      "length": "0x2F4",
+      "previousPointer": "0x453B34",
+      "source": "dk-combined-carry.json strip22:2",
+      "timestamp": "2026-07-28T22:14:09.5234440\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x718",
+      "offset": "0x454410",
+      "length": "0x316",
+      "previousPointer": "0x45381E",
+      "source": "dk-combined-carry.json strip22:1",
+      "timestamp": "2026-07-28T22:14:09.5259160\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x724",
+      "offset": "0x454726",
+      "length": "0x2D2",
+      "previousPointer": "0xDC8E6A",
+      "source": "dk-combined-carry.json strip24:0",
+      "timestamp": "2026-07-28T22:14:09.5281130\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x728",
+      "offset": "0x4549F8",
+      "length": "0x2D2",
+      "previousPointer": "0xDC9080",
+      "source": "dk-combined-carry.json strip24:1",
+      "timestamp": "2026-07-28T22:14:09.5302140\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x728",
+      "offset": "0x454CCA",
+      "length": "0x2D2",
+      "previousPointer": "0x4549F8",
+      "source": "dk-combined-carry.json strip24:1",
+      "timestamp": "2026-07-28T22:14:09.5326050\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x724",
+      "offset": "0x454F9C",
+      "length": "0x2D2",
+      "previousPointer": "0x454726",
+      "source": "dk-combined-carry.json strip24:0",
+      "timestamp": "2026-07-28T22:14:09.5349890\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x72C",
+      "offset": "0x45526E",
+      "length": "0x2F4",
+      "previousPointer": "0xDC7868",
+      "source": "dk-combined-carry.json strip23:0",
+      "timestamp": "2026-07-28T22:14:09.5372610\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x730",
+      "offset": "0x455562",
+      "length": "0x316",
+      "previousPointer": "0xDC7A7E",
+      "source": "dk-combined-carry.json strip23:1",
+      "timestamp": "2026-07-28T22:14:09.5394680\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x734",
+      "offset": "0x455878",
+      "length": "0x338",
+      "previousPointer": "0xDC7C94",
+      "source": "dk-combined-carry.json strip23:2",
+      "timestamp": "2026-07-28T22:14:09.5417070\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x738",
+      "offset": "0x455BB0",
+      "length": "0x39E",
+      "previousPointer": "0xDC7ECC",
+      "source": "dk-combined-carry.json strip23:3",
+      "timestamp": "2026-07-28T22:14:09.5440840\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x73C",
+      "offset": "0x455F4E",
+      "length": "0x39E",
+      "previousPointer": "0xDC8142",
+      "source": "dk-combined-carry.json strip23:4",
+      "timestamp": "2026-07-28T22:14:09.5465580\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x740",
+      "offset": "0x4562EC",
+      "length": "0x3C0",
+      "previousPointer": "0xDC83FC",
+      "source": "dk-combined-carry.json strip23:5",
+      "timestamp": "2026-07-28T22:14:09.5489630\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x73C",
+      "offset": "0x4566AC",
+      "length": "0x39E",
+      "previousPointer": "0x455F4E",
+      "source": "dk-combined-carry.json strip23:4",
+      "timestamp": "2026-07-28T22:14:09.5549550\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x738",
+      "offset": "0x456A4A",
+      "length": "0x39E",
+      "previousPointer": "0x455BB0",
+      "source": "dk-combined-carry.json strip23:3",
+      "timestamp": "2026-07-28T22:14:09.5576790\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x734",
+      "offset": "0x456DE8",
+      "length": "0x338",
+      "previousPointer": "0x455878",
+      "source": "dk-combined-carry.json strip23:2",
+      "timestamp": "2026-07-28T22:14:09.5602820\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x730",
+      "offset": "0x457120",
+      "length": "0x316",
+      "previousPointer": "0x455562",
+      "source": "dk-combined-carry.json strip23:1",
+      "timestamp": "2026-07-28T22:14:09.5627520\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x58C",
+      "offset": "0x457436",
+      "length": "0x39E",
+      "previousPointer": "0xEDE076",
+      "source": "dk-combined-carry.json strip15:10",
+      "timestamp": "2026-07-28T22:14:09.5651360\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x590",
+      "offset": "0x4577D4",
+      "length": "0x404",
+      "previousPointer": "0xEDE2F2",
+      "source": "dk-combined-carry.json strip15:12",
+      "timestamp": "2026-07-28T22:14:09.5675840\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x594",
+      "offset": "0x457BD8",
+      "length": "0x426",
+      "previousPointer": "0xEDE5B2",
+      "source": "dk-combined-carry.json strip15:14",
+      "timestamp": "2026-07-28T22:14:09.5699340\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x598",
+      "offset": "0x460000",
+      "length": "0x404",
+      "previousPointer": "0xEDE82E",
+      "source": "dk-combined-carry.json strip15:16",
+      "timestamp": "2026-07-28T22:14:09.5722670\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x59C",
+      "offset": "0x460404",
+      "length": "0x3E2",
+      "previousPointer": "0xEDEAA4",
+      "source": "dk-combined-carry.json strip15:18",
+      "timestamp": "2026-07-28T22:14:09.5746050\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x5A0",
+      "offset": "0x4607E6",
+      "length": "0x448",
+      "previousPointer": "0xEDED42",
+      "source": "dk-combined-carry.json strip15:20",
+      "timestamp": "2026-07-28T22:14:09.5770950\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x5A4",
+      "offset": "0x460C2E",
+      "length": "0x3E2",
+      "previousPointer": "0xEDEFE0",
+      "source": "dk-combined-carry.json strip15:22",
+      "timestamp": "2026-07-28T22:14:09.5797070\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x2E4",
+      "offset": "0x461010",
+      "length": "0x46A",
+      "previousPointer": "0xC9BAC7",
+      "source": "dk-combined-carry.json strip16:0",
+      "timestamp": "2026-07-28T22:14:09.5823570\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x2E8",
+      "offset": "0x46147A",
+      "length": "0x48C",
+      "previousPointer": "0xC9BDA9",
+      "source": "dk-combined-carry.json strip16:1",
+      "timestamp": "2026-07-28T22:14:09.5849920\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x2EC",
+      "offset": "0x461906",
+      "length": "0x448",
+      "previousPointer": "0xC9C0AD",
+      "source": "dk-combined-carry.json strip16:2",
+      "timestamp": "2026-07-28T22:14:09.5875890\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x2F0",
+      "offset": "0x461D4E",
+      "length": "0x448",
+      "previousPointer": "0xC9C3CD",
+      "source": "dk-combined-carry.json strip16:3",
+      "timestamp": "2026-07-28T22:14:09.5901190\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x2F4",
+      "offset": "0x462196",
+      "length": "0x426",
+      "previousPointer": "0xC9C6AF",
+      "source": "dk-combined-carry.json strip16:4",
+      "timestamp": "2026-07-28T22:14:09.5926870\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x2F8",
+      "offset": "0x4625BC",
+      "length": "0x426",
+      "previousPointer": "0xC9C9D5",
+      "source": "dk-combined-carry.json strip16:5",
+      "timestamp": "2026-07-28T22:14:09.5954180\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x2FC",
+      "offset": "0x4629E2",
+      "length": "0x426",
+      "previousPointer": "0xC9CD5B",
+      "source": "dk-combined-carry.json strip16:6",
+      "timestamp": "2026-07-28T22:14:09.5980940\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x300",
+      "offset": "0x462E08",
+      "length": "0x404",
+      "previousPointer": "0xC9D0A9",
+      "source": "dk-combined-carry.json strip16:7",
+      "timestamp": "2026-07-28T22:14:09.6009260\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x304",
+      "offset": "0x46320C",
+      "length": "0x3C0",
+      "previousPointer": "0xC9D46D",
+      "source": "dk-combined-carry.json strip16:8",
+      "timestamp": "2026-07-28T22:14:09.6063850\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x308",
+      "offset": "0x4635CC",
+      "length": "0x3C0",
+      "previousPointer": "0xC9D7D1",
+      "source": "dk-combined-carry.json strip16:9",
+      "timestamp": "2026-07-28T22:14:09.6090690\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x30C",
+      "offset": "0x46398C",
+      "length": "0x39E",
+      "previousPointer": "0xC9DB3B",
+      "source": "dk-combined-carry.json strip16:10",
+      "timestamp": "2026-07-28T22:14:09.6117410\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x310",
+      "offset": "0x463D2A",
+      "length": "0x37C",
+      "previousPointer": "0xC9DEBB",
+      "source": "dk-combined-carry.json strip16:11",
+      "timestamp": "2026-07-28T22:14:09.6142390\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x314",
+      "offset": "0x4640A6",
+      "length": "0x3C0",
+      "previousPointer": "0xC9E1E7",
+      "source": "dk-combined-carry.json strip16:12",
+      "timestamp": "2026-07-28T22:14:09.6175490\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x318",
+      "offset": "0x464466",
+      "length": "0x404",
+      "previousPointer": "0xC9E50D",
+      "source": "dk-combined-carry.json strip16:13",
+      "timestamp": "2026-07-28T22:14:09.6201190\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x31C",
+      "offset": "0x46486A",
+      "length": "0x404",
+      "previousPointer": "0xC9E85B",
+      "source": "dk-combined-carry.json strip16:14",
+      "timestamp": "2026-07-28T22:14:09.6227150\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x320",
+      "offset": "0x464C6E",
+      "length": "0x3C0",
+      "previousPointer": "0xC9EC03",
+      "source": "dk-combined-carry.json strip16:15",
+      "timestamp": "2026-07-28T22:14:09.6253980\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x324",
+      "offset": "0x46502E",
+      "length": "0x37C",
+      "previousPointer": "0xC9EFA5",
+      "source": "dk-combined-carry.json strip16:16",
+      "timestamp": "2026-07-28T22:14:09.6279860\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x328",
+      "offset": "0x4653AA",
+      "length": "0x3C0",
+      "previousPointer": "0xC9F309",
+      "source": "dk-combined-carry.json strip16:17",
+      "timestamp": "2026-07-28T22:14:09.6304680\u002B00:00",
+      "fillByte": "0x00"
+    },
+    {
+      "imageIndex": "0x32C",
+      "offset": "0x46576A",
+      "length": "0x3C0",
+      "previousPointer": "0xC9F607",
+      "source": "dk-combined-carry.json strip16:18",
+      "timestamp": "2026-07-28T22:14:09.6329450\u002B00:00",
+      "fillByte": "0x00"
+    }
+  ],
+  "expansion": {
+    "originalSize": "0x400000",
+    "originalSha256": "628147468c3539283197f58f03b94df49758a332831857481ea9cc31645f0527",
+    "originalMapMode": "0x31",
+    "originalSizeByte": "0x0C",
+    "originalChecksum": "0x2BCC",
+    "originalComplement": "0xD433",
+    "targetSize": "0x800000",
+    "mapMode": "0x35",
+    "mirrorLowBank": true,
+    "timestamp": "2026-07-27T00:15:45.1018230\u002B00:00"
+  }
+}

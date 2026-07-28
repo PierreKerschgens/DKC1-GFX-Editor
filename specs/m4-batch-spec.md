@@ -2146,6 +2146,51 @@ looking at the source: an operator sentence, a screenshot of a mockup, and a cap
 showed one caption per strip. The sheet answered it in ten seconds once someone looked at the right
 part of it.
 
+### A.35 Prop animations interleave DK and prop frames — and every search so far hid them
+
+A.34's two sector mappings both **failed in play**: Barrel Pick Up → anims 71/75 and Barrel Walk →
+anims 15/96 left DK stock while carrying. Desk mapping goes 8 for 10, and both misses share one
+cause.
+
+`--anims-in` reports animations drawing **entirely inside** a range, and prints the rest as a count:
+*"14 more touch this range but also draw outside it (held props / mounts) — excluded from the list
+below"*. Every mapping in this spec was made from the included list. **The 14 excluded ones are
+exactly the prop and mount animations**, so the entire class was invisible to the method — not
+mis-ranked, absent.
+
+Their draw orders alternate character and prop:
+
+```
+anim 46:  0x2710 0x58C  0x2714 0x590  0x2718 0x594  0x271C 0x594  0x2720 0x59C  0x2724 0x5A0
+          prop   DK     prop   DK     prop   DK     prop   DK     prop   DK     prop   DK
+```
+
+**DK's carry poses are `0x538` and `0x58C..0x5A4` — about eight indices**, inside the mounted set the
+handoff pointed at (`0x538..0x594`). And they are **shared across every carryable object**: the same
+DK frames pair with prop `0x2710`, `0x232C`, `0x1F4C` and `0x28F0` in anims 46/47/50/52/53. One carry
+pose set serves all of them.
+
+That is why the sheet's 15-pose Barrel Walk matched nothing: **there is no 15-index carry animation,
+because the ROM carries with ~7 poses.** The 15-vs-15 agreement with anims 15/96 was coincidence of
+exactly the kind A.9 warned about, and it slipped through because the count matched *and* the chunk
+looked plausible.
+
+⚠️ **`indices` is mandatory for a prop run.** Deriving from `animation` yields the interleaved list,
+so the importer would try to write sheet art into the *barrel's* sprite slots. This is the one case
+where the escape hatch is correct rather than a shortcut — and it means the length check cannot help,
+so the pose↔index correspondence must be argued in the manifest's `name` and checked in play.
+
+**What is still unknown:** which sheet poses to sample. The ROM has ~7 carry poses against the
+sheet's 15, and `port/dk-combined-carry.json` samples every other one. That ratio is a guess and is
+labelled as such.
+
+#### Three searches, one blind spot
+
+The barrel-blast hunt (A.28), the sector mapping (A.34) and the batch mappings (A.33) all used
+`--anims-in`'s included list, and the answer was in the excluded header the whole time. **A tool that
+summarises what it filtered out is telling you where to look next** — this one printed
+"held props / mounts" on every invocation for six sections.
+
 ### A.13 `0x858..0x8A8` is **not** DK — it is a foreign island (corrected)
 
 > **This section previously concluded "DK at reduced scale". That was wrong**, and it was wrong in

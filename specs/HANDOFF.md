@@ -249,6 +249,14 @@ answers it in one command. Two successive wrong conclusions about the barrel thr
 reasoning about screenshots — one of them the sprite author's own mockup, mistaken for the game —
 while the primary source sat locally unrendered (A.33).
 
+⚠️ **Prop/mount animations are the ones `--anims-in` EXCLUDES** (A.35). It lists animations drawing
+entirely inside a range and prints the rest as "N more touch this range but also draw outside it
+(held props / mounts)" — that header is the prop class, 14 animations, and every mapping in this file
+was made from the included list. Their draw orders interleave DK and prop frames
+(`0x2710 0x58C 0x2714 0x590 …`), so **DK's carry poses are `0x538` + `0x58C..0x5A4`, ~8 indices
+shared across every carryable object**. Use explicit `indices` for these — `animation` would derive
+the prop's slots too.
+
 ⚠️ **A slicer strip can hold several captioned sectors** (A.34) — strip 15 is Barrel Pick Up (0..6) |
 Barrel Idle (7..9) | Barrel Walk (10..24), split by drawn rules. `--captions` shows only the *first*
 caption per strip, so the A.33 strip→caption table is incomplete; strips 14 and 18 are known to be
