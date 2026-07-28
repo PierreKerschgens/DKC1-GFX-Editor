@@ -2048,8 +2048,10 @@ remember.
 So the two failures look alike and are not:
 
 - **Keg** — the character was in the wrong place. Fixable, and fixed, with existing knobs.
-- **Barrel** — the character was flattened out of a 29 px lunge the prop depends on. Also fixable,
-  also mine.
+- **Barrel** — partly mine (`flatX` flattened a 29 px lunge the prop depends on; fixed, and centre-X
+  now matches stock exactly) and partly not: with that corrected it *still* reads wrong, because the
+  sheet throws from the hip while the game releases the barrel on an overhead arc. The release point
+  and trajectory are game code, not a placement quantity.
 
 Distinguish them by asking whether stock and imported *agree on the character's* box — bottom edge
 **and** centre-X spread. If they do, suspect the prop; if they do not, it is the anchor or `flatX`,
@@ -2058,6 +2060,30 @@ and it is yours to fix. Both failures this batch looked like "the prop is broken
 ⚠️ **`port/barrel-throw1..4.png` are the sprite author's mockup, not the game and not this build.**
 They are a useful statement of intended composition and worthless as evidence about stock. Label
 reference images by provenance before reasoning from them.
+
+#### Where the prop runs actually landed: dropped, not solved
+
+Both prop runs mapped correctly, were placed correctly by every measure this spec has, and both still
+read wrong in play. The keg ride is the sharpest statement of why: its **centroid sits within 2 px of
+stock horizontally** and its bbox and centre-X match — and DK still stands beside the keg rather than
+on it, because the sheet draws an upright arms-out balance where stock draws a different ride pose.
+
+**Geometry was never the problem, so no geometric knob was ever going to fix it.** `offsetY` was
+added while chasing this (companion to `offsetX`, applied after all other placement) and is *not*
+used by any strip: nudging a correctly-placed character to make a prop look right would trade a
+measured correctness for an eyeballed one, on a relationship only one side of which this tool writes.
+
+**Strips 16 and 17 are therefore excluded** — `port/dk-combined-noprops.json`, 14 runs, 172 poses.
+They are the only 2 of 15 that looked wrong; everything else is confirmed in play. Re-add either by
+copying its entry back from `dk-combined-batch3.json`.
+
+The three ways forward, none of which is importer work:
+
+1. **Accept** — the character is right, the prop is wrong, in two animations.
+2. **Art-side** — the author redraws the throw overhead and the ride to stock's pose. His mockup shows
+   he intends otherwise, so this is a request, not a correction.
+3. **ROM-side** — find where the prop's offset and release arc live and move them to the new anatomy.
+   That is a genuinely different capability from anything M1–M5 covers.
 
 **What generalises is milder than first recorded.** Every prop and mount run needs `groundRef` and
 `flatX` chosen against *stock's own numbers* rather than by character-only reasoning — Barrel Pick Up

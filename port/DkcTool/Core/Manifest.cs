@@ -85,6 +85,24 @@ namespace DkcTool.Core
         public int? OffsetX;
 
         /// <summary>
+        /// Vertical nudge applied to every pose in this strip, after all other placement.
+        ///
+        /// <para>The companion to <see cref="OffsetX"/>, and needed for the same reason at one
+        /// remove: matching a slot's bounding box does not put the *body* where the old body was
+        /// when the two poses differ in shape. The sheet's keg-ride pose has both arms out; stock's
+        /// is compact and crouched. Anchored so their boxes agree, the imported body sits left of
+        /// and above the keg the game composites against it — box matched, character misplaced.
+        /// This is A.20's head-continuity finding again: an average over a bounding box is not the
+        /// feature a viewer tracks.</para>
+        ///
+        /// <para>Only for runs the game draws a second object against, where "correct" is defined
+        /// by the prop rather than by a ground line. Tune by eye against a screenshot; there is no
+        /// measurement that substitutes, because the target is a relationship between two sprites
+        /// only one of which this tool writes.</para>
+        /// </summary>
+        public int? OffsetY;
+
+        /// <summary>
         /// Which of the strip's poses take part, in order — resolved from the `poses` field's
         /// tokens (`"0..10"`, `"0,0,1,1,2"`). Null = all of them, in order.
         ///
@@ -122,6 +140,9 @@ namespace DkcTool.Core
 
         /// <summary>Per-strip horizontal nudge, applied after all other placement.</summary>
         public int? OffsetX;
+
+        /// <summary>Per-strip vertical nudge, applied after all other placement.</summary>
+        public int? OffsetY;
     }
 
     /// <summary>
@@ -241,6 +262,7 @@ namespace DkcTool.Core
                     FlatX = s.flatX,
                     GroundRef = ParseGroundRef(s.groundRef),
                     OffsetX = s.offsetX,
+                    OffsetY = s.offsetY,
                     Poses = ParsePoseList(s.strip, s.poses),
                 });
             }
@@ -384,6 +406,7 @@ namespace DkcTool.Core
                         FlatX = entry.FlatX,
                         GroundRef = entry.GroundRef ?? GroundRef,
                         OffsetX = entry.OffsetX,
+                        OffsetY = entry.OffsetY,
                     });
                 }
             }
@@ -430,6 +453,7 @@ namespace DkcTool.Core
             public bool? flatX { get; set; }
             public string? groundRef { get; set; }
             public int? offsetX { get; set; }
+            public int? offsetY { get; set; }
             public string? poses { get; set; }
         }
 

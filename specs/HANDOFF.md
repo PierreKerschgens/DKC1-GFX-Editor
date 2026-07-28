@@ -249,6 +249,13 @@ answers it in one command. Two successive wrong conclusions about the barrel thr
 reasoning about screenshots — one of them the sprite author's own mockup, mistaken for the game —
 while the primary source sat locally unrendered (A.33).
 
+⚠️ **Prop and mount runs are excluded from the manifest** (A.33) — `port/dk-combined-noprops.json`
+is the good build, 14 runs / 172 poses. Barrel Throw and Steel Keg Ride both map correctly and both
+look wrong, because the sheet draws its own composition (hip throw, standing balance) while the game
+composites the prop against stock's. The keg's **centroid is within 2 px of stock** and it still
+reads wrong, so geometry is not the lever. `offsetY` exists now and is deliberately unused: nudging a
+correctly-placed character to flatter a prop trades measured correctness for eyeballed.
+
 ⚠️ **Never `flatX` a run that holds something** (A.33). The game composites a prop against DK's
 position, so the replaced animation's horizontal travel is load-bearing. Stock's barrel throw lunges
 **29 px** — the largest in the game — and flattening it left the barrel swinging away from a

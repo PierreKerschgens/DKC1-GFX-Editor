@@ -172,7 +172,7 @@ namespace DkcTool.Core
                     foreach (var p in strip)
                     {
                         int belowBaseline = (p.RectY + p.RectH - 1) - baseline;
-                        originY[p] = reference + belowBaseline - (p.RectH - 1);
+                        originY[p] = reference + belowBaseline - (p.RectH - 1) + (p.OffsetY ?? 0);
 
                         var slot = slots[p.ImageIndex];
                         int centreX = stripFlatX ? flatCentre : (slot.OpaqueMinX + slot.OpaqueMaxX) / 2;
