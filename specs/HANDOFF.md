@@ -244,6 +244,11 @@ open.
 The rope strips got it and Steel Keg Ride did not, in the same commit, which put DK 9 px low and
 11 px right of the keg (A.33). Check it whenever a strip's feet are not on the ground.
 
+⚠️ **Render the ROM before theorising about what stock looks like.** `--contact-range <lo>..<hi>`
+answers it in one command. Two successive wrong conclusions about the barrel throw came from
+reasoning about screenshots — one of them the sprite author's own mockup, mistaken for the game —
+while the primary source sat locally unrendered (A.33).
+
 ⚠️ **Never `flatX` a run that holds something** (A.33). The game composites a prop against DK's
 position, so the replaced animation's horizontal travel is load-bearing. Stock's barrel throw lunges
 **29 px** — the largest in the game — and flattening it left the barrel swinging away from a

@@ -1984,14 +1984,28 @@ which cannot fit 19 indices. **The provisional tier is now 0 for 5 whenever test
 
 #### The barrel floats — and the first explanation for it was wrong
 
-> ⚠️ **This section originally concluded that stock DK throws the barrel *overhead* while the sheet
-> draws a *hip* throw, making the two irreconcilable without redrawing the art. That was wrong**, and
-> it was wrong because the operator's report was read backwards. They wrote that stock throws *from
-> the hip* and that the imported build put the barrel *above* DK; it was recorded as the opposite.
-> Reference screenshots (`port/barrel-throw1..4.png`) show stock DK holding the barrel at chest, then
-> waist, then low — never overhead. **The sheet and stock agree on the pose.**
+> ⚠️ **This section has been wrong twice, in opposite directions. Read the whole box before using
+> it.**
+>
+> 1. First it claimed stock throws *overhead* and the sheet throws from the *hip*, so the two were
+>    irreconcilable without redrawing art. Asserted from one operator sentence, read backwards.
+> 2. Then it claimed the opposite — that stock throws chest/waist/low and the two agree — citing
+>    `port/barrel-throw1..4.png`. **Those screenshots are the sprite author's own YouTube mockup**,
+>    not the game: they show what he *intends*, and say nothing about stock.
+> 3. Rendering `0x2E4..0x32C` from the ROM — the primary source, available locally the whole time —
+>    settles it: **stock is arms high overhead (`0x2E4..0x2FC`), swinging down and forward
+>    (`0x300..0x318`), ending crouched low (`0x31C..0x32C`)**. The author's mockup starts at chest.
+>    So a pose difference is real, and (1) was closer than (2).
+>
+> **Neither wrong turn came from a hard question.** Both came from reasoning about an image instead
+> of rendering the ROM. `--contact-range` answers "what does stock actually look like here" in one
+> command and was not run until the third attempt.
 
-The real cause is the same class as the keg below: a knob I chose wrongly.
+Two things are true at once, and they were conflated:
+
+- **A measured knob error**, fixed below, that is definitely part of it.
+- **A possible residual pose difference**, since stock starts overhead and the sheet does not.
+  Unknown magnitude; the next boot decides. **Do not record it as either fixed or impossible.**
 
 | `0x2E4..0x32C` | top | bottom | centre X |
 |---|---|---|---|
@@ -2040,6 +2054,10 @@ So the two failures look alike and are not:
 Distinguish them by asking whether stock and imported *agree on the character's* box — bottom edge
 **and** centre-X spread. If they do, suspect the prop; if they do not, it is the anchor or `flatX`,
 and it is yours to fix. Both failures this batch looked like "the prop is broken" and neither was.
+
+⚠️ **`port/barrel-throw1..4.png` are the sprite author's mockup, not the game and not this build.**
+They are a useful statement of intended composition and worthless as evidence about stock. Label
+reference images by provenance before reasoning from them.
 
 **What generalises is milder than first recorded.** Every prop and mount run needs `groundRef` and
 `flatX` chosen against *stock's own numbers* rather than by character-only reasoning — Barrel Pick Up
