@@ -508,7 +508,7 @@ namespace DkcTool.Core
         public static int RunBaseline(Rom rom, int low, int high, SKColor[] palette)
         {
             var valid = GfxTable.EnumerateImageIndices(rom).ToHashSet();
-            var rows = new List<(int Index, int Top, int Bottom, int Height, int Left, int Right, int Cx, int Cy, int Head)>();
+            var rows = new List<(int Index, int Top, int Bottom, int Height, int Left, int Right, int Cx, int Cy, int Head, int Foot)>();
 
             for (int i = low; i <= high; i += 4)
             {
@@ -520,14 +520,15 @@ namespace DkcTool.Core
                 if (b.Width <= 0 || b.Height <= 0) continue;
                 var c = OpaqueCentroid(sprite);
                 int head = HeadCentreX(sprite, b);
-                rows.Add((i, b.Top, b.Bottom - 1, b.Height, b.Left, b.Right - 1, c.X, c.Y, head));
+                int foot = FootCentreX(sprite, b);
+                rows.Add((i, b.Top, b.Bottom - 1, b.Height, b.Left, b.Right - 1, c.X, c.Y, head, foot));
             }
 
             Console.WriteLine($"=== opaque bbox over 0x{low:X}..0x{high:X} ({rows.Count} sprite(s)) ===");
             foreach (var r in rows)
                 Console.WriteLine($"  idx 0x{r.Index:X4}  top {r.Top,3}  bottom {r.Bottom,3}  height {r.Height,3}" +
                                   $"  left {r.Left,3}  right {r.Right,3}  centreX {(r.Left + r.Right) / 2,3}" +
-                                  $"  centroid {r.Cx,3},{r.Cy,3}  head {r.Head,3}");
+                                  $"  centroid {r.Cx,3},{r.Cy,3}  head {r.Head,3}  foot {r.Foot,3}");
 
             if (rows.Count > 0)
             {
@@ -571,6 +572,14 @@ namespace DkcTool.Core
                 var heads = rows.Select(r => r.Head).ToList();
                 Console.WriteLine($"  HEAD X      : {heads.Min()}..{heads.Max()}  spread {heads.Max() - heads.Min()} px" +
                                   $"   (mean {heads.Average():F1})   <- what the eye follows");
+
+                // The feet, for the same reason one level down: a prop composited by game code
+                // meets the character at the contact point, not at its centre of mass. Compare
+                // FOOT X *means* between stock and an import over a mount/carry range -- the
+                // difference is the offsetX that range needs, computed rather than guessed.
+                var feet = rows.Select(r => r.Foot).ToList();
+                Console.WriteLine($"  FOOT X      : {feet.Min()}..{feet.Max()}  spread {feet.Max() - feet.Min()} px" +
+                                  $"   (mean {feet.Average():F1})   <- where a composited prop meets him");
             }
             return 0;
         }
@@ -615,6 +624,28 @@ namespace DkcTool.Core
             int limit = b.Top + Math.Max(1, b.Height / 3);
             long sx = 0, n = 0;
             for (int y = b.Top; y < limit && y < bmp.Height; y++)
+                for (int x = 0; x < bmp.Width; x++)
+                    if (bmp.GetPixel(x, y).Alpha != 0) { sx += x; n++; }
+            return n == 0 ? 0 : (int)(sx / n);
+        }
+
+        /// <summary>
+        /// Mean X of the opaque pixels in the *bottom* third of the box -- where the character
+        /// touches the world.
+        ///
+        /// The mirror of <see cref="HeadCentreX"/>, and added for the same reason: a prop the game
+        /// composites by code (a keg, a rhino, a mine cart) meets the character at the feet, so the
+        /// feet are what has to land where stock's landed. Neither the box centre nor the centroid
+        /// reports that -- both average in the arms, and a balance pose has the arms flung out
+        /// asymmetrically, so a sprite whose feet are 15 px off can still show a matching centroid.
+        /// That is exactly how the steel keg ride measured "within 1.5 px of stock" while the
+        /// operator watched DK ride along beside the keg (spec A.38).
+        /// </summary>
+        private static int FootCentreX(SKBitmap bmp, SKRectI b)
+        {
+            int start = b.Bottom - Math.Max(1, b.Height / 3);
+            long sx = 0, n = 0;
+            for (int y = Math.Max(b.Top, start); y < b.Bottom && y < bmp.Height; y++)
                 for (int x = 0; x < bmp.Width; x++)
                     if (bmp.GetPixel(x, y).Alpha != 0) { sx += x; n++; }
             return n == 0 ? 0 : (int)(sx / n);

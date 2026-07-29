@@ -21,27 +21,43 @@ swap partner, swap leader, rope idle/turn/climb, steel keg ride, barrel pick-up,
 barrel throw. Everything else is stock, which is coverage rather than defect — check a report against
 this list before investigating it.
 
-### One thing is mid-flight
+### The keg is settled — `offsetX: +15` is confirmed in play
 
-`offsetX: +15` on strip 17 (keg ride) is **eyeball-tuned from `port/barrel-roll2.png` and unbooted**.
-The operator has reported the ride "off to the left" three times. Ask them **better / worse /
-overshot**, and converge.
+Booted `dk-KEG15.sfc`; operator reports it **looks great**. Strip 17 is done. The value stays
+labelled **empirical**, because no measurement produces it (A.38).
 
-**Before iterating by eye, test this instead:** the centroid puts our DK within **1.5 px** of stock's
-ride art, while the screenshot puts him ~**15 px** left of the keg. Both can only be true if the game
-composites props against something `--baseline` does not measure — most likely the **placement
-(tile-grid) box** rather than the opaque box. Those are the two coordinate systems A.19 reconciled,
-and they differ by up to 7 px per sprite. `--coords <lo>..<hi>` prints both side by side. If the
-placement box is the prop's reference, every prop run gets a *computed* offset instead of a guessed
-one, and the barrel throw's floating prop probably falls out too. **That check needs no boot.**
+### Thread 1 is closed — the placement-box hypothesis is FALSIFIED
 
-### The three open threads, in the order I would take them
+Do not re-run it; it is answered in both directions (A.38). `--coords` over the ride range gives
+`max |dMinX| = 0 px` in **both** the stock ROM and the build — the placement and opaque boxes agree
+exactly on the left edge for all 12 sprites, disagreeing only vertically. No choice between the two
+coordinate systems can move a prop sideways at all, let alone 15 px. It does **not** retire the
+prop-offset class.
 
-1. **Placement-box hypothesis above** — cheapest, and it may retire the whole prop-offset class.
-2. **Band fix in the slicer** — join wrapped rows instead of splitting them (A.29 establishes the
+Also confirmed while there: `--anim-sheet --props` renders 0 animations over `0x55C..0x588` and
+`--anims-in` finds 0 prop/mount animations touching it, so the keg really is composited by game code
+(A.15 holds).
+
+**`--baseline` now reports FOOT X** — mean X of opaque pixels in the bottom third of the box, the
+mirror of HEAD X. It resolves the contradiction that motivated the hypothesis: the centroid matched
+stock to 1.5 px while the *feet* were 7.3 px left, because a balance pose flings the arms out and the
+centroid averages them. **It is a diagnostic, not a rule** — the barrel throw, the one run with a
+live prop defect, has the *smallest* foot delta (+1.1) while the two confirmed-good barrel runs carry
+5–6 px. Useful residue: **~6 px of foot offset passes in play** for a held barrel.
+
+**Both candidate rules for a computed prop offset are now spent.** Prop offsets are tuned by boot.
+
+### The two open threads, in the order I would take them
+
+1. **Band fix in the slicer** — join wrapped rows instead of splitting them (A.29 establishes the
    direction). Unblocks Swing, Victory, Map Stuff and the End Credits runs. Renumbers strips ≥25;
    nothing imported is above 24, so the manifest is safe.
-3. **M5 / animation-script editing** — smaller than the 9-of-51 figure suggests (A.27, A.29).
+2. **M5 / animation-script editing** — smaller than the 9-of-51 figure suggests (A.27, A.29).
+
+**The barrel throw's floating prop is the one known-live defect**, and FOOT X says it is not a
+placement error — its feet are within 1.1 px of stock. That points at the art (the sheet draws a hip
+throw against the game's overhead composite), which A.33 already suspected and which is an art
+question to put to the author, not something to fix in the importer.
 
 **Barrel Idle** is unlocated: white in `0x8C..0x32C`, `0x538..0x5A4` and `0x680..0x7FC`. Remaining
 space is `0x330..0x534`, `0x5A8..0x67C`, `0x800..0x950`. One 3-pose animation — low value, but the
@@ -449,6 +465,8 @@ Research/inspection, all read-only:
 --palette-sweep <idx> --out f        one sprite under all 79 palettes
 --near <idx> [--count N]             neighbours in ROM *data* order, not table order
 --baseline <lo>..<hi>                opaque bbox per sprite + foot-line spread (bob measurement)
+                                     also CENTROID X/Y, HEAD X (what the eye follows) and
+                                     FOOT X (where a code-composited prop meets him — A.38)
 --coords <lo>..<hi>                  placement bbox vs opaque bbox per slot, and their slack
 ```
 

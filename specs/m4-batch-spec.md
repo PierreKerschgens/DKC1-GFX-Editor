@@ -2191,6 +2191,74 @@ The barrel-blast hunt (A.28), the sector mapping (A.34) and the batch mappings (
 summarises what it filtered out is telling you where to look next** — this one printed
 "held props / mounts" on every invocation for six sections.
 
+### A.38 The placement-box hypothesis is dead, and prop offsets stay empirical
+
+The handoff's top-ranked thread was that the game composites props against the **placement
+(tile-grid) box** rather than the opaque box — the two systems A.19 reconciled, which differ by up to
+7 px per sprite. It was ranked first because it needed no boot and, if true, would have converted
+every prop offset from a guess into a computed value.
+
+**It is false.** `--coords 0x55C..0x588` on the stock ROM and on `dk-KEG15.sfc`:
+
+| | max abs dMinX | max abs dMinY |
+|---|---|---|
+| stock | **0 px** | 3 px |
+| dk-KEG15 | **0 px** | 0 px |
+
+The two boxes agree **exactly** on the left edge for all 12 ride sprites in both ROMs. They disagree
+only vertically. There is no horizontal slack anywhere in the range, so no choice between the two
+coordinate systems can move a prop sideways by 15 px, or by anything at all.
+
+Two confirmations that the keg really is composited by game code, as A.15 said:
+`--anim-sheet 0x55C..0x588 --props` renders **0 animations**, and `--anims-in 0x55C..0x588` reports
+**1** animation entirely inside and **0** prop/mount animations touching it. The keg is drawn at a
+fixed offset from DK's object position by code that no animation script describes.
+
+#### `offsetX: +15` is confirmed in play
+
+Reported "looks great" from a boot of `dk-KEG15.sfc`. It stays, and it stays labelled **empirical**.
+
+#### FOOT X — why the centroid lied, and why it is still not a rule
+
+The contradiction A.37 left open was real: the centroid put our ride within **1.5 px** of stock while
+the operator saw DK riding beside the keg. The cause is the same shape as the HEAD X finding one
+level down. **A prop composited by code meets the character at the feet**, and a balance pose flings
+the arms out asymmetrically, so the centroid averages the arms and reports a match while the feet are
+7 px off.
+
+`--baseline` now reports **FOOT X** — mean X of opaque pixels in the *bottom* third of the box, the
+mirror of HEAD X. Over `0x55C..0x588`: stock **129.7**, `dk-KEG15` **137.4**. Pre-offset that was
+**122.4**, i.e. the feet were **7.3 px left** of stock's while the centroid claimed 1.5 px. FOOT X
+sees the error the centroid cannot.
+
+**But it does not generalise, and the control is what kills it.** Measured against the runs the
+operator has already confirmed:
+
+| run | stock | build | Δ | in play |
+|---|---|---|---|---|
+| barrel pick up `0x28C..0x2A4` | 122.7 | 127.6 | +4.9 | good, `offsetX` 0 |
+| barrel carry `0x2A8..0x2E0` | 119.9 | 126.2 | +6.3 | good, `offsetX` 0 |
+| **barrel throw `0x2E4..0x32C`** | 117.0 | 118.1 | **+1.1** | **floating prop — the known defect** |
+
+The throw, the one run with a live prop defect, has the **smallest** foot delta of the three, and the
+two runs that read fine in play carry 5–6 px of it. So FOOT X neither predicts the defect nor
+predicts the confirmed `+15` (it would have said `+7.3`). It is a **diagnostic that explains a
+specific failure**, not a formula.
+
+The useful residue is a **tolerance calibration**: ~6 px of foot offset passes in play for a held
+barrel. That is why the pre-offset keg at 7.3 px was reported and the carry at 6.3 px was not.
+
+#### The standing conclusion
+
+**No computed prop offset is available.** Both candidate rules are now spent — placement box
+(falsified outright) and foot contact (explains one case, mispredicts two). Prop offsets are tuned by
+boot, and the A.33 principle still governs everything that is *not* a prop: do not nudge a
+correctly-placed character to flatter a prop. The keg's `+15` is the documented exception, and it is
+an exception because the operator confirmed it, not because a measurement produced it.
+
+⚠️ **Do not re-run this experiment.** It looks cheap and inviting from the handoff — it was — and it
+is now answered in both directions.
+
 ### A.13 `0x858..0x8A8` is **not** DK — it is a foreign island (corrected)
 
 > **This section previously concluded "DK at reduced scale". That was wrong**, and it was wrong in
