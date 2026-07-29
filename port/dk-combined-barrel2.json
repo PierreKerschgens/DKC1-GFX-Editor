@@ -207,7 +207,7 @@
     {
       "strip": 15,
       "poses": "10..24",
-      "flatX": false,
+      "flatX": true,
       "indices": [
         "0x2a8",
         "0x2ac",
@@ -225,7 +225,7 @@
         "0x2dc",
         "0x2e0"
       ],
-      "name": "Barrel Carry Walk (sector 3) -> 0x2A8..0x2E0, 15 indices of DK walking with both arms overhead, exactly the sector's 15 poses. Found by rendering the range after paint put the carry inside 0x8C..0x32C; three structural guesses (anims 71/75, 15/96, the mount set) all missed it. The whole barrel sequence is contiguous: pick up 0x28C, carry 0x2A8, throw 0x2E4."
+      "name": "Barrel Carry Walk (sector 3) -> 0x2A8..0x2E0, 15 indices of DK walking with both arms overhead, exactly the sector's 15 poses. Found by rendering the range after paint put the carry inside 0x8C..0x32C; three structural guesses (anims 71/75, 15/96, the mount set) all missed it. The whole barrel sequence is contiguous: pick up 0x28C, carry 0x2A8, throw 0x2E4. flatX ON: stock body is static here (centroid spread 1-3px) and only the BOX moves, because the prop changes the extent. Per-pose centring inherited that box variation as real body wobble. Decide flatX on stock CENTROID spread, not centre-X (A.37)."
     },
     {
       "strip": 16,
@@ -236,8 +236,8 @@
     {
       "strip": 17,
       "animation": "0x4E",
-      "flatX": false,
-      "name": "Steel Keg Ride, 12 poses -> anim 78 (0x55C..0x588, 12), inside the 0x538..0x594 mounted set. NOTE A.15 claimed the ride animations cannot be matched through the table at all; an exact 12/12 in the right block is worth testing against that. groundRef self + flatX off: a keg rider is not standing on the walk floor, and the game composites the keg at a fixed offset from DK, so he must sit exactly where stock ride poses sat. Inheriting the manifest ground line put him 9px low and 11px right of the keg (A.34).",
+      "flatX": true,
+      "name": "Steel Keg Ride, 12 poses -> anim 78 (0x55C..0x588, 12), inside the 0x538..0x594 mounted set. NOTE A.15 claimed the ride animations cannot be matched through the table at all; an exact 12/12 in the right block is worth testing against that. groundRef self + flatX off: a keg rider is not standing on the walk floor, and the game composites the keg at a fixed offset from DK, so he must sit exactly where stock ride poses sat. Inheriting the manifest ground line put him 9px low and 11px right of the keg (A.34). flatX ON: stock body is static here (centroid spread 1-3px) and only the BOX moves, because the prop changes the extent. Per-pose centring inherited that box variation as real body wobble. Decide flatX on stock CENTROID spread, not centre-X (A.37).",
       "groundRef": "self"
     }
   ],

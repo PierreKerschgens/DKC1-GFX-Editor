@@ -285,7 +285,19 @@ composites the prop against stock's. The keg's **centroid is within 2 px of stoc
 reads wrong, so geometry is not the lever. `offsetY` exists now and is deliberately unused: nudging a
 correctly-placed character to flatter a prop trades measured correctness for eyeballed.
 
-⚠️ **Never `flatX` a run that holds something** (A.33). The game composites a prop against DK's
+⚠️ **Decide `flatX` on stock's CENTROID spread, not its centre-X** (A.37). Centre-X is a bounding
+box and a held prop inflates it, so a run whose body never moves can still show 6 px of box travel.
+The barrel carry (stock centroid spread **1 px**) and keg ride (**3 px**) both had `flatX` off, so
+per-pose centring injected that box variation as real body wobble — 6 px into the carry, a 17 px head
+swing into the ride. With `flatX` on, both bodies match stock. The earlier blanket rule "never flatX
+a run that holds something" was drawn from the *throw*, where the body genuinely lunges 29 px; it is
+the centroid that tells the two cases apart.
+
+⚠️ **`HEAD X` is unreliable for arms-out poses.** It averages opaque pixels in the top third, so wide
+arms at shoulder height are counted as head. The keg ride reads 16 px of "head" swing that is mostly
+the sheet's outstretched arms.
+
+⚠️ **Never `flatX` a run that holds something** (A.33) — superseded by the centroid rule above. The game composites a prop against DK's
 position, so the replaced animation's horizontal travel is load-bearing. Stock's barrel throw lunges
 **29 px** — the largest in the game — and flattening it left the barrel swinging away from a
 stationary DK. Both prop failures this batch (barrel, keg) looked structural and were both knob
