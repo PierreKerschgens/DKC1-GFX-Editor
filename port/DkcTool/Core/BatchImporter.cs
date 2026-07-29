@@ -131,7 +131,11 @@ namespace DkcTool.Core
             var originX = new Dictionary<PlannedPose, int>();
             if (alignStrip)
             {
-                foreach (var strip in plan.GroupBy(p => p.Strip))
+                // By manifest ENTRY, not by strip: one strip can hold several captioned sectors
+                // (A.34) and each is a separate run with its own baseline. Grouping by strip number
+                // anchored the barrel carry-walk to the pick-up sector's reference pose and dropped
+                // it 10px below the ordinary walk -- DK sank as he picked a barrel up.
+                foreach (var strip in plan.GroupBy(p => (p.Strip, p.Entry)))
                 {
                     // One read per distinct *index*: SpriteSlot.Read decodes the sprite and scans
                     // the whole pointer table for aliases, so it is far too expensive to repeat.

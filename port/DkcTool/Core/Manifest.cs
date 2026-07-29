@@ -127,6 +127,14 @@ namespace DkcTool.Core
     public sealed class PlannedPose
     {
         public int Strip;
+
+        /// <summary>Which manifest entry produced this pose. Two entries may name the same strip --
+        /// a strip holds several captioned sectors (A.34), and each sector is its own run. Strip
+        /// alignment must group by this, not by <see cref="Strip"/>: grouping by strip number
+        /// anchored the barrel's carry-walk to the *pick-up* sector's baseline and dropped it 10 px,
+        /// so DK sank as he picked a barrel up.</summary>
+        public int Entry;
+
         public int Position;
         public int ImageIndex;
         public int RectX, RectY, RectW, RectH;
@@ -302,6 +310,7 @@ namespace DkcTool.Core
             }
 
             var plan = new List<PlannedPose>();
+            int entryIndex = 0;
 
             foreach (var entry in Strips)
             {
@@ -397,6 +406,7 @@ namespace DkcTool.Core
                     plan.Add(new PlannedPose
                     {
                         Strip = entry.Strip,
+                        Entry = entryIndex,
                         Position = selected[i],
                         ImageIndex = targetIndices[i],
                         RectX = rect.X,
@@ -409,6 +419,8 @@ namespace DkcTool.Core
                         OffsetY = entry.OffsetY,
                     });
                 }
+
+                entryIndex++;
             }
 
             return plan;
