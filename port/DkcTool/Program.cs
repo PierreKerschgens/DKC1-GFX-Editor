@@ -460,6 +460,7 @@ if (args.Length >= 3 && args[1] == "--poison-index")
         pzBytes += charLen;
     }
 
+    rom.RefreshLowBankMirror();   // char edits land in mirrored banks; keep the copy in step
     rom.Save(pzOut);
     Console.WriteLine($"Poisoned {pzCount} sprite(s) ({pzBytes} bytes of char data) in 0x{pzLo:X}..0x{pzHi:X}.");
     Console.WriteLine($"Wrote {pzOut}");
@@ -536,6 +537,7 @@ if (args.Length >= 2 && args[1] == "--paint")
         Console.WriteLine($"  0x{lo:X}..0x{hi:X} -> colour {colour,2}: {painted} sprite(s)");
     }
 
+    rom.RefreshLowBankMirror();   // char edits land in mirrored banks; keep the copy in step
     rom.Save(ptOut);
     Console.WriteLine($"Wrote {ptOut}");
     return 0;
