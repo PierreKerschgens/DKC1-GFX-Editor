@@ -47,12 +47,39 @@ live prop defect, has the *smallest* foot delta (+1.1) while the two confirmed-g
 
 **Both candidate rules for a computed prop offset are now spent.** Prop offsets are tuned by boot.
 
-### The two open threads, in the order I would take them
+### The band fix is DONE (A.39)
 
-1. **Band fix in the slicer** — join wrapped rows instead of splitting them (A.29 establishes the
-   direction). Unblocks Swing, Victory, Map Stuff and the End Credits runs. Renumbers strips ≥25;
-   nothing imported is above 24, so the manifest is safe.
-2. **M5 / animation-script editing** — smaller than the 9-of-51 figure suggests (A.27, A.29).
+Wrapped rows are joined in reading order, and the sheet's black **headlines** decide where a run
+starts: a segment with a headline begins a run, one without continues the row above it. Decomposition
+is band → rows-of-one-sector (same height *and* horizontally adjacent) → segments → strips.
+
+| | strips before | after | poses |
+|---|---|---|---|
+| DK | 50 | **38** | 678, unchanged |
+| DK Jr | 42 | **32** | 553, unchanged |
+
+Map Stuff is one strip of 37 poses over 5 rows; Swing 31 over 2; DK Jr's Credits 110 over 7. **The
+confirmed build is bit-identical** (`sha256 1dca65a2…` = `dk-KEG15.sfc`), V4 7/7, goldens rebuilt.
+
+⚠️ **Strips renumbered from 20 up, not 25** — Ground Slap wraps too (17+13 poses), which A.29's read
+missed, and folding its second row shifted the rope runs 22/23/24 → **21/22/23**. The manifest is
+updated. A.25's "nothing imported is above 24, so the manifest is safe" was wrong on both halves.
+
+⚠️ **Rope turn refused; rope idle would have silently imported climb art.** One of three caught by
+luck of length. So a manifest entry now takes **`"stripPoses": N`**, asserting the strip's pose count
+before anything is planned — every entry in `dk-combined-barrel2.json` carries it. Add it to any new
+entry; it turns the next renumbering into a refusal instead of a silent retarget.
+
+⚠️ **The slicer cannot tell a headline from a secondary annotation** — both are black text and
+nothing reads text. `(Loop and Reverse)` sits above Bang Chest's second row and keeps it a separate
+strip, so the chest-beat is still strips 3 **and** 5 as the manifest already handles. Height does not
+separate the classes. **"Every run is one strip" is false.**
+
+### The one open thread
+
+1. **M5 / animation-script editing** — smaller than the 9-of-51 figure suggests (A.27, A.29). ⚠️ That
+   figure was computed against 51 DK strips and the slicer now reports **38**; the membership needs
+   recomputing before it is used as a work list.
 
 **The barrel throw's floating prop is the one known-live defect**, and FOOT X says it is not a
 placement error — its feet are within 1.1 px of stock. That points at the art (the sheet draws a hip
@@ -782,9 +809,8 @@ Two candidates, both surfaced by M4 rather than planned:
    tumble. `0x4BC`/`0x4E4`/`0x4E8` are drawn by no animation at all — dead slots, no longer written.
    The build is 74 → 71 poses. **Not yet booted.**
 
-3. **Band membership in the slicer** (A.25) — 6 of 51 DK strips, 1 of 42 DK Jr, all bands 19–20,
-   none below strip 25, none used by a manifest. Their rects are right; the grouping is not.
-   Renumbers strips ≥25 when it lands.
+3. ~~**Band membership in the slicer**~~ — **done** (A.39). It renumbered from strip 20, not 25, and
+   the rope runs it moved *were* used by a manifest.
 2. ~~**Strip-level pose placement.**~~ Done — implemented, confirmed in play, and as of A.19 the
    default, with the two coordinate systems reconciled. M5 is (1).
 
@@ -795,12 +821,11 @@ Two candidates, both surfaced by M4 rather than planned:
 - DK owns `0x8C..0x950`, 562 indices; Diddy begins `0x954` (A.8).
 - `0x858..0x8A8` inside that range is **not DK** — most likely Manky Kong. **Exclude from any DK
   manifest** (A.13). Reference at `port/DkcTool/testdata/manky-reference.png`.
-- DK sheet: **678 poses, 51 strips**, **29 authorable captioned runs** (a strip is not an animation).
-  DK Jr: 553 poses, 42 strips. These are the post-A.25 counts; anything citing **533 / 46 strips**
-  predates the merge fix and is wrong. Strips **0–25 kept their numbers** across that fix, strips
-  ≥26 did not.
-- ⚠️ **Strips ≥25 still group two rows into one strip** on both sheets (A.25) — 6 DK strips, 1 DK Jr.
-  Their pose rects are right; the strip grouping and pose order are not. Fixing it renumbers ≥25.
+- DK sheet: **678 poses, 38 strips**. DK Jr: 553 poses, **32 strips**. These are the post-A.39 band-fix
+  counts. Anything citing **533 / 46 strips** predates the A.25 merge fix; anything citing **50 / 42
+  strips** predates A.39. Strips **0–19 kept their numbers** across A.39, strips ≥20 did not.
+- ~~Strips ≥25 group two rows into one strip~~ — **fixed** (A.39). Wrapped runs are joined in reading
+  order; 7 runs join on DK, 4 on DK Jr.
 - Capacity: DK alone is 487 KB against a 92 KB stock pool → `--expand` is mandatory for a full
   import, but a single ~20-pose run fits stock with room to spare.
 - **In-place writing would not avoid expansion** (A.31): only **1 of 120** poses fits the slot it

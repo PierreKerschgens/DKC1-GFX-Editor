@@ -2259,6 +2259,86 @@ an exception because the operator confirmed it, not because a measurement produc
 ⚠️ **Do not re-run this experiment.** It looks cheap and inviting from the handoff — it was — and it
 is now answered in both directions.
 
+### A.39 The band fix: join wrapped rows, and let the headlines say where a run starts
+
+A.25's open defect, closed. A band is formed by *vertical overlap*, so one tall pose reaching from
+row N into row N+1 pulled both rows into one band; ordering that band by `MinX` then interleaved
+them. Map Stuff came out as `(930,1418) (934,1383) (959,1383) (962,1419) …` — poses alternating
+between two rows, which is not an animation in any order.
+
+A.29 established the direction (*join* the rows, don't split them) and the operator supplied the
+structure: **the sheet is divided into sectors, each with a black headline at its top-left.**
+
+#### Three decompositions, in this order
+
+1. **Band → rows of one sector.** Poses link into a row when they are at the same height *and*
+   horizontally adjacent (`RowGap` 20 px, `RowLinkGapX` 40 px). Height alone is not enough, and this
+   is the part that is easy to get wrong: sectors sharing a band keep **independent row rhythms** —
+   Swing wraps at 1458/1520 while Map Stuff, level with it, wraps at 1449/1480/1508. Clustering tops
+   across the band merges Map Stuff's 1449 row into Swing's 1458 row and reinstates the interleaving
+   one level down. The 301 px of whitespace between the two sectors is what separates them.
+2. **Row → segments** at horizontal gaps, unchanged from before.
+3. **Segment → strip.** A segment carrying a headline starts a run; one carrying none is the run
+   above it *continuing*, and is appended in reading order.
+
+The continuation search deliberately **crosses band boundaries** — Map Stuff wraps five rows and the
+vertical-overlap banding cuts it in two, so a search confined to one band would rejoin only part of
+it.
+
+#### Results
+
+| | strips before | strips after | poses |
+|---|---|---|---|
+| DK | 50 | **38** | 678, unchanged |
+| DK Jr | 42 | **32** | 553, unchanged |
+
+**7 runs join on DK, 4 on DK Jr.** Map Stuff is now one strip of 37 poses over 5 rows, numbered
+0..36 in reading order; Swing is 31 over 2; DK Jr's Credits is 110 over 7. No pose is created or
+lost on either sheet, and V4b still round-trips 1231/1231.
+
+The set includes **every wrap A.29 named except Bang Chest** (see the limitation below), and adds one
+A.29's manual read missed: **Ground Slap wraps too** — 17 + 13 poses under a single headline, which
+is why the handoff's "strip 20, 17 poses" was short.
+
+#### ⚠️ The slicer cannot tell a headline from a secondary annotation
+
+Both are black text, and nothing here reads text (A.29). So a wrapped row whose continuation carries
+an annotation is **not** joined: `(Loop and Reverse)` sits at `(40,163)` directly above Bang Chest's
+second row, is indistinguishable from a title, and keeps that row as its own strip. A.29 says the
+chest-beat is strips 3 **and** 5; the slicer still reports two.
+
+Left that way deliberately — the manifest already encodes the wrap by hand, mapping strip 3's poses
+10..14 and strip 5's poses 0..18 to different index ranges, and joining them would invalidate that
+without making anything more correct. Height does not separate the two classes either (headlines
+measure 9 and 11 px, annotations 9 and 17). **Treat "every run has exactly one strip" as false.**
+
+#### The renumbering, and the guard it forced
+
+Merging Ground Slap's second row removed a strip at 21, so **everything above 20 shifted down by
+one** — the three rope runs went 22/23/24 → 21/22/23. A.25 predicted renumbering would start at ≥25
+and said "nothing imported is above 24, so the manifest is safe". **Both halves were wrong**: the
+manifest *does* import strips 22/23/24, and the shift started at 21.
+
+How it surfaced is the lesson. Rope *turn* refused loudly (`BadPoseRange` — its `poses` list named
+pose 2 of a 2-pose strip). Rope *idle* would have imported **climb art, silently**, because its new
+strip was long enough to satisfy every existing check. One of three caught it, by luck of length.
+
+So `ManifestStripEntry.StripPoses` now exists: an optional `"stripPoses": N` asserting how many poses
+the strip should hold, checked before anything is planned. Every entry in
+`port/dk-combined-barrel2.json` carries it. It is the cheapest thing that pins a strip's identity
+without reading caption text, and it turns the next renumbering from a silent retarget into a refusal.
+
+#### Verification
+
+- **DK strips 0..19 are byte-identical** before and after; only ≥20 moved.
+- **The confirmed build is bit-identical.** Rebuilding `dk-combined-barrel2.json` after the fix and
+  the remap gives `sha256 1dca65a2…`, the same ROM as `port/dk-KEG15.sfc` — the build the operator
+  confirmed in play. A.25's check 6, and the strongest signal available: the import plan is the same
+  228 instructions, only the strip labels renumbered.
+- **V4 7/7**, goldens deliberately rebuilt (delete + re-bootstrap), 1231/1231 poses.
+- **Looked at it** (C.4's overlay), which is the only way to tell a correct numbering from a
+  plausible one.
+
 ### A.13 `0x858..0x8A8` is **not** DK — it is a foreign island (corrected)
 
 > **This section previously concluded "DK at reduced scale". That was wrong**, and it was wrong in

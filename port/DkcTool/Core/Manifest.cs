@@ -57,6 +57,21 @@ namespace DkcTool.Core
         public List<string>? Indices;
 
         /// <summary>
+        /// How many poses the strip is expected to hold. Optional, and purely an assertion.
+        ///
+        /// <para>Strip numbers are positional, so any slicer change that adds or removes a strip
+        /// silently retargets every entry after it — the manifest keeps loading and imports the
+        /// wrong art. That is not hypothetical: the A.39 band fix folded "Ground Slap"'s wrapped
+        /// second row back into it, which shifted the three rope runs down by one. The rope *turn*
+        /// entry happened to refuse (its new strip was shorter than its `poses` list), but the rope
+        /// *idle* entry would have imported climb art without a word.</para>
+        ///
+        /// <para>A pose count is the cheapest thing that pins a strip's identity without the slicer
+        /// having to read the caption text, which is pixels (A.29).</para>
+        /// </summary>
+        public int? StripPoses;
+
+        /// <summary>
         /// Per-strip override for horizontal placement (spec A.20/A.22). Null = follow the
         /// command line's `--flat-x`.
         ///
@@ -272,6 +287,7 @@ namespace DkcTool.Core
                     OffsetX = s.offsetX,
                     OffsetY = s.offsetY,
                     Poses = ParsePoseList(s.strip, s.poses),
+                    StripPoses = s.stripPoses,
                 });
             }
             foreach (var o in doc.overrides ?? new List<OverrideJson>())
@@ -357,6 +373,12 @@ namespace DkcTool.Core
                 {
                     targetIndices = entry.Indices!.Select(h => Convert.ToInt32(h, 16)).ToList();
                 }
+
+                if (entry.StripPoses is int expected && expected != stripPoses.Poses.Count)
+                    throw new ManifestException(ManifestErrorCode.BadPoseRange,
+                        $"strip {entry.Strip}: manifest asserts {expected} pose(s) but the slicer " +
+                        $"produced {stripPoses.Poses.Count}. The strip numbering has moved under " +
+                        $"this manifest — re-check which strip holds the run before importing.");
 
                 // Which of the strip's poses take part. Without `poses` this is all of them, so
                 // selected[i] == i and everything below behaves exactly as it did.
@@ -467,6 +489,7 @@ namespace DkcTool.Core
             public int? offsetX { get; set; }
             public int? offsetY { get; set; }
             public string? poses { get; set; }
+            public int? stripPoses { get; set; }
         }
 
         private sealed class OverrideJson

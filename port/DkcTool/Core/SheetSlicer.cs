@@ -48,6 +48,47 @@ namespace DkcTool.Core
         /// </summary>
         public const double FragmentRatio = 0.5;
 
+        /// <summary>A black component this small is dust, not a glyph. Far below
+        /// <see cref="MinPosePixels"/> — caption letters are only a few pixels tall.</summary>
+        public const int MinGlyphPixels = 4;
+
+        /// <summary>Horizontal gap bridged when merging black glyphs into one headline. Wide enough
+        /// to cross the space in "Rope Idle", narrow enough not to join two headlines that sit side
+        /// by side over adjacent runs ("Rope Idle" / "Rope Climb" are ~165 px apart).</summary>
+        public const int CaptionGlyphGap = 12;
+
+        /// <summary>A black mark at least this tall and no wider than <see cref="RuleMaxWidth"/> is
+        /// one of the sheet's drawn segment rules (A.29), not a headline glyph.</summary>
+        public const int RuleMinHeight = 15;
+        public const int RuleMaxWidth = 3;
+
+        /// <summary>
+        /// Vertical gap that separates two <i>rows</i> of the same run, measured between successive
+        /// pose tops within one column.
+        ///
+        /// <para>Rows are clustered per column rather than per band because sectors on the same band
+        /// keep independent row rhythms — on the DK sheet "Swing" wraps at 1458/1520 while "Map
+        /// Stuff", level with it, wraps at 1449/1480/1508. Clustering tops across the whole band
+        /// merges 1449 with 1458 and reinstates the very interleaving this fixes (A.39).</para>
+        /// </summary>
+        public const int RowGap = 20;
+
+        /// <summary>Horizontal distance within which two poses at the same height belong to the same
+        /// row <i>of the same sector</i>. Wide enough to bridge the rules between runs sharing a row
+        /// ("Rope Idle" to "Rope Climb" is 23 px), far below the whitespace between sectors sitting
+        /// side by side ("Swing" to "Map Stuff" is 301 px).</summary>
+        public const int RowLinkGapX = 40;
+
+        /// <summary>How far above a row's poses its headline may sit. The sheet keeps titles tight
+        /// to their run — the measured reaches are 4..16 px — so this only has to exclude the
+        /// headline of the sector *above*, which is a row-height away.</summary>
+        public const int CaptionReach = 30;
+
+        /// <summary>Vertical gap a wrapped row may leave below the row it continues. Measured wraps
+        /// on the DK sheet are 4..9 px; the sector *below* an uncaptioned run is always further.
+        /// </summary>
+        public const int ContinuationReach = 40;
+
         public sealed class SlicedPose
         {
             public int StripIndex;
@@ -72,7 +113,30 @@ namespace DkcTool.Core
             /// <summary>Which row band this strip was split from -- informational (review/CLI
             /// output), not part of a manifest's addressing.</summary>
             public int Band;
+
+            /// <summary>How many sheet rows this strip's poses wrap across. &gt;1 means the run was
+            /// joined in reading order by the band fix (A.39); 1 is the ordinary case.</summary>
+            public int Rows = 1;
+
+            /// <summary>Bounding box of the black headline sitting above this strip's first pose,
+            /// or null if the strip is a wrap continuation with no headline of its own. Informational
+            /// -- the caption *text* still has to be read by eye (A.29), but its presence is what
+            /// tells the grouper a new run starts here.</summary>
+            public Caption? Caption;
+
             public List<SlicedPose> Poses = new List<SlicedPose>();
+        }
+
+        /// <summary>
+        /// A black headline: the sector title the sheet writes at the top-left of each captioned run
+        /// (A.29 lists them). Individual glyphs are separate components -- this is a whole line of
+        /// them merged back together.
+        /// </summary>
+        public sealed class Caption
+        {
+            public int MinX, MinY, MaxX, MaxY;
+            public int Width => MaxX - MinX + 1;
+            public int Height => MaxY - MinY + 1;
         }
 
         public sealed class SlicedSheet
@@ -80,6 +144,7 @@ namespace DkcTool.Core
             public string Path = "";
             public int Width, Height;
             public List<Strip> Strips = new List<Strip>();
+            public List<Caption> Captions = new List<Caption>();
             public IEnumerable<SlicedPose> Poses => Strips.SelectMany(s => s.Poses);
         }
 
@@ -114,6 +179,7 @@ namespace DkcTool.Core
             var islands = Segment(opaque, artwork, w, h);
 
             var poses = islands
+                .Where(i => i.HasArtwork)
                 .Select(i => new SlicedPose
                 {
                     MinX = i.MinX,
@@ -127,8 +193,10 @@ namespace DkcTool.Core
 
             foreach (var pose in poses) Measure(pose, opaque);
 
-            var sheet = new SlicedSheet { Path = path, Width = w, Height = h };
-            sheet.Strips = GroupIntoStrips(poses);
+            var captions = GroupCaptions(islands.Where(i => !i.HasArtwork));
+
+            var sheet = new SlicedSheet { Path = path, Width = w, Height = h, Captions = captions };
+            sheet.Strips = GroupIntoStrips(poses, captions);
             return sheet;
         }
 
@@ -202,7 +270,71 @@ namespace DkcTool.Core
                 }
             }
 
-            return islands.Where(p => p.HasArtwork && p.OpaquePixels >= MinPosePixels).ToList();
+            return islands
+                .Where(p => p.HasArtwork
+                    ? p.OpaquePixels >= MinPosePixels
+                    : p.OpaquePixels >= MinGlyphPixels)
+                .ToList();
+        }
+
+        /// <summary>
+        /// Merges the surviving black components into headline boxes: glyphs on a shared text line,
+        /// close enough horizontally to be one title.
+        ///
+        /// <para>Drops the sheet's drawn segment rules first (A.29) — a thin tall bar is a boundary
+        /// mark, not a letter, and one left in would stretch a headline's box across the run it
+        /// divides.</para>
+        /// </summary>
+        private static List<Caption> GroupCaptions(IEnumerable<Island> annotations)
+        {
+            var glyphs = annotations
+                .Where(a => !(a.MaxX - a.MinX + 1 <= RuleMaxWidth && a.MaxY - a.MinY + 1 >= RuleMinHeight))
+                .OrderBy(a => a.MinY).ThenBy(a => a.MinX)
+                .ToList();
+
+            var lines = new List<Caption>();
+            foreach (var g in glyphs)
+            {
+                // Same text line = vertical ranges overlap; same title = within one glyph gap.
+                var host = lines.FirstOrDefault(c =>
+                    g.MinY <= c.MaxY && c.MinY <= g.MaxY &&
+                    g.MinX - CaptionGlyphGap <= c.MaxX && c.MinX - CaptionGlyphGap <= g.MaxX);
+
+                if (host == null)
+                {
+                    lines.Add(new Caption { MinX = g.MinX, MinY = g.MinY, MaxX = g.MaxX, MaxY = g.MaxY });
+                    continue;
+                }
+                host.MinX = Math.Min(host.MinX, g.MinX);
+                host.MinY = Math.Min(host.MinY, g.MinY);
+                host.MaxX = Math.Max(host.MaxX, g.MaxX);
+                host.MaxY = Math.Max(host.MaxY, g.MaxY);
+            }
+
+            // One pass is not enough: a glyph can bridge two boxes that were opened separately
+            // before the letter between them arrived.
+            bool merged = true;
+            while (merged)
+            {
+                merged = false;
+                for (int i = 0; i < lines.Count && !merged; i++)
+                    for (int j = i + 1; j < lines.Count; j++)
+                    {
+                        var a = lines[i];
+                        var b = lines[j];
+                        if (!(a.MinY <= b.MaxY && b.MinY <= a.MaxY &&
+                              a.MinX - CaptionGlyphGap <= b.MaxX && b.MinX - CaptionGlyphGap <= a.MaxX)) continue;
+                        a.MinX = Math.Min(a.MinX, b.MinX);
+                        a.MinY = Math.Min(a.MinY, b.MinY);
+                        a.MaxX = Math.Max(a.MaxX, b.MaxX);
+                        a.MaxY = Math.Max(a.MaxY, b.MaxY);
+                        lines.RemoveAt(j);
+                        merged = true;
+                        break;
+                    }
+            }
+
+            return lines.OrderBy(c => c.MinY).ThenBy(c => c.MinX).ToList();
         }
 
         private static bool Near(Island a, Island b) =>
@@ -260,7 +392,7 @@ namespace DkcTool.Core
         /// band is split again at horizontal gaps well above the typical inter-pose spacing to
         /// recover the actual strips, which is the manifest's real unit.
         /// </summary>
-        private static List<Strip> GroupIntoStrips(List<SlicedPose> posesByMinY)
+        private static List<Strip> GroupIntoStrips(List<SlicedPose> posesByMinY, List<Caption> captions)
         {
             // Bands: a single sweep over poses ordered by MinY (already the input order).
             // A pose either extends the current band (its top lies at or above the band's
@@ -287,38 +419,206 @@ namespace DkcTool.Core
             var strips = new List<Strip>();
             for (int bandIndex = 0; bandIndex < bands.Count; bandIndex++)
             {
-                var row = bands[bandIndex].OrderBy(p => p.MinX).ToList();
-
-                var gaps = new List<int>();
-                for (int i = 1; i < row.Count; i++)
-                    gaps.Add(Math.Max(0, row[i].MinX - row[i - 1].MaxX));
-                int typical = gaps.Count == 0 ? 0 : Percentile(gaps, .5);
-                int split = Math.Max(typical * 3, typical + 8);
-
-                var current = new List<SlicedPose>();
-                void Flush()
+                // A band is not a row. One tall pose reaching from row N into row N+1 pulls both
+                // into the same band, and ordering that by MinX interleaves them -- which is the
+                // whole defect (A.39). Decompose the band into *rows of one sector* first, so every
+                // later step sees a genuine single row.
+                foreach (var row in RowComponents(bands[bandIndex]))
                 {
-                    if (current.Count == 0) return;
-                    var strip = new Strip { Index = strips.Count, Band = bandIndex };
-                    for (int i = 0; i < current.Count; i++)
+                    foreach (var segment in SplitRowAtGaps(row))
                     {
-                        current[i].StripIndex = strip.Index;
-                        current[i].Position = i;
-                    }
-                    strip.Poses = current;
-                    strips.Add(strip);
-                    current = new List<SlicedPose>();
-                }
+                        int segMinX = segment.Min(p => p.MinX);
+                        int segMaxX = segment.Max(p => p.MaxX);
 
-                for (int i = 0; i < row.Count; i++)
-                {
-                    if (i > 0 && row[i].MinX - row[i - 1].MaxX > split) Flush();
-                    current.Add(row[i]);
+                        // The sheet writes a headline at the top of each sector. One over this
+                        // segment means a new run starts; none means the segment is the previous
+                        // run continuing onto another row.
+                        var caption = FindHeadline(captions, segment);
+
+                        Strip? host = caption == null
+                            ? FindWrappedRun(strips, segment, segMinX, segMaxX)
+                            : null;
+
+                        if (host == null)
+                        {
+                            host = new Strip
+                            {
+                                Index = strips.Count,
+                                Band = bandIndex,
+                                Caption = caption,
+                            };
+                            strips.Add(host);
+                        }
+                        else host.Rows++;
+
+                        foreach (var pose in segment)
+                        {
+                            pose.StripIndex = host.Index;
+                            pose.Position = host.Poses.Count;
+                            host.Poses.Add(pose);
+                        }
+                    }
                 }
-                Flush();
             }
 
             return strips;
+        }
+
+        /// <summary>
+        /// The headline sitting over this segment, or null if the segment carries none and is
+        /// therefore a wrapped continuation of the run above it.
+        ///
+        /// <para>Anchored on the poses the caption is actually <i>over</i>, not on the segment as a
+        /// whole. A run's poses are not level: strip 10 "Jump" rises through its arc to y 513 while
+        /// its headline sits at y 514..524 above the leftmost pose, which starts at y 542. Tested
+        /// against the segment's overall top the title reads as *below* the run and the whole strip
+        /// is mistaken for a continuation -- which merged Jump into the run above it.</para>
+        /// </summary>
+        private static Caption? FindHeadline(List<Caption> captions, List<SlicedPose> segment)
+        {
+            Caption? best = null;
+            foreach (var c in captions)
+            {
+                int top = int.MaxValue;
+                foreach (var p in segment)
+                    if (p.MinX <= c.MaxX && c.MinX <= p.MaxX && p.MinY < top) top = p.MinY;
+                if (top == int.MaxValue) continue;
+
+                if (c.MaxY >= top || top - c.MaxY > CaptionReach) continue;
+                if (best == null || c.MinX < best.MinX) best = c;
+            }
+            return best;
+        }
+
+        /// <summary>
+        /// Splits a band into rows that each belong to one sector: poses link when they sit at the
+        /// same height <i>and</i> are horizontally adjacent.
+        ///
+        /// <para>Height alone is not enough. Sectors sharing a band keep independent row rhythms --
+        /// "Swing" wraps at 1458/1520 while "Map Stuff", level with it, wraps at 1449/1480/1508 --
+        /// so clustering tops across the band merges Map Stuff's 1449 row into Swing's 1458 row and
+        /// reinstates the interleaving. Requiring horizontal adjacency keeps the 301 px of
+        /// whitespace between the two sectors doing its job.</para>
+        /// </summary>
+        private static List<List<SlicedPose>> RowComponents(List<SlicedPose> band)
+        {
+            var ordered = band.OrderBy(p => p.MinY).ThenBy(p => p.MinX).ToList();
+            var owner = Enumerable.Range(0, ordered.Count).ToArray();
+
+            int Find(int i) => owner[i] == i ? i : owner[i] = Find(owner[i]);
+            void Union(int a, int b) { a = Find(a); b = Find(b); if (a != b) owner[b] = a; }
+
+            for (int i = 0; i < ordered.Count; i++)
+                for (int j = i + 1; j < ordered.Count; j++)
+                {
+                    if (Math.Abs(ordered[i].MinY - ordered[j].MinY) > RowGap) continue;
+                    int gap = Math.Max(ordered[j].MinX - ordered[i].MaxX, ordered[i].MinX - ordered[j].MaxX);
+                    if (gap > RowLinkGapX) continue;
+                    Union(i, j);
+                }
+
+            var rows = ordered
+                .Select((p, i) => (Pose: p, Root: Find(i)))
+                .GroupBy(x => x.Root)
+                .Select(g => g.Select(x => x.Pose).OrderBy(p => p.MinX).ToList())
+                .ToList();
+
+            return OrderAsRead(rows);
+        }
+
+        /// <summary>
+        /// Puts a band's rows into reading order: sectors left to right, and the rows *within* a
+        /// sector top to bottom.
+        ///
+        /// <para>Sorting rows by top alone is wrong in both directions. Across a band it scrambles
+        /// stacked sectors -- Map Stuff's 1449/1480/1508 rows interleave with Swing's 1458/1520 by
+        /// height, so its own rows come out of order. Sorting by left alone stacks nothing. Grouping
+        /// rows into columns by horizontal overlap first keeps each sector's rows together, and
+        /// leaves single-row bands ordered exactly left to right as before -- which is what holds
+        /// strips 0..24, and every manifest that addresses them, still.</para>
+        /// </summary>
+        private static List<List<SlicedPose>> OrderAsRead(List<List<SlicedPose>> rows)
+        {
+            var owner = Enumerable.Range(0, rows.Count).ToArray();
+            int Find(int i) => owner[i] == i ? i : owner[i] = Find(owner[i]);
+
+            var span = rows.Select(r => (Lo: r.Min(p => p.MinX), Hi: r.Max(p => p.MaxX))).ToList();
+            for (int i = 0; i < rows.Count; i++)
+                for (int j = i + 1; j < rows.Count; j++)
+                {
+                    if (span[i].Hi < span[j].Lo || span[j].Hi < span[i].Lo) continue;
+                    int a = Find(i), b = Find(j);
+                    if (a != b) owner[b] = a;
+                }
+
+            return rows
+                .Select((r, i) => (Row: r, Index: i, Column: Find(i)))
+                .GroupBy(x => x.Column)
+                .Select(g => (
+                    Lo: g.Min(x => span[x.Index].Lo),
+                    Rows: g.OrderBy(x => x.Row.Min(p => p.MinY)).Select(x => x.Row).ToList()))
+                .OrderBy(c => c.Lo)
+                .SelectMany(c => c.Rows)
+                .ToList();
+        }
+
+        /// <summary>
+        /// Splits one row at horizontal gaps well above its own typical inter-pose spacing -- the
+        /// sheets put several captioned runs side by side on one line.
+        /// </summary>
+        private static List<List<SlicedPose>> SplitRowAtGaps(List<SlicedPose> row)
+        {
+            var gaps = new List<int>();
+            for (int i = 1; i < row.Count; i++)
+                gaps.Add(Math.Max(0, row[i].MinX - row[i - 1].MaxX));
+            int typical = gaps.Count == 0 ? 0 : Percentile(gaps, .5);
+            int split = Math.Max(typical * 3, typical + 8);
+
+            var segments = new List<List<SlicedPose>>();
+            var current = new List<SlicedPose>();
+            for (int i = 0; i < row.Count; i++)
+            {
+                if (i > 0 && row[i].MinX - row[i - 1].MaxX > split && current.Count > 0)
+                {
+                    segments.Add(current);
+                    current = new List<SlicedPose>();
+                }
+                current.Add(row[i]);
+            }
+            if (current.Count > 0) segments.Add(current);
+            return segments;
+        }
+
+        /// <summary>
+        /// Finds the run this uncaptioned segment continues: the nearest strip directly above it
+        /// that overlaps it horizontally (A.29 -- "Swing", "Victory", "Map Stuff" and the End
+        /// Credits runs each carry on for another row or two under one headline).
+        ///
+        /// <para>The search deliberately crosses band boundaries. Map Stuff wraps five rows and the
+        /// vertical-overlap banding cuts it in two, so a continuation confined to its own band would
+        /// rejoin only part of it.</para>
+        /// </summary>
+        private static Strip? FindWrappedRun(List<Strip> strips, List<SlicedPose> segment, int minX, int maxX)
+        {
+            int top = segment.Min(p => p.MinY);
+            Strip? best = null;
+            int bestOverlap = 0;
+
+            foreach (var strip in strips)
+            {
+                if (strip.Poses.Count == 0) continue;
+                int sMinX = strip.Poses.Min(p => p.MinX);
+                int sMaxX = strip.Poses.Max(p => p.MaxX);
+                int overlap = Math.Min(maxX, sMaxX) - Math.Max(minX, sMinX);
+                if (overlap <= 0) continue;
+
+                int gap = top - strip.Poses.Max(p => p.MaxY);
+                if (gap < -RowGap || gap > ContinuationReach) continue;
+
+                if (overlap >= bestOverlap) { bestOverlap = overlap; best = strip; }
+            }
+
+            return best;
         }
 
         private static int Percentile(IEnumerable<int> xs, double p)
@@ -452,12 +752,18 @@ namespace DkcTool.Core
             Console.WriteLine($"  over {SpriteTiler.MaxChars}-char budget    : {overBudget}");
             Console.WriteLine();
 
+            int wrapped = sheet.Strips.Count(s => s.Rows > 1);
+            Console.WriteLine($"  headlines found       : {sheet.Captions.Count}");
+            Console.WriteLine($"  runs wrapping rows    : {wrapped}");
+            Console.WriteLine();
+
             foreach (var strip in sheet.Strips)
             {
                 var parts = strip.Poses.Select(p =>
                     $"{p.Position}:{p.Width}x{p.Height}@({p.MinX},{p.MinY}) {p.CharCount}ch" +
                     (p.OverCanvas ? " [OVER-CANVAS]" : p.OverCharBudget ? " [OVER-BUDGET]" : ""));
-                Console.WriteLine($"  strip {strip.Index,3} (band {strip.Band,3}, {strip.Poses.Count,2} poses): " +
+                Console.WriteLine($"  strip {strip.Index,3} (band {strip.Band,3}, {strip.Poses.Count,2} poses" +
+                                  (strip.Rows > 1 ? $", {strip.Rows} rows" : "") + "): " +
                                   string.Join(", ", parts));
             }
 
