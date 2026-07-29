@@ -397,8 +397,18 @@ namespace DkcTool.Core
         /// landed inside poses this way; the importer caught it as an UnmappedColor refusal rather
         /// than importing a black bar, which is the refusal doing its job but well after the
         /// mistake.</para></summary>
+        /// <para>Two black components never absorb each other either. Absorption is a
+        /// <i>fragment-into-figure</i> rule and a glyph is not a fragment of the glyph beside it,
+        /// but the size test cannot tell them apart: a parenthesis is ~9 opaque pixels against a
+        /// capital's ~40, well under <see cref="FragmentRatio"/>, so an opening bracket sitting
+        /// within <see cref="MergeGap"/> of the next letter was swallowed into it. That destroyed
+        /// the one mark that identifies an annotation (A.39) — "(Also used in Bonus Games)" came
+        /// out with a 21x9 blob where its "(" should be, and read as a headline. Caption lines are
+        /// reassembled from glyphs in <c>GroupCaptions</c> anyway, so nothing needs this merge.
+        /// </para></summary>
         private static bool Absorbs(Island a, Island b) =>
             a.HasArtwork == b.HasArtwork
+            && a.HasArtwork
             && Math.Min(a.OpaquePixels, b.OpaquePixels)
                 < FragmentRatio * Math.Max(a.OpaquePixels, b.OpaquePixels);
 
@@ -811,6 +821,16 @@ namespace DkcTool.Core
             // count it separately rather than reporting it as a headline that found no run.
             Console.WriteLine($"  other black text      : {idle}   (nothing beneath it; ignored)");
             Console.WriteLine($"  runs wrapping rows    : {wrapped}");
+            // Black text with nothing under it is usually margin writing (the sheet's credit
+            // line), but it is also where a headline lands if it failed to anchor -- which would
+            // mean a run was silently swallowed by the strip to its left. Worth listing, not just
+            // counting. See A.39's "five headlines that name nothing".
+            if (idle > 0)
+            {
+                var anchored = sheet.Strips.Where(x => x.Caption != null).Select(x => x.Caption!).ToHashSet();
+                foreach (var c in sheet.Captions.Where(c => !c.IsAnnotation && !anchored.Contains(c)))
+                    Console.WriteLine($"      unused headline @({c.MinX},{c.MinY}) {c.Width}x{c.Height}");
+            }
             Console.WriteLine();
 
             foreach (var strip in sheet.Strips)
