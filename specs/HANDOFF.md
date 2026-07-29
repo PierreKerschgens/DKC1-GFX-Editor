@@ -249,6 +249,12 @@ answers it in one command. Two successive wrong conclusions about the barrel thr
 reasoning about screenshots — one of them the sprite author's own mockup, mistaken for the game —
 while the primary source sat locally unrendered (A.33).
 
+⚠️ **Barrel Idle is NOT in `0x8C..0x32C`, `0x538..0x5A4` or `0x680..0x7FC`** — all three tested white
+by the operator. Remaining: `0x330..0x534`, `0x5A8..0x67C`, `0x800..0x950`. A candidate at
+`0x280..0x288` was proposed on contiguity and **falsified**; it sat inside a range the operator had
+already reported white, so the operator's own data refuted it before it was built. **Check a
+candidate against every prior paint result before spending a boot on it.**
+
 **The barrel sequence is contiguous** (A.36): pick up `0x28C..0x2A4` (7), **carry walk
 `0x2A8..0x2E0` (15)**, throw `0x2E4..0x32C` (19) — matching sheet strip 15's sectors 7 / 15 and strip
 16's 19 exactly. Found by *rendering the range* after paint localised the carry; three structural

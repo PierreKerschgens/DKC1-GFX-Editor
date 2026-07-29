@@ -234,15 +234,11 @@
       "name": "Barrel Throw, 19 poses -> anim 74 (0x2E4..0x32C, 19). A.22 puts \"walk+throw barrel\" in 0x180..0x32C. NOTE this competes with the handoff's provisional \"Ground Slap -> 0x2E4..0x32C\"; Ground Slap is strip 20 with 17 poses, which does not fit 19, so the count favours Barrel Throw. flatX OFF: stock throw lunges 29px of centre-X -- the largest in the game -- and the barrel is composited against DK, so flattening it strands the prop. Per-pose centring reproduces stock horizontal travel exactly, which is what the prop offset assumes."
     },
     {
-      "strip": 15,
-      "poses": "7..9",
+      "strip": 17,
+      "animation": "0x4E",
       "flatX": false,
-      "indices": [
-        "0x280",
-        "0x284",
-        "0x288"
-      ],
-      "name": "Barrel Idle (sector 2 of strip 15) -> 0x280..0x288, 3 indices of DK standing with arms raised, immediately before the pick-up. 3 sheet poses, 3 indices, and it completes the contiguous barrel sequence idle/pick-up/carry/throw at 0x280..0x32C. CANDIDATE -- the contiguity and count are the whole argument."
+      "name": "Steel Keg Ride, 12 poses -> anim 78 (0x55C..0x588, 12), inside the 0x538..0x594 mounted set. NOTE A.15 claimed the ride animations cannot be matched through the table at all; an exact 12/12 in the right block is worth testing against that. groundRef self + flatX off: a keg rider is not standing on the walk floor, and the game composites the keg at a fixed offset from DK, so he must sit exactly where stock ride poses sat. Inheriting the manifest ground line put him 9px low and 11px right of the keg (A.34).",
+      "groundRef": "self"
     }
   ],
   "groundRef": "0xE0"
