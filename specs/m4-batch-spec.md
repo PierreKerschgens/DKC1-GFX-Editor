@@ -2330,6 +2330,34 @@ Checked against the rule filter while there: every drawn rule on the DK sheet is
 **DK: 43 headlines, 8 bracketed annotations. DK Jr: 35 and 5.** With annotations excluded, Bang Chest
 joins as A.29 said it should — strips 3 **and** 5 become one strip of 34 poses over 2 rows.
 
+#### Headlines also split a row into sectors — and rules do not
+
+Listing the headlines that anchored *nothing* found five on the DK sheet: **Death, Barrel Idle,
+Barrel Walk, Ride Attack, Ride Idle**. Each shares a row with the run to its left, divided by a drawn
+rule and a gap no wider than the gap between poses, so `SplitRowAtGaps` cannot see the boundary and
+the runs came out as one strip — A.34's multi-sector case, with the evidence for fixing it sitting
+unused in the caption layer.
+
+A strip is now split wherever a headline sits within `HeadlineAlign` (8 px) of a pose's left edge.
+Measured sector-opening headlines land 1..8 px from their first pose; "Map Stuff", the one headline
+that titles a block without opening it, lands 12 px away and is confirmed by the operator as
+deliberate. **4 px of margin — the thinnest threshold in this file; re-measure on a third sheet.**
+
+⚠️ **Rules mark sub-motions, not sectors.** Operator, on the rule sitting inside Barrel Idle and
+again inside Duck: *"Duck on the left side of the ruler is the animation from standing to duck and
+right from the ruler is the duck idle animation."* So a run's internal rules separate a transition
+from the loop it settles into — exactly A.29's "vertical rule = a segment boundary *within* a
+captioned run". **Splitting on rules would be wrong**; only headlines delimit runs.
+
+That is also the correction to A.34, which read the barrel row as
+`Pick Up (0..6) | Barrel Idle (7..9) | Barrel Walk (10..24)` by counting rules. The operator's
+reading, matching the headlines exactly: **Barrel Idle is 7..14, Barrel Walk is 15..24**, and the
+rule between 9 and 10 is one of these internal sub-motion marks.
+
+DK goes 35 → **40 strips**, and "other black text" drops to the sheet's two credit lines.
+
+⚠️ **This falsifies the Barrel Carry Walk mapping** — see the open question at the end.
+
 #### The renumbering, and the guard it forced
 
 Every merge removes a strip and shifts everything above it. Bang Chest's join removes one at 5, so
@@ -2361,6 +2389,38 @@ without reading caption text, and it turns the next renumbering from a silent re
 - **V4 7/7**, goldens deliberately rebuilt (delete + re-bootstrap), 1231/1231 poses.
 - **Looked at it** (C.4's overlay), which is the only way to tell a correct numbering from a
   plausible one.
+
+⚠️ **The sector split is the one step that does NOT preserve the confirmed build.** 306 bytes differ,
+all inside `0x2BC..0x2E0` — the ten Barrel Walk poses, re-placed because `--align-strip` anchors a
+strip against one reference and those poses are now their own strip instead of the tail of a 15-pose
+one. Everything else is byte-identical. **`port/dk-KEG15.sfc` remains the confirmed ROM; anything
+built after this needs a boot before it is called confirmed.**
+
+#### The Barrel Carry Walk pairing survives — and the rules explain why
+
+Splitting the barrel row first looked like it falsified the carry-walk mapping: the manifest imports
+**sheet poses 10..24** into the 15 ROM indices `0x2A8..0x2E0`, and with Barrel Idle running 7..14
+that selection straddles a drawn sector boundary. The operator resolved it:
+
+> Barrel idle is idling, next ruler is the animation to the next ruler → walking
+
+So the internal rules subdivide the run by *sub-motion*, and the barrel sequence reads:
+
+| sheet poses | what it is |
+|---|---|
+| 7..9 | barrel idle, the loop |
+| 10..14 | the transition out of idle into walking |
+| 15..24 | the walk loop |
+
+The ROM's 15-frame carry animation is therefore **transition + loop**, which is exactly poses 10..24.
+The pairing is coherent and stands; what the count mismatch looked like (10 sheet poses against 15
+frames) was an artefact of reading "Barrel Walk" as the whole run rather than as its loop.
+
+**The lesson is about the instrument, not the mapping.** This surfaced from *listing what the tool had
+found and discarded* — the five unanchored headlines were in the caption layer all along, counted but
+never printed. A summary line ("51 captions") hid them; printing them cost nothing and produced both
+this and the A.34 correction. Cf. A.35, where `--anims-in`'s excluded-count header held the answer
+for six sections.
 
 ### A.13 `0x858..0x8A8` is **not** DK — it is a foreign island (corrected)
 

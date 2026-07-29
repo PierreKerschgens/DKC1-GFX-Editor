@@ -102,6 +102,19 @@ namespace DkcTool.Core
         /// </summary>
         public const int ContinuationReach = 40;
 
+        /// <summary>
+        /// How closely a headline must sit to a pose's left edge to be read as *starting a sector
+        /// there*, rather than merely floating over the run.
+        ///
+        /// <para>Several runs share a row, divided by drawn rules rather than by a gap wide enough
+        /// for <see cref="SplitRowAtGaps"/> — "Barrel Pick Up | Barrel Idle | Barrel Walk" is one
+        /// row (A.34). Their headlines sit 1..8 px from the first pose of their sector. "Map Stuff"
+        /// is the one headline that titles a block without opening it, and it lands 12 px from the
+        /// nearest pose, so this separates the two — but by 4 px, which is the thinnest margin in
+        /// this file. Re-measure before trusting it on a third sheet.</para>
+        /// </summary>
+        public const int HeadlineAlign = 8;
+
         public sealed class SlicedPose
         {
             public int StripIndex;
@@ -480,7 +493,8 @@ namespace DkcTool.Core
                 // later step sees a genuine single row.
                 foreach (var row in RowComponents(bands[bandIndex]))
                 {
-                    foreach (var segment in SplitRowAtGaps(row))
+                    foreach (var gapSegment in SplitRowAtGaps(row))
+                    foreach (var (segment, sectorCaption) in SplitAtSectorHeadlines(captions, gapSegment))
                     {
                         int segMinX = segment.Min(p => p.MinX);
                         int segMaxX = segment.Max(p => p.MaxX);
@@ -488,7 +502,7 @@ namespace DkcTool.Core
                         // The sheet writes a headline at the top of each sector. One over this
                         // segment means a new run starts; none means the segment is the previous
                         // run continuing onto another row.
-                        var caption = FindHeadline(captions, segment);
+                        var caption = sectorCaption ?? FindHeadline(captions, segment);
 
                         Strip? host = caption == null
                             ? FindWrappedRun(strips, segment, segMinX, segMaxX)
@@ -517,6 +531,55 @@ namespace DkcTool.Core
             }
 
             return strips;
+        }
+
+        /// <summary>
+        /// Splits one gap-delimited segment wherever a headline opens a new sector inside it, and
+        /// returns each piece with the headline that opened it (null for the first piece, which
+        /// keeps whatever the caller resolves for it).
+        ///
+        /// <para>Several captioned runs can share a row divided only by a drawn rule, with the
+        /// inter-run gap no wider than the gap between poses — so <see cref="SplitRowAtGaps"/>
+        /// cannot see the boundary and the runs come out as one strip. Their headlines can: five on
+        /// the DK sheet (Death, Barrel Idle, Barrel Walk, Ride Attack, Ride Idle) named a sector
+        /// that no strip started, which is A.34's multi-sector case with the evidence for fixing it
+        /// sitting unused in the caption layer.</para>
+        /// </summary>
+        private static List<(List<SlicedPose> Segment, Caption? Caption)> SplitAtSectorHeadlines(
+            List<Caption> captions, List<SlicedPose> segment)
+        {
+            var startsAt = new Dictionary<int, Caption>();
+            foreach (var c in captions)
+            {
+                if (c.IsAnnotation) continue;
+
+                int best = -1, bestDist = int.MaxValue;
+                for (int i = 0; i < segment.Count; i++)
+                {
+                    var p = segment[i];
+                    if (c.MaxY >= p.MinY || p.MinY - c.MaxY > CaptionReach) continue;
+                    int dist = Math.Abs(p.MinX - c.MinX);
+                    if (dist < bestDist) { bestDist = dist; best = i; }
+                }
+                if (best > 0 && bestDist <= HeadlineAlign && !startsAt.ContainsKey(best))
+                    startsAt[best] = c;
+            }
+
+            var pieces = new List<(List<SlicedPose>, Caption?)>();
+            var current = new List<SlicedPose>();
+            Caption? currentCaption = null;
+            for (int i = 0; i < segment.Count; i++)
+            {
+                if (startsAt.TryGetValue(i, out var opener) && current.Count > 0)
+                {
+                    pieces.Add((current, currentCaption));
+                    current = new List<SlicedPose>();
+                    currentCaption = opener;
+                }
+                current.Add(segment[i]);
+            }
+            if (current.Count > 0) pieces.Add((current, currentCaption));
+            return pieces;
         }
 
         /// <summary>

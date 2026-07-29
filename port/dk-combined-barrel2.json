@@ -173,20 +173,20 @@
       "animation": "0x50",
       "flatX": true,
       "name": "CANDIDATE. Sheet strip 4 \"Swap (Leader)\", 5 poses -> anim 80 (0x770..0x780, 5 distinct), immediately after anim 79 in the same chunk -- the two swaps should sit together. Draw order 0x770 0x774 0x778 0x77C 0x780 0x77C repeats 0x77C, so poses mirror it.",
-      "poses": "0,1,2,3,4,3",
+      "poses": "0..4,3",
       "stripPoses": 5
     },
     {
-      "strip": 20,
+      "strip": 25,
       "animation": "0x5E",
       "flatX": true,
       "groundRef": "self",
       "name": "(A.39 bracket rule: was strip 21) (was sheet strip 22; A.39 band fix shifted rope runs down one) Rope Idle, 4 poses -> anim 94 (0x714..0x720, 4). groundRef self: on a rope, not the floor. Draw order is loop-and-reverse, exactly the sheet's own annotation (A.29); poses mirror it.",
-      "poses": "0,1,2,3,2,1",
+      "poses": "0..3,2,1",
       "stripPoses": 4
     },
     {
-      "strip": 22,
+      "strip": 27,
       "animation": "0x5F",
       "flatX": true,
       "groundRef": "self",
@@ -195,16 +195,16 @@
       "stripPoses": 2
     },
     {
-      "strip": 21,
+      "strip": 26,
       "animation": "0x5C",
       "flatX": true,
       "groundRef": "self",
       "name": "(A.39 bracket rule: was strip 22) (was sheet strip 23; A.39 band fix shifted rope runs down one) Rope Climb, 6 poses -> anim 92 (0x72C..0x740, 6). The three rope runs sit contiguously at 0x714..0x740 and the sheet has exactly 4/2/6 poses. Draw order is loop-and-reverse, exactly the sheet's own annotation (A.29); poses mirror it.",
-      "poses": "0,1,2,3,4,5,4,3,2,1",
+      "poses": "0..5,4,3,2,1",
       "stripPoses": 6
     },
     {
-      "strip": 14,
+      "strip": 15,
       "poses": "0..6",
       "flatX": false,
       "indices": [
@@ -217,18 +217,27 @@
         "0x2a4"
       ],
       "name": "(A.39 bracket rule: was strip 15) Barrel Pick Up (sector 1 of strip 15) -> 0x28C..0x2A4, 7 indices, DK bending to lift. Rendered, not inferred.",
-      "stripPoses": 25
+      "stripPoses": 7
     },
     {
-      "strip": 14,
-      "poses": "10..24",
+      "strip": 16,
+      "poses": "3..7",
       "flatX": true,
       "indices": [
         "0x2a8",
         "0x2ac",
         "0x2b0",
         "0x2b4",
-        "0x2b8",
+        "0x2b8"
+      ],
+      "name": "Barrel Carry Walk, part 1/2 -- the TRANSITION out of barrel idle into walking. Sheet strip 16 is the 'Barrel Idle' sector, subdivided by drawn rules into the idle loop (poses 0..2) and this transition (3..7); rules mark sub-motions, headlines mark runs (A.39). The ROM's 15-frame carry animation is transition + loop, which is why it spans two strips. Same pose->index pairs as the single entry it replaces.",
+      "stripPoses": 8
+    },
+    {
+      "strip": 17,
+      "poses": "0..9",
+      "flatX": true,
+      "indices": [
         "0x2bc",
         "0x2c0",
         "0x2c4",
@@ -240,18 +249,18 @@
         "0x2dc",
         "0x2e0"
       ],
-      "name": "(A.39 bracket rule: was strip 15) Barrel Carry Walk (sector 3) -> 0x2A8..0x2E0, 15 indices of DK walking with both arms overhead, exactly the sector's 15 poses. Found by rendering the range after paint put the carry inside 0x8C..0x32C; three structural guesses (anims 71/75, 15/96, the mount set) all missed it. The whole barrel sequence is contiguous: pick up 0x28C, carry 0x2A8, throw 0x2E4. flatX ON: stock body is static here (centroid spread 1-3px) and only the BOX moves, because the prop changes the extent. Per-pose centring inherited that box variation as real body wobble. Decide flatX on stock CENTROID spread, not centre-X (A.37).",
-      "stripPoses": 25
+      "name": "Barrel Carry Walk, part 2/2 -- the walk LOOP. Sheet strip 17 'Barrel Walk', all 10 poses. Together with part 1 this reproduces the confirmed-in-play pose->index pairing exactly; only the strip alignment differs, since --align-strip now anchors the loop separately from the transition (A.39). NEEDS A BOOT to re-confirm.",
+      "stripPoses": 10
     },
     {
-      "strip": 15,
+      "strip": 18,
       "animation": "0x4A",
       "flatX": false,
       "name": "(A.39 bracket rule: was strip 16) Barrel Throw, 19 poses -> anim 74 (0x2E4..0x32C, 19). A.22 puts \"walk+throw barrel\" in 0x180..0x32C. NOTE this competes with the handoff's provisional \"Ground Slap -> 0x2E4..0x32C\"; Ground Slap is strip 20 with 17 poses, which does not fit 19, so the count favours Barrel Throw. flatX OFF: stock throw lunges 29px of centre-X -- the largest in the game -- and the barrel is composited against DK, so flattening it strands the prop. Per-pose centring reproduces stock horizontal travel exactly, which is what the prop offset assumes.",
       "stripPoses": 19
     },
     {
-      "strip": 16,
+      "strip": 19,
       "animation": "0x4E",
       "flatX": true,
       "name": "(A.39 bracket rule: was strip 17) Steel Keg Ride, 12 poses -> anim 78 (0x55C..0x588, 12), inside the 0x538..0x594 mounted set. NOTE A.15 claimed the ride animations cannot be matched through the table at all; an exact 12/12 in the right block is worth testing against that. groundRef self + flatX off: a keg rider is not standing on the walk floor, and the game composites the keg at a fixed offset from DK, so he must sit exactly where stock ride poses sat. Inheriting the manifest ground line put him 9px low and 11px right of the keg (A.34). flatX ON: stock body is static here (centroid spread 1-3px) and only the BOX moves, because the prop changes the extent. Per-pose centring inherited that box variation as real body wobble. Decide flatX on stock CENTROID spread, not centre-X (A.37). offsetX +15: CONFIRMED IN PLAY (A.38), and empirical -- no measurement produces it. The placement-box hypothesis that would have computed it is falsified: --coords gives max|dMinX|=0 over this range in both stock and the build. FOOT X explains why the centroid lied (it averages the balance pose's outflung arms while the feet sat 7.3px left) but mispredicts this value at +7.3, so it is a diagnostic, not a rule. Do not re-derive; do not nudge without a boot.",
