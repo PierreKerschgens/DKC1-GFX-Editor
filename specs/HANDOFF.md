@@ -249,6 +249,12 @@ answers it in one command. Two successive wrong conclusions about the barrel thr
 reasoning about screenshots — one of them the sprite author's own mockup, mistaken for the game —
 while the primary source sat locally unrendered (A.33).
 
+**The barrel sequence is contiguous** (A.36): pick up `0x28C..0x2A4` (7), **carry walk
+`0x2A8..0x2E0` (15)**, throw `0x2E4..0x32C` (19) — matching sheet strip 15's sectors 7 / 15 and strip
+16's 19 exactly. Found by *rendering the range* after paint localised the carry; three structural
+guesses missed it first (anims 71/75, anims 15/96, the mount set `0x538..0x5A4`). The mount set is
+the **keg ride**, confirmed brown by the same paint round.
+
 ⚠️ **Prop/mount animations are the ones `--anims-in` EXCLUDES** (A.35). It lists animations drawing
 entirely inside a range and prints the rest as "N more touch this range but also draw outside it
 (held props / mounts)" — that header is the prop class, 14 animations, and every mapping in this file
