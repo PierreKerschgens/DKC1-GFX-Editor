@@ -5,6 +5,50 @@ The durable record is in the numbered specs; this file is the map and the open e
 
 ---
 
+## Pick up here (written 2026-07-29, end of a long session)
+
+**The good build is `port/dk-combined-barrel2.json`** — 225 poses, 18 runs, built onto
+`port/dk-EXP4.sfc` (expanded, mirrored). The other `dk-combined-*.json` are its history; ignore them
+unless you need to see how a mapping was reached.
+
+```
+dotnet run --project port/DkcTool -- port/dk-EXP4.sfc --batch port/dk-combined-barrel2.json --out port/dk-NEXT.sfc
+./port/boot.sh port/dk-NEXT.sfc      # operator only ever opens port/dk-BOOT.sfc
+```
+
+**Confirmed in play (18):** idle, turn, walk, run, roll, jump, bang chest, enemy bounce,
+swap partner, swap leader, rope idle/turn/climb, steel keg ride, barrel pick-up, barrel carry-walk,
+barrel throw. Everything else is stock, which is coverage rather than defect — check a report against
+this list before investigating it.
+
+### One thing is mid-flight
+
+`offsetX: +15` on strip 17 (keg ride) is **eyeball-tuned from `port/barrel-roll2.png` and unbooted**.
+The operator has reported the ride "off to the left" three times. Ask them **better / worse /
+overshot**, and converge.
+
+**Before iterating by eye, test this instead:** the centroid puts our DK within **1.5 px** of stock's
+ride art, while the screenshot puts him ~**15 px** left of the keg. Both can only be true if the game
+composites props against something `--baseline` does not measure — most likely the **placement
+(tile-grid) box** rather than the opaque box. Those are the two coordinate systems A.19 reconciled,
+and they differ by up to 7 px per sprite. `--coords <lo>..<hi>` prints both side by side. If the
+placement box is the prop's reference, every prop run gets a *computed* offset instead of a guessed
+one, and the barrel throw's floating prop probably falls out too. **That check needs no boot.**
+
+### The three open threads, in the order I would take them
+
+1. **Placement-box hypothesis above** — cheapest, and it may retire the whole prop-offset class.
+2. **Band fix in the slicer** — join wrapped rows instead of splitting them (A.29 establishes the
+   direction). Unblocks Swing, Victory, Map Stuff and the End Credits runs. Renumbers strips ≥25;
+   nothing imported is above 24, so the manifest is safe.
+3. **M5 / animation-script editing** — smaller than the 9-of-51 figure suggests (A.27, A.29).
+
+**Barrel Idle** is unlocated: white in `0x8C..0x32C`, `0x538..0x5A4` and `0x680..0x7FC`. Remaining
+space is `0x330..0x534`, `0x5A8..0x67C`, `0x800..0x950`. One 3-pose animation — low value, but the
+paint rounds are already banked.
+
+---
+
 ## Where things stand
 
 | milestone | state |

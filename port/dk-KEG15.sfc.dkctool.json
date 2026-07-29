@@ -8,7 +8,7 @@
       "length": "0x3E2",
       "previousPointer": "0xCD0000",
       "source": "dk-combined-barrel2.json strip6:0",
-      "timestamp": "2026-07-29T18:07:43.7163660\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.7983130\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -17,7 +17,7 @@
       "length": "0x37C",
       "previousPointer": "0xCD02BA",
       "source": "dk-combined-barrel2.json strip6:1",
-      "timestamp": "2026-07-29T18:07:43.7191810\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.8014720\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -26,7 +26,7 @@
       "length": "0x35A",
       "previousPointer": "0xCD0574",
       "source": "dk-combined-barrel2.json strip6:2",
-      "timestamp": "2026-07-29T18:07:43.7215930\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.8046590\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -35,7 +35,7 @@
       "length": "0x39E",
       "previousPointer": "0xCD0850",
       "source": "dk-combined-barrel2.json strip6:3",
-      "timestamp": "2026-07-29T18:07:43.7239530\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.8083310\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -44,7 +44,7 @@
       "length": "0x404",
       "previousPointer": "0xCD0B2C",
       "source": "dk-combined-barrel2.json strip6:4",
-      "timestamp": "2026-07-29T18:07:43.7263400\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.8113380\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -53,7 +53,7 @@
       "length": "0x448",
       "previousPointer": "0xCD0E08",
       "source": "dk-combined-barrel2.json strip6:5",
-      "timestamp": "2026-07-29T18:07:43.7312210\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.8180350\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -62,7 +62,7 @@
       "length": "0x3E2",
       "previousPointer": "0xCD1106",
       "source": "dk-combined-barrel2.json strip6:6",
-      "timestamp": "2026-07-29T18:07:43.7335940\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.8205810\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -71,7 +71,7 @@
       "length": "0x3C0",
       "previousPointer": "0xCD13E8",
       "source": "dk-combined-barrel2.json strip6:7",
-      "timestamp": "2026-07-29T18:07:43.7359850\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.8233090\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -80,7 +80,7 @@
       "length": "0x39E",
       "previousPointer": "0xCD16C4",
       "source": "dk-combined-barrel2.json strip6:8",
-      "timestamp": "2026-07-29T18:07:43.7383070\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.8264500\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -89,7 +89,7 @@
       "length": "0x37C",
       "previousPointer": "0xCD197E",
       "source": "dk-combined-barrel2.json strip6:9",
-      "timestamp": "2026-07-29T18:07:43.7406050\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.8295130\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -98,7 +98,7 @@
       "length": "0x37C",
       "previousPointer": "0xCD1C38",
       "source": "dk-combined-barrel2.json strip6:10",
-      "timestamp": "2026-07-29T18:07:43.7429010\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.8321150\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -107,7 +107,7 @@
       "length": "0x316",
       "previousPointer": "0xCD1ED6",
       "source": "dk-combined-barrel2.json strip6:11",
-      "timestamp": "2026-07-29T18:07:43.7452170\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.8353880\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -116,7 +116,7 @@
       "length": "0x338",
       "previousPointer": "0xCD2196",
       "source": "dk-combined-barrel2.json strip6:12",
-      "timestamp": "2026-07-29T18:07:43.7475640\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.8384110\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -125,7 +125,7 @@
       "length": "0x338",
       "previousPointer": "0xCD2472",
       "source": "dk-combined-barrel2.json strip6:13",
-      "timestamp": "2026-07-29T18:07:43.7498710\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.8410260\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -134,7 +134,7 @@
       "length": "0x37C",
       "previousPointer": "0xCD272C",
       "source": "dk-combined-barrel2.json strip6:14",
-      "timestamp": "2026-07-29T18:07:43.7522060\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.8441130\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -143,7 +143,7 @@
       "length": "0x3E2",
       "previousPointer": "0xCD29E6",
       "source": "dk-combined-barrel2.json strip6:15",
-      "timestamp": "2026-07-29T18:07:43.7545700\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.8467900\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -152,7 +152,7 @@
       "length": "0x426",
       "previousPointer": "0xCD2CA0",
       "source": "dk-combined-barrel2.json strip6:16",
-      "timestamp": "2026-07-29T18:07:43.7569360\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.8503350\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -161,7 +161,7 @@
       "length": "0x3C0",
       "previousPointer": "0xCD2F7C",
       "source": "dk-combined-barrel2.json strip6:17",
-      "timestamp": "2026-07-29T18:07:43.7595320\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.8545380\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -170,7 +170,7 @@
       "length": "0x3C0",
       "previousPointer": "0xCD327A",
       "source": "dk-combined-barrel2.json strip6:18",
-      "timestamp": "2026-07-29T18:07:43.7624440\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.8588200\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -179,7 +179,7 @@
       "length": "0x3C0",
       "previousPointer": "0xCD3534",
       "source": "dk-combined-barrel2.json strip6:19",
-      "timestamp": "2026-07-29T18:07:43.7648310\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.8642220\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -188,7 +188,7 @@
       "length": "0x3C0",
       "previousPointer": "0xD7620A",
       "source": "dk-combined-barrel2.json strip7:0",
-      "timestamp": "2026-07-29T18:07:43.7670920\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.8685120\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -197,7 +197,7 @@
       "length": "0x35A",
       "previousPointer": "0xD7646A",
       "source": "dk-combined-barrel2.json strip7:1",
-      "timestamp": "2026-07-29T18:07:43.7693620\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.8741530\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -206,7 +206,7 @@
       "length": "0x39E",
       "previousPointer": "0xD766E6",
       "source": "dk-combined-barrel2.json strip7:2",
-      "timestamp": "2026-07-29T18:07:43.7716560\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.8766900\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -215,7 +215,7 @@
       "length": "0x35A",
       "previousPointer": "0xD76984",
       "source": "dk-combined-barrel2.json strip7:3",
-      "timestamp": "2026-07-29T18:07:43.7740780\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.8792980\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -224,7 +224,7 @@
       "length": "0x35A",
       "previousPointer": "0xD76C82",
       "source": "dk-combined-barrel2.json strip7:4",
-      "timestamp": "2026-07-29T18:07:43.7766890\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.8824170\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -233,7 +233,7 @@
       "length": "0x404",
       "previousPointer": "0xD76FE6",
       "source": "dk-combined-barrel2.json strip7:5",
-      "timestamp": "2026-07-29T18:07:43.7811700\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.8889960\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -242,7 +242,7 @@
       "length": "0x3C0",
       "previousPointer": "0xD772F0",
       "source": "dk-combined-barrel2.json strip7:6",
-      "timestamp": "2026-07-29T18:07:43.7837880\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.8920210\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -251,7 +251,7 @@
       "length": "0x3C0",
       "previousPointer": "0xD77632",
       "source": "dk-combined-barrel2.json strip7:7",
-      "timestamp": "2026-07-29T18:07:43.7863830\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.8947740\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -260,7 +260,7 @@
       "length": "0x3C0",
       "previousPointer": "0xD77952",
       "source": "dk-combined-barrel2.json strip7:8",
-      "timestamp": "2026-07-29T18:07:43.7889650\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.8974850\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -269,7 +269,7 @@
       "length": "0x3C0",
       "previousPointer": "0xD77CB6",
       "source": "dk-combined-barrel2.json strip7:9",
-      "timestamp": "2026-07-29T18:07:43.7914810\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.9002750\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -278,7 +278,7 @@
       "length": "0x404",
       "previousPointer": "0xD77FD6",
       "source": "dk-combined-barrel2.json strip7:10",
-      "timestamp": "2026-07-29T18:07:43.7939460\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.9063730\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -287,7 +287,7 @@
       "length": "0x404",
       "previousPointer": "0xD782FC",
       "source": "dk-combined-barrel2.json strip7:11",
-      "timestamp": "2026-07-29T18:07:43.7963620\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.9091270\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -296,7 +296,7 @@
       "length": "0x404",
       "previousPointer": "0xD78600",
       "source": "dk-combined-barrel2.json strip7:12",
-      "timestamp": "2026-07-29T18:07:43.7988570\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.9118610\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -305,7 +305,7 @@
       "length": "0x3E2",
       "previousPointer": "0xD78948",
       "source": "dk-combined-barrel2.json strip7:13",
-      "timestamp": "2026-07-29T18:07:43.8049340\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.9190560\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -314,7 +314,7 @@
       "length": "0x448",
       "previousPointer": "0xD78C2A",
       "source": "dk-combined-barrel2.json strip7:14",
-      "timestamp": "2026-07-29T18:07:43.8073310\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.9235510\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -323,7 +323,7 @@
       "length": "0x39E",
       "previousPointer": "0xD78EEA",
       "source": "dk-combined-barrel2.json strip7:15",
-      "timestamp": "2026-07-29T18:07:43.8096530\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.9261660\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -332,7 +332,7 @@
       "length": "0x35A",
       "previousPointer": "0xD79188",
       "source": "dk-combined-barrel2.json strip7:16",
-      "timestamp": "2026-07-29T18:07:43.8119680\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.9289090\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -341,7 +341,7 @@
       "length": "0x39E",
       "previousPointer": "0xD79426",
       "source": "dk-combined-barrel2.json strip7:17",
-      "timestamp": "2026-07-29T18:07:43.8142930\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.9320990\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -350,7 +350,7 @@
       "length": "0x39E",
       "previousPointer": "0xD796E0",
       "source": "dk-combined-barrel2.json strip7:18",
-      "timestamp": "2026-07-29T18:07:43.8165710\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.9350310\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -359,7 +359,7 @@
       "length": "0x3C0",
       "previousPointer": "0xD7995C",
       "source": "dk-combined-barrel2.json strip7:19",
-      "timestamp": "2026-07-29T18:07:43.8187430\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.9389080\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -368,7 +368,7 @@
       "length": "0x37C",
       "previousPointer": "0xF376FA",
       "source": "dk-combined-barrel2.json strip8:0",
-      "timestamp": "2026-07-29T18:07:43.8211660\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.9418680\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -377,7 +377,7 @@
       "length": "0x338",
       "previousPointer": "0xF37BE6",
       "source": "dk-combined-barrel2.json strip8:1",
-      "timestamp": "2026-07-29T18:07:43.8233680\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.9443110\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -386,7 +386,7 @@
       "length": "0x2D2",
       "previousPointer": "0xF37E3A",
       "source": "dk-combined-barrel2.json strip8:2",
-      "timestamp": "2026-07-29T18:07:43.8256020\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.9474070\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -395,7 +395,7 @@
       "length": "0x28E",
       "previousPointer": "0xF380B6",
       "source": "dk-combined-barrel2.json strip8:3",
-      "timestamp": "2026-07-29T18:07:43.8278310\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.9500550\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -404,7 +404,7 @@
       "length": "0x2B0",
       "previousPointer": "0xF3830A",
       "source": "dk-combined-barrel2.json strip8:4",
-      "timestamp": "2026-07-29T18:07:43.8312130\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.9574170\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -413,7 +413,7 @@
       "length": "0x2D2",
       "previousPointer": "0xF38542",
       "source": "dk-combined-barrel2.json strip8:5",
-      "timestamp": "2026-07-29T18:07:43.8333610\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.9598300\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -422,7 +422,7 @@
       "length": "0x26C",
       "previousPointer": "0xF38764",
       "source": "dk-combined-barrel2.json strip8:6",
-      "timestamp": "2026-07-29T18:07:43.8354270\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.9621990\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -431,7 +431,7 @@
       "length": "0x2D2",
       "previousPointer": "0xF38958",
       "source": "dk-combined-barrel2.json strip8:7",
-      "timestamp": "2026-07-29T18:07:43.8375690\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.9647400\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -440,7 +440,7 @@
       "length": "0x2F4",
       "previousPointer": "0xF38B90",
       "source": "dk-combined-barrel2.json strip8:8",
-      "timestamp": "2026-07-29T18:07:43.8397870\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.9677760\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -449,7 +449,7 @@
       "length": "0x35A",
       "previousPointer": "0xF38DEA",
       "source": "dk-combined-barrel2.json strip8:9",
-      "timestamp": "2026-07-29T18:07:43.8419610\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.9712050\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -458,7 +458,7 @@
       "length": "0x338",
       "previousPointer": "0xF39558",
       "source": "dk-combined-barrel2.json strip8:10",
-      "timestamp": "2026-07-29T18:07:43.8441840\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.9738970\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -467,7 +467,7 @@
       "length": "0x39E",
       "previousPointer": "0xF81688",
       "source": "dk-combined-barrel2.json strip10:0",
-      "timestamp": "2026-07-29T18:07:43.8465490\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.9764880\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -476,7 +476,7 @@
       "length": "0x39E",
       "previousPointer": "0xF81964",
       "source": "dk-combined-barrel2.json strip10:1",
-      "timestamp": "2026-07-29T18:07:43.8489770\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.9790970\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -485,7 +485,7 @@
       "length": "0x426",
       "previousPointer": "0xF81C46",
       "source": "dk-combined-barrel2.json strip10:2",
-      "timestamp": "2026-07-29T18:07:43.8514440\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.9817670\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -494,7 +494,7 @@
       "length": "0x3C0",
       "previousPointer": "0xF81F88",
       "source": "dk-combined-barrel2.json strip10:3",
-      "timestamp": "2026-07-29T18:07:43.8539090\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.9845540\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -503,7 +503,7 @@
       "length": "0x3E2",
       "previousPointer": "0xF822CA",
       "source": "dk-combined-barrel2.json strip10:4",
-      "timestamp": "2026-07-29T18:07:43.8564640\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.9874820\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -512,7 +512,7 @@
       "length": "0x448",
       "previousPointer": "0xF8262E",
       "source": "dk-combined-barrel2.json strip10:5",
-      "timestamp": "2026-07-29T18:07:43.8590350\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.9904780\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -521,7 +521,7 @@
       "length": "0x448",
       "previousPointer": "0xF829B4",
       "source": "dk-combined-barrel2.json strip10:6",
-      "timestamp": "2026-07-29T18:07:43.8616630\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.9934950\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -530,7 +530,7 @@
       "length": "0x4AE",
       "previousPointer": "0xF82D34",
       "source": "dk-combined-barrel2.json strip10:7",
-      "timestamp": "2026-07-29T18:07:43.8644430\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.9964810\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -539,7 +539,7 @@
       "length": "0x4D0",
       "previousPointer": "0xF830B4",
       "source": "dk-combined-barrel2.json strip10:8",
-      "timestamp": "2026-07-29T18:07:43.8674060\u002B00:00",
+      "timestamp": "2026-07-29T18:11:21.9993680\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -548,7 +548,7 @@
       "length": "0x4F2",
       "previousPointer": "0xF83434",
       "source": "dk-combined-barrel2.json strip10:9",
-      "timestamp": "2026-07-29T18:07:43.8701220\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0038150\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -557,7 +557,7 @@
       "length": "0x4AE",
       "previousPointer": "0xF837BA",
       "source": "dk-combined-barrel2.json strip10:10",
-      "timestamp": "2026-07-29T18:07:43.8728640\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0068830\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -566,7 +566,7 @@
       "length": "0x4D0",
       "previousPointer": "0xF83B62",
       "source": "dk-combined-barrel2.json strip10:11",
-      "timestamp": "2026-07-29T18:07:43.8755170\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0097520\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -575,7 +575,7 @@
       "length": "0x4AE",
       "previousPointer": "0xF83EE8",
       "source": "dk-combined-barrel2.json strip10:12",
-      "timestamp": "2026-07-29T18:07:43.8805130\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0150690\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -584,7 +584,7 @@
       "length": "0x46A",
       "previousPointer": "0xF84224",
       "source": "dk-combined-barrel2.json strip10:13",
-      "timestamp": "2026-07-29T18:07:43.8829490\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0177960\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -593,7 +593,7 @@
       "length": "0x4AE",
       "previousPointer": "0xF84500",
       "source": "dk-combined-barrel2.json strip10:14",
-      "timestamp": "2026-07-29T18:07:43.8854320\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0206810\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -602,7 +602,7 @@
       "length": "0x426",
       "previousPointer": "0xF8477C",
       "source": "dk-combined-barrel2.json strip10:15",
-      "timestamp": "2026-07-29T18:07:43.8878200\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0233450\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -611,7 +611,7 @@
       "length": "0x426",
       "previousPointer": "0xF84A3C",
       "source": "dk-combined-barrel2.json strip10:16",
-      "timestamp": "2026-07-29T18:07:43.8901580\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0258230\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -620,7 +620,7 @@
       "length": "0x404",
       "previousPointer": "0xF84CE0",
       "source": "dk-combined-barrel2.json strip10:17",
-      "timestamp": "2026-07-29T18:07:43.8925360\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0283980\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -629,7 +629,7 @@
       "length": "0x35A",
       "previousPointer": "0xF84F9A",
       "source": "dk-combined-barrel2.json strip10:18",
-      "timestamp": "2026-07-29T18:07:43.8963220\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0325380\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -638,7 +638,7 @@
       "length": "0x3C0",
       "previousPointer": "0xF85254",
       "source": "dk-combined-barrel2.json strip10:19",
-      "timestamp": "2026-07-29T18:07:43.8986980\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0352300\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -647,7 +647,7 @@
       "length": "0x39E",
       "previousPointer": "0xD8B1F0",
       "source": "dk-combined-barrel2.json strip0:0",
-      "timestamp": "2026-07-29T18:07:43.9009500\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0378820\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -656,7 +656,7 @@
       "length": "0x39E",
       "previousPointer": "0xD8B46C",
       "source": "dk-combined-barrel2.json strip0:0",
-      "timestamp": "2026-07-29T18:07:43.9031650\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0402340\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -665,7 +665,7 @@
       "length": "0x39E",
       "previousPointer": "0xD8B6E8",
       "source": "dk-combined-barrel2.json strip0:1",
-      "timestamp": "2026-07-29T18:07:43.9053900\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0425840\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -674,7 +674,7 @@
       "length": "0x39E",
       "previousPointer": "0xD8B964",
       "source": "dk-combined-barrel2.json strip0:1",
-      "timestamp": "2026-07-29T18:07:43.9076430\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0448950\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -683,7 +683,7 @@
       "length": "0x39E",
       "previousPointer": "0xD8BBE0",
       "source": "dk-combined-barrel2.json strip0:2",
-      "timestamp": "2026-07-29T18:07:43.9099570\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0472950\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -692,7 +692,7 @@
       "length": "0x39E",
       "previousPointer": "0xD8BE9A",
       "source": "dk-combined-barrel2.json strip0:2",
-      "timestamp": "2026-07-29T18:07:43.9123080\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0497360\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -701,7 +701,7 @@
       "length": "0x39E",
       "previousPointer": "0xD8C154",
       "source": "dk-combined-barrel2.json strip0:3",
-      "timestamp": "2026-07-29T18:07:43.9146320\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0522880\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -710,7 +710,7 @@
       "length": "0x39E",
       "previousPointer": "0xD8C40E",
       "source": "dk-combined-barrel2.json strip0:3",
-      "timestamp": "2026-07-29T18:07:43.9168600\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0546450\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -719,7 +719,7 @@
       "length": "0x37C",
       "previousPointer": "0xD8C684",
       "source": "dk-combined-barrel2.json strip0:4",
-      "timestamp": "2026-07-29T18:07:43.9191530\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0570920\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -728,7 +728,7 @@
       "length": "0x37C",
       "previousPointer": "0xD8C922",
       "source": "dk-combined-barrel2.json strip0:4",
-      "timestamp": "2026-07-29T18:07:43.9214390\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0594500\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -737,7 +737,7 @@
       "length": "0x39E",
       "previousPointer": "0xD8CBA4",
       "source": "dk-combined-barrel2.json strip0:5",
-      "timestamp": "2026-07-29T18:07:43.9237140\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0619490\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -746,7 +746,7 @@
       "length": "0x39E",
       "previousPointer": "0xD8CE42",
       "source": "dk-combined-barrel2.json strip0:5",
-      "timestamp": "2026-07-29T18:07:43.9259840\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0643890\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -755,7 +755,7 @@
       "length": "0x39E",
       "previousPointer": "0xD8D0E0",
       "source": "dk-combined-barrel2.json strip0:6",
-      "timestamp": "2026-07-29T18:07:43.9297920\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0690110\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -764,7 +764,7 @@
       "length": "0x39E",
       "previousPointer": "0xD8D37E",
       "source": "dk-combined-barrel2.json strip0:6",
-      "timestamp": "2026-07-29T18:07:43.9320580\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0716990\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -773,7 +773,7 @@
       "length": "0x39E",
       "previousPointer": "0xD8D61C",
       "source": "dk-combined-barrel2.json strip0:7",
-      "timestamp": "2026-07-29T18:07:43.9343200\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0743280\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -782,7 +782,7 @@
       "length": "0x39E",
       "previousPointer": "0xD8D8BA",
       "source": "dk-combined-barrel2.json strip0:7",
-      "timestamp": "2026-07-29T18:07:43.9366400\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0771650\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -791,7 +791,7 @@
       "length": "0x39E",
       "previousPointer": "0xD8DB58",
       "source": "dk-combined-barrel2.json strip0:8",
-      "timestamp": "2026-07-29T18:07:43.9389140\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0796830\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -800,7 +800,7 @@
       "length": "0x39E",
       "previousPointer": "0xD8DDF6",
       "source": "dk-combined-barrel2.json strip0:8",
-      "timestamp": "2026-07-29T18:07:43.9411770\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0829000\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -809,7 +809,7 @@
       "length": "0x37C",
       "previousPointer": "0xD8E094",
       "source": "dk-combined-barrel2.json strip0:9",
-      "timestamp": "2026-07-29T18:07:43.9434680\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0862870\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -818,7 +818,7 @@
       "length": "0x37C",
       "previousPointer": "0xD8E332",
       "source": "dk-combined-barrel2.json strip0:9",
-      "timestamp": "2026-07-29T18:07:43.9457540\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0888370\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -827,7 +827,7 @@
       "length": "0x35A",
       "previousPointer": "0xD8E5D0",
       "source": "dk-combined-barrel2.json strip0:10",
-      "timestamp": "2026-07-29T18:07:43.9480430\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0913220\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -836,7 +836,7 @@
       "length": "0x404",
       "previousPointer": "0xF640CE",
       "source": "dk-combined-barrel2.json strip3:10",
-      "timestamp": "2026-07-29T18:07:43.9503430\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0944920\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -845,7 +845,7 @@
       "length": "0x426",
       "previousPointer": "0xF6436C",
       "source": "dk-combined-barrel2.json strip3:11",
-      "timestamp": "2026-07-29T18:07:43.9527100\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.0973270\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -854,7 +854,7 @@
       "length": "0x3E2",
       "previousPointer": "0xF64648",
       "source": "dk-combined-barrel2.json strip3:12",
-      "timestamp": "2026-07-29T18:07:43.9550610\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.1008830\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -863,7 +863,7 @@
       "length": "0x48C",
       "previousPointer": "0xF64902",
       "source": "dk-combined-barrel2.json strip3:13",
-      "timestamp": "2026-07-29T18:07:43.9574240\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.1053280\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -872,7 +872,7 @@
       "length": "0x426",
       "previousPointer": "0xF64BDE",
       "source": "dk-combined-barrel2.json strip3:14",
-      "timestamp": "2026-07-29T18:07:43.9597490\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.1080610\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -881,7 +881,7 @@
       "length": "0x426",
       "previousPointer": "0xF64E98",
       "source": "dk-combined-barrel2.json strip5:0",
-      "timestamp": "2026-07-29T18:07:43.9620820\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.1107090\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -890,7 +890,7 @@
       "length": "0x426",
       "previousPointer": "0xF65136",
       "source": "dk-combined-barrel2.json strip5:1",
-      "timestamp": "2026-07-29T18:07:43.9643680\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.1138790\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -899,7 +899,7 @@
       "length": "0x4AE",
       "previousPointer": "0xF653CE",
       "source": "dk-combined-barrel2.json strip5:2",
-      "timestamp": "2026-07-29T18:07:43.9666300\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.1166260\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -908,7 +908,7 @@
       "length": "0x46A",
       "previousPointer": "0xF6564A",
       "source": "dk-combined-barrel2.json strip5:3",
-      "timestamp": "2026-07-29T18:07:43.9689490\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.1198440\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -917,7 +917,7 @@
       "length": "0x448",
       "previousPointer": "0xF658E8",
       "source": "dk-combined-barrel2.json strip5:4",
-      "timestamp": "2026-07-29T18:07:43.9712540\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.1228750\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -926,7 +926,7 @@
       "length": "0x404",
       "previousPointer": "0xF65B86",
       "source": "dk-combined-barrel2.json strip5:5",
-      "timestamp": "2026-07-29T18:07:43.9735360\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.1258060\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -935,7 +935,7 @@
       "length": "0x48C",
       "previousPointer": "0xF65E24",
       "source": "dk-combined-barrel2.json strip5:6",
-      "timestamp": "2026-07-29T18:07:43.9758530\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.1290560\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -944,7 +944,7 @@
       "length": "0x4F2",
       "previousPointer": "0xF660C2",
       "source": "dk-combined-barrel2.json strip5:7",
-      "timestamp": "2026-07-29T18:07:43.9803750\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.1391810\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -953,7 +953,7 @@
       "length": "0x448",
       "previousPointer": "0xF6633E",
       "source": "dk-combined-barrel2.json strip5:8",
-      "timestamp": "2026-07-29T18:07:43.9827530\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.1420720\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -962,7 +962,7 @@
       "length": "0x448",
       "previousPointer": "0xF665FE",
       "source": "dk-combined-barrel2.json strip5:9",
-      "timestamp": "2026-07-29T18:07:43.9853060\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.1452550\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -971,7 +971,7 @@
       "length": "0x46A",
       "previousPointer": "0xF668BE",
       "source": "dk-combined-barrel2.json strip5:10",
-      "timestamp": "2026-07-29T18:07:43.9877820\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.1485780\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -980,7 +980,7 @@
       "length": "0x448",
       "previousPointer": "0xF66B5C",
       "source": "dk-combined-barrel2.json strip5:11",
-      "timestamp": "2026-07-29T18:07:43.9901120\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.1516360\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -989,7 +989,7 @@
       "length": "0x3E2",
       "previousPointer": "0xF66DFA",
       "source": "dk-combined-barrel2.json strip5:12",
-      "timestamp": "2026-07-29T18:07:43.9923310\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.1548120\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -998,7 +998,7 @@
       "length": "0x3E2",
       "previousPointer": "0xF67054",
       "source": "dk-combined-barrel2.json strip5:13",
-      "timestamp": "2026-07-29T18:07:43.9946110\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.1575480\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1007,7 +1007,7 @@
       "length": "0x3E2",
       "previousPointer": "0xF672AE",
       "source": "dk-combined-barrel2.json strip5:14",
-      "timestamp": "2026-07-29T18:07:43.9969150\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.1600430\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1016,7 +1016,7 @@
       "length": "0x3E2",
       "previousPointer": "0xF67508",
       "source": "dk-combined-barrel2.json strip5:15",
-      "timestamp": "2026-07-29T18:07:43.9992430\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.1625420\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1025,7 +1025,7 @@
       "length": "0x404",
       "previousPointer": "0xF67784",
       "source": "dk-combined-barrel2.json strip5:16",
-      "timestamp": "2026-07-29T18:07:44.0015430\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.1653470\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1034,7 +1034,7 @@
       "length": "0x404",
       "previousPointer": "0xF67A00",
       "source": "dk-combined-barrel2.json strip5:17",
-      "timestamp": "2026-07-29T18:07:44.0038260\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.1680260\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1043,7 +1043,7 @@
       "length": "0x404",
       "previousPointer": "0xF67C98",
       "source": "dk-combined-barrel2.json strip5:18",
-      "timestamp": "2026-07-29T18:07:44.0061460\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.1736480\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1052,7 +1052,7 @@
       "length": "0x3E2",
       "previousPointer": "0xF27696",
       "source": "dk-combined-barrel2.json strip1:0",
-      "timestamp": "2026-07-29T18:07:44.0085930\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.1777190\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1061,7 +1061,7 @@
       "length": "0x39E",
       "previousPointer": "0xF27972",
       "source": "dk-combined-barrel2.json strip1:1",
-      "timestamp": "2026-07-29T18:07:44.0109500\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.1806730\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1070,7 +1070,7 @@
       "length": "0x39E",
       "previousPointer": "0x444282",
       "source": "dk-combined-barrel2.json strip1:1",
-      "timestamp": "2026-07-29T18:07:44.0137990\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.1837540\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1079,7 +1079,7 @@
       "length": "0x3E2",
       "previousPointer": "0x443EA0",
       "source": "dk-combined-barrel2.json strip1:0",
-      "timestamp": "2026-07-29T18:07:44.0170360\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.1866730\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1088,7 +1088,7 @@
       "length": "0x2D2",
       "previousPointer": "0xCD3EEC",
       "source": "dk-combined-barrel2.json strip9:0",
-      "timestamp": "2026-07-29T18:07:44.0192280\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.1893050\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1097,7 +1097,7 @@
       "length": "0x338",
       "previousPointer": "0xCD4124",
       "source": "dk-combined-barrel2.json strip9:1",
-      "timestamp": "2026-07-29T18:07:44.0213640\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.1931640\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1106,7 +1106,7 @@
       "length": "0x2D2",
       "previousPointer": "0xCD433A",
       "source": "dk-combined-barrel2.json strip9:2",
-      "timestamp": "2026-07-29T18:07:44.0234630\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.1959670\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1115,7 +1115,7 @@
       "length": "0x2B0",
       "previousPointer": "0xCD4550",
       "source": "dk-combined-barrel2.json strip9:3",
-      "timestamp": "2026-07-29T18:07:44.0256190\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.1987920\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1124,7 +1124,7 @@
       "length": "0x2B0",
       "previousPointer": "0xCD476C",
       "source": "dk-combined-barrel2.json strip9:4",
-      "timestamp": "2026-07-29T18:07:44.0278320\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2020120\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1133,7 +1133,7 @@
       "length": "0x2D2",
       "previousPointer": "0xCD49C6",
       "source": "dk-combined-barrel2.json strip9:5",
-      "timestamp": "2026-07-29T18:07:44.0323200\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2089480\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1142,7 +1142,7 @@
       "length": "0x2B0",
       "previousPointer": "0xCD4C04",
       "source": "dk-combined-barrel2.json strip9:6",
-      "timestamp": "2026-07-29T18:07:44.0346030\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2118490\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1151,7 +1151,7 @@
       "length": "0x28E",
       "previousPointer": "0xCD4E58",
       "source": "dk-combined-barrel2.json strip9:7",
-      "timestamp": "2026-07-29T18:07:44.0367930\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2153360\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1160,7 +1160,7 @@
       "length": "0x2B0",
       "previousPointer": "0xCD50AC",
       "source": "dk-combined-barrel2.json strip9:8",
-      "timestamp": "2026-07-29T18:07:44.0389750\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2185200\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1169,7 +1169,7 @@
       "length": "0x28E",
       "previousPointer": "0xCD5300",
       "source": "dk-combined-barrel2.json strip9:9",
-      "timestamp": "2026-07-29T18:07:44.0411160\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2224140\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1178,7 +1178,7 @@
       "length": "0x2B0",
       "previousPointer": "0xCD5538",
       "source": "dk-combined-barrel2.json strip9:10",
-      "timestamp": "2026-07-29T18:07:44.0433220\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2253200\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1187,7 +1187,7 @@
       "length": "0x26C",
       "previousPointer": "0xCD5770",
       "source": "dk-combined-barrel2.json strip9:11",
-      "timestamp": "2026-07-29T18:07:44.0454390\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2281320\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1196,7 +1196,7 @@
       "length": "0x26C",
       "previousPointer": "0xCD5986",
       "source": "dk-combined-barrel2.json strip9:12",
-      "timestamp": "2026-07-29T18:07:44.0475380\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2315480\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1205,7 +1205,7 @@
       "length": "0x2B0",
       "previousPointer": "0xCD5B9C",
       "source": "dk-combined-barrel2.json strip9:13",
-      "timestamp": "2026-07-29T18:07:44.0498760\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2343080\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1214,7 +1214,7 @@
       "length": "0x2D2",
       "previousPointer": "0xCD5DF6",
       "source": "dk-combined-barrel2.json strip9:14",
-      "timestamp": "2026-07-29T18:07:44.0521160\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2371640\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1223,7 +1223,7 @@
       "length": "0x2F4",
       "previousPointer": "0xCD602E",
       "source": "dk-combined-barrel2.json strip9:15",
-      "timestamp": "2026-07-29T18:07:44.0542980\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2399030\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1232,7 +1232,7 @@
       "length": "0x37C",
       "previousPointer": "0xE5775B",
       "source": "dk-combined-barrel2.json strip2:0",
-      "timestamp": "2026-07-29T18:07:44.0566770\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2425650\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1241,7 +1241,7 @@
       "length": "0x37C",
       "previousPointer": "0xE57A37",
       "source": "dk-combined-barrel2.json strip2:1",
-      "timestamp": "2026-07-29T18:07:44.0590440\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2451820\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1250,7 +1250,7 @@
       "length": "0x39E",
       "previousPointer": "0xE57CF7",
       "source": "dk-combined-barrel2.json strip2:2",
-      "timestamp": "2026-07-29T18:07:44.0613830\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2480390\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1259,7 +1259,7 @@
       "length": "0x3C0",
       "previousPointer": "0xE57FB1",
       "source": "dk-combined-barrel2.json strip2:3",
-      "timestamp": "2026-07-29T18:07:44.0636370\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2506380\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1268,7 +1268,7 @@
       "length": "0x3E2",
       "previousPointer": "0xE58233",
       "source": "dk-combined-barrel2.json strip2:4",
-      "timestamp": "2026-07-29T18:07:44.0659840\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2535990\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1277,7 +1277,7 @@
       "length": "0x404",
       "previousPointer": "0xE584D1",
       "source": "dk-combined-barrel2.json strip2:5",
-      "timestamp": "2026-07-29T18:07:44.0683900\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2563580\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1286,7 +1286,7 @@
       "length": "0x404",
       "previousPointer": "0xE587CF",
       "source": "dk-combined-barrel2.json strip2:6",
-      "timestamp": "2026-07-29T18:07:44.0708270\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2590910\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1295,7 +1295,7 @@
       "length": "0x35A",
       "previousPointer": "0xE58AE9",
       "source": "dk-combined-barrel2.json strip2:7",
-      "timestamp": "2026-07-29T18:07:44.0731400\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2616990\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1304,7 +1304,7 @@
       "length": "0x37C",
       "previousPointer": "0xE58DA3",
       "source": "dk-combined-barrel2.json strip2:8",
-      "timestamp": "2026-07-29T18:07:44.0753900\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2655670\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1313,7 +1313,7 @@
       "length": "0x3E2",
       "previousPointer": "0xE58FFD",
       "source": "dk-combined-barrel2.json strip2:9",
-      "timestamp": "2026-07-29T18:07:44.0777140\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2689610\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1322,7 +1322,7 @@
       "length": "0x37C",
       "previousPointer": "0xE56A07",
       "source": "dk-combined-barrel2.json strip4:0",
-      "timestamp": "2026-07-29T18:07:44.0799290\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2716800\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1331,7 +1331,7 @@
       "length": "0x39E",
       "previousPointer": "0xE56C61",
       "source": "dk-combined-barrel2.json strip4:1",
-      "timestamp": "2026-07-29T18:07:44.0844970\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2768450\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1340,7 +1340,7 @@
       "length": "0x3C0",
       "previousPointer": "0xE56EFF",
       "source": "dk-combined-barrel2.json strip4:2",
-      "timestamp": "2026-07-29T18:07:44.0868410\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2796060\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1349,7 +1349,7 @@
       "length": "0x404",
       "previousPointer": "0xE571BF",
       "source": "dk-combined-barrel2.json strip4:3",
-      "timestamp": "2026-07-29T18:07:44.0891910\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2829350\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1358,7 +1358,7 @@
       "length": "0x448",
       "previousPointer": "0xE5747F",
       "source": "dk-combined-barrel2.json strip4:4",
-      "timestamp": "2026-07-29T18:07:44.0915740\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2859330\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1367,7 +1367,7 @@
       "length": "0x404",
       "previousPointer": "0x4528DA",
       "source": "dk-combined-barrel2.json strip4:3",
-      "timestamp": "2026-07-29T18:07:44.0942830\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2889630\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1376,7 +1376,7 @@
       "length": "0x2F4",
       "previousPointer": "0xDC869A",
       "source": "dk-combined-barrel2.json strip22:0",
-      "timestamp": "2026-07-29T18:07:44.0963910\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2912970\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1385,7 +1385,7 @@
       "length": "0x316",
       "previousPointer": "0xDC888E",
       "source": "dk-combined-barrel2.json strip22:1",
-      "timestamp": "2026-07-29T18:07:44.0985170\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2937050\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1394,7 +1394,7 @@
       "length": "0x2F4",
       "previousPointer": "0xDC8A82",
       "source": "dk-combined-barrel2.json strip22:2",
-      "timestamp": "2026-07-29T18:07:44.1006000\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2962560\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1403,7 +1403,7 @@
       "length": "0x2F4",
       "previousPointer": "0xDC8C76",
       "source": "dk-combined-barrel2.json strip22:3",
-      "timestamp": "2026-07-29T18:07:44.1027070\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.2988340\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1412,7 +1412,7 @@
       "length": "0x2F4",
       "previousPointer": "0x453B34",
       "source": "dk-combined-barrel2.json strip22:2",
-      "timestamp": "2026-07-29T18:07:44.1051030\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3017100\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1421,7 +1421,7 @@
       "length": "0x316",
       "previousPointer": "0x45381E",
       "source": "dk-combined-barrel2.json strip22:1",
-      "timestamp": "2026-07-29T18:07:44.1077300\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3043720\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1430,7 +1430,7 @@
       "length": "0x2D2",
       "previousPointer": "0xDC8E6A",
       "source": "dk-combined-barrel2.json strip24:0",
-      "timestamp": "2026-07-29T18:07:44.1100760\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3067540\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1439,7 +1439,7 @@
       "length": "0x2D2",
       "previousPointer": "0xDC9080",
       "source": "dk-combined-barrel2.json strip24:1",
-      "timestamp": "2026-07-29T18:07:44.1121550\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3098210\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1448,7 +1448,7 @@
       "length": "0x2D2",
       "previousPointer": "0x4549F8",
       "source": "dk-combined-barrel2.json strip24:1",
-      "timestamp": "2026-07-29T18:07:44.1145380\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3171500\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1457,7 +1457,7 @@
       "length": "0x2D2",
       "previousPointer": "0x454726",
       "source": "dk-combined-barrel2.json strip24:0",
-      "timestamp": "2026-07-29T18:07:44.1168600\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3208590\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1466,7 +1466,7 @@
       "length": "0x2F4",
       "previousPointer": "0xDC7868",
       "source": "dk-combined-barrel2.json strip23:0",
-      "timestamp": "2026-07-29T18:07:44.1190070\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3233010\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1475,7 +1475,7 @@
       "length": "0x316",
       "previousPointer": "0xDC7A7E",
       "source": "dk-combined-barrel2.json strip23:1",
-      "timestamp": "2026-07-29T18:07:44.1211830\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3257490\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1484,7 +1484,7 @@
       "length": "0x338",
       "previousPointer": "0xDC7C94",
       "source": "dk-combined-barrel2.json strip23:2",
-      "timestamp": "2026-07-29T18:07:44.1234010\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3282270\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1493,7 +1493,7 @@
       "length": "0x39E",
       "previousPointer": "0xDC7ECC",
       "source": "dk-combined-barrel2.json strip23:3",
-      "timestamp": "2026-07-29T18:07:44.1256720\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3316960\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1502,7 +1502,7 @@
       "length": "0x39E",
       "previousPointer": "0xDC8142",
       "source": "dk-combined-barrel2.json strip23:4",
-      "timestamp": "2026-07-29T18:07:44.1280390\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3355560\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1511,7 +1511,7 @@
       "length": "0x3C0",
       "previousPointer": "0xDC83FC",
       "source": "dk-combined-barrel2.json strip23:5",
-      "timestamp": "2026-07-29T18:07:44.1303690\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3383170\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1520,7 +1520,7 @@
       "length": "0x39E",
       "previousPointer": "0x455F4E",
       "source": "dk-combined-barrel2.json strip23:4",
-      "timestamp": "2026-07-29T18:07:44.1329540\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3413590\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1529,7 +1529,7 @@
       "length": "0x39E",
       "previousPointer": "0x455BB0",
       "source": "dk-combined-barrel2.json strip23:3",
-      "timestamp": "2026-07-29T18:07:44.1379200\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3470580\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1538,7 +1538,7 @@
       "length": "0x338",
       "previousPointer": "0x455878",
       "source": "dk-combined-barrel2.json strip23:2",
-      "timestamp": "2026-07-29T18:07:44.1404130\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3498850\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1547,7 +1547,7 @@
       "length": "0x316",
       "previousPointer": "0x455562",
       "source": "dk-combined-barrel2.json strip23:1",
-      "timestamp": "2026-07-29T18:07:44.1427950\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3527040\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1556,7 +1556,7 @@
       "length": "0x338",
       "previousPointer": "0xD70000",
       "source": "dk-combined-barrel2.json strip15:0",
-      "timestamp": "2026-07-29T18:07:44.1450230\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3554560\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1565,7 +1565,7 @@
       "length": "0x3E2",
       "previousPointer": "0xD70254",
       "source": "dk-combined-barrel2.json strip15:1",
-      "timestamp": "2026-07-29T18:07:44.1472820\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3579590\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1574,7 +1574,7 @@
       "length": "0x3E2",
       "previousPointer": "0xD704AE",
       "source": "dk-combined-barrel2.json strip15:2",
-      "timestamp": "2026-07-29T18:07:44.1494920\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3604840\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1583,7 +1583,7 @@
       "length": "0x404",
       "previousPointer": "0xD70708",
       "source": "dk-combined-barrel2.json strip15:3",
-      "timestamp": "2026-07-29T18:07:44.1518580\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3631870\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1592,7 +1592,7 @@
       "length": "0x3E2",
       "previousPointer": "0xD709EA",
       "source": "dk-combined-barrel2.json strip15:4",
-      "timestamp": "2026-07-29T18:07:44.1541960\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3657750\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1601,7 +1601,7 @@
       "length": "0x35A",
       "previousPointer": "0xD70CAA",
       "source": "dk-combined-barrel2.json strip15:5",
-      "timestamp": "2026-07-29T18:07:44.1565600\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3695560\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1610,7 +1610,7 @@
       "length": "0x39E",
       "previousPointer": "0xD70F6A",
       "source": "dk-combined-barrel2.json strip15:6",
-      "timestamp": "2026-07-29T18:07:44.1589440\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3722720\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1619,7 +1619,7 @@
       "length": "0x39E",
       "previousPointer": "0xFB3BDA",
       "source": "dk-combined-barrel2.json strip15:10",
-      "timestamp": "2026-07-29T18:07:44.1613640\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3747530\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1628,7 +1628,7 @@
       "length": "0x39E",
       "previousPointer": "0xFB3E94",
       "source": "dk-combined-barrel2.json strip15:11",
-      "timestamp": "2026-07-29T18:07:44.1637830\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3772290\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1637,7 +1637,7 @@
       "length": "0x404",
       "previousPointer": "0xFB4170",
       "source": "dk-combined-barrel2.json strip15:12",
-      "timestamp": "2026-07-29T18:07:44.1661550\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3796830\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1646,7 +1646,7 @@
       "length": "0x3C0",
       "previousPointer": "0xFB444C",
       "source": "dk-combined-barrel2.json strip15:13",
-      "timestamp": "2026-07-29T18:07:44.1686160\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3822730\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1655,7 +1655,7 @@
       "length": "0x426",
       "previousPointer": "0xFB476C",
       "source": "dk-combined-barrel2.json strip15:14",
-      "timestamp": "2026-07-29T18:07:44.1711330\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3851780\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1664,7 +1664,7 @@
       "length": "0x448",
       "previousPointer": "0xFB4AA8",
       "source": "dk-combined-barrel2.json strip15:15",
-      "timestamp": "2026-07-29T18:07:44.1735960\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3878700\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1673,7 +1673,7 @@
       "length": "0x404",
       "previousPointer": "0xFB4DA0",
       "source": "dk-combined-barrel2.json strip15:16",
-      "timestamp": "2026-07-29T18:07:44.1759830\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3903650\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1682,7 +1682,7 @@
       "length": "0x3C0",
       "previousPointer": "0xFB507C",
       "source": "dk-combined-barrel2.json strip15:17",
-      "timestamp": "2026-07-29T18:07:44.1783340\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3928370\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1691,7 +1691,7 @@
       "length": "0x3E2",
       "previousPointer": "0xFB5314",
       "source": "dk-combined-barrel2.json strip15:18",
-      "timestamp": "2026-07-29T18:07:44.1806960\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.3953100\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1700,7 +1700,7 @@
       "length": "0x404",
       "previousPointer": "0xFB55AC",
       "source": "dk-combined-barrel2.json strip15:19",
-      "timestamp": "2026-07-29T18:07:44.1854300\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.4006680\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1709,7 +1709,7 @@
       "length": "0x448",
       "previousPointer": "0xFB58AA",
       "source": "dk-combined-barrel2.json strip15:20",
-      "timestamp": "2026-07-29T18:07:44.1878680\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.4037840\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1718,7 +1718,7 @@
       "length": "0x3C0",
       "previousPointer": "0xFB5B86",
       "source": "dk-combined-barrel2.json strip15:21",
-      "timestamp": "2026-07-29T18:07:44.1902710\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.4067440\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1727,7 +1727,7 @@
       "length": "0x3E2",
       "previousPointer": "0xFB5E62",
       "source": "dk-combined-barrel2.json strip15:22",
-      "timestamp": "2026-07-29T18:07:44.1926510\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.4093440\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1736,7 +1736,7 @@
       "length": "0x404",
       "previousPointer": "0xFB613E",
       "source": "dk-combined-barrel2.json strip15:23",
-      "timestamp": "2026-07-29T18:07:44.1951930\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.4121450\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1745,7 +1745,7 @@
       "length": "0x404",
       "previousPointer": "0xFB647A",
       "source": "dk-combined-barrel2.json strip15:24",
-      "timestamp": "2026-07-29T18:07:44.1977240\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.4151680\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1754,7 +1754,7 @@
       "length": "0x46A",
       "previousPointer": "0xC9BAC7",
       "source": "dk-combined-barrel2.json strip16:0",
-      "timestamp": "2026-07-29T18:07:44.2001230\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.4194940\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1763,7 +1763,7 @@
       "length": "0x48C",
       "previousPointer": "0xC9BDA9",
       "source": "dk-combined-barrel2.json strip16:1",
-      "timestamp": "2026-07-29T18:07:44.2025560\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.4242710\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1772,7 +1772,7 @@
       "length": "0x448",
       "previousPointer": "0xC9C0AD",
       "source": "dk-combined-barrel2.json strip16:2",
-      "timestamp": "2026-07-29T18:07:44.2050610\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.4285340\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1781,7 +1781,7 @@
       "length": "0x448",
       "previousPointer": "0xC9C3CD",
       "source": "dk-combined-barrel2.json strip16:3",
-      "timestamp": "2026-07-29T18:07:44.2075040\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.4312640\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1790,7 +1790,7 @@
       "length": "0x426",
       "previousPointer": "0xC9C6AF",
       "source": "dk-combined-barrel2.json strip16:4",
-      "timestamp": "2026-07-29T18:07:44.2105580\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.4342700\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1799,7 +1799,7 @@
       "length": "0x426",
       "previousPointer": "0xC9C9D5",
       "source": "dk-combined-barrel2.json strip16:5",
-      "timestamp": "2026-07-29T18:07:44.2132160\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.4381500\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1808,7 +1808,7 @@
       "length": "0x426",
       "previousPointer": "0xC9CD5B",
       "source": "dk-combined-barrel2.json strip16:6",
-      "timestamp": "2026-07-29T18:07:44.2157860\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.4440320\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1817,7 +1817,7 @@
       "length": "0x404",
       "previousPointer": "0xC9D0A9",
       "source": "dk-combined-barrel2.json strip16:7",
-      "timestamp": "2026-07-29T18:07:44.2184810\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.4540660\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1826,7 +1826,7 @@
       "length": "0x3C0",
       "previousPointer": "0xC9D46D",
       "source": "dk-combined-barrel2.json strip16:8",
-      "timestamp": "2026-07-29T18:07:44.2210380\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.4598590\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1835,7 +1835,7 @@
       "length": "0x3C0",
       "previousPointer": "0xC9D7D1",
       "source": "dk-combined-barrel2.json strip16:9",
-      "timestamp": "2026-07-29T18:07:44.2235660\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.4630340\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1844,7 +1844,7 @@
       "length": "0x39E",
       "previousPointer": "0xC9DB3B",
       "source": "dk-combined-barrel2.json strip16:10",
-      "timestamp": "2026-07-29T18:07:44.2262990\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.4687450\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1853,7 +1853,7 @@
       "length": "0x37C",
       "previousPointer": "0xC9DEBB",
       "source": "dk-combined-barrel2.json strip16:11",
-      "timestamp": "2026-07-29T18:07:44.2312910\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.4773310\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1862,7 +1862,7 @@
       "length": "0x3C0",
       "previousPointer": "0xC9E1E7",
       "source": "dk-combined-barrel2.json strip16:12",
-      "timestamp": "2026-07-29T18:07:44.2338280\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.4811920\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1871,7 +1871,7 @@
       "length": "0x404",
       "previousPointer": "0xC9E50D",
       "source": "dk-combined-barrel2.json strip16:13",
-      "timestamp": "2026-07-29T18:07:44.2365940\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.4874000\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1880,7 +1880,7 @@
       "length": "0x404",
       "previousPointer": "0xC9E85B",
       "source": "dk-combined-barrel2.json strip16:14",
-      "timestamp": "2026-07-29T18:07:44.2393650\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.4908660\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1889,7 +1889,7 @@
       "length": "0x3C0",
       "previousPointer": "0xC9EC03",
       "source": "dk-combined-barrel2.json strip16:15",
-      "timestamp": "2026-07-29T18:07:44.2420770\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.4944200\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1898,7 +1898,7 @@
       "length": "0x37C",
       "previousPointer": "0xC9EFA5",
       "source": "dk-combined-barrel2.json strip16:16",
-      "timestamp": "2026-07-29T18:07:44.2447420\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.4974010\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1907,7 +1907,7 @@
       "length": "0x3C0",
       "previousPointer": "0xC9F309",
       "source": "dk-combined-barrel2.json strip16:17",
-      "timestamp": "2026-07-29T18:07:44.2472050\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.5000370\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1916,7 +1916,7 @@
       "length": "0x3C0",
       "previousPointer": "0xC9F607",
       "source": "dk-combined-barrel2.json strip16:18",
-      "timestamp": "2026-07-29T18:07:44.2496490\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.5037520\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1925,7 +1925,7 @@
       "length": "0x46A",
       "previousPointer": "0xE16D05",
       "source": "dk-combined-barrel2.json strip17:0",
-      "timestamp": "2026-07-29T18:07:44.2523210\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.5077290\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1934,7 +1934,7 @@
       "length": "0x46A",
       "previousPointer": "0xE17041",
       "source": "dk-combined-barrel2.json strip17:1",
-      "timestamp": "2026-07-29T18:07:44.2549190\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.5110760\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1943,7 +1943,7 @@
       "length": "0x48C",
       "previousPointer": "0xE17361",
       "source": "dk-combined-barrel2.json strip17:2",
-      "timestamp": "2026-07-29T18:07:44.2575860\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.5138950\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1952,7 +1952,7 @@
       "length": "0x48C",
       "previousPointer": "0xE1769D",
       "source": "dk-combined-barrel2.json strip17:3",
-      "timestamp": "2026-07-29T18:07:44.2602190\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.5167080\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1961,7 +1961,7 @@
       "length": "0x48C",
       "previousPointer": "0xE179D9",
       "source": "dk-combined-barrel2.json strip17:4",
-      "timestamp": "2026-07-29T18:07:44.2627620\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.5195000\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1970,7 +1970,7 @@
       "length": "0x48C",
       "previousPointer": "0xE17D15",
       "source": "dk-combined-barrel2.json strip17:5",
-      "timestamp": "2026-07-29T18:07:44.2653000\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.5234560\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1979,7 +1979,7 @@
       "length": "0x48C",
       "previousPointer": "0xE18051",
       "source": "dk-combined-barrel2.json strip17:6",
-      "timestamp": "2026-07-29T18:07:44.2678930\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.5269320\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1988,7 +1988,7 @@
       "length": "0x4D0",
       "previousPointer": "0xE183B5",
       "source": "dk-combined-barrel2.json strip17:7",
-      "timestamp": "2026-07-29T18:07:44.2705320\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.5298530\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -1997,7 +1997,7 @@
       "length": "0x4D0",
       "previousPointer": "0xE18713",
       "source": "dk-combined-barrel2.json strip17:8",
-      "timestamp": "2026-07-29T18:07:44.2730860\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.5337600\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -2006,7 +2006,7 @@
       "length": "0x4AE",
       "previousPointer": "0xE18A55",
       "source": "dk-combined-barrel2.json strip17:9",
-      "timestamp": "2026-07-29T18:07:44.2780510\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.5397630\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -2015,7 +2015,7 @@
       "length": "0x4F2",
       "previousPointer": "0xE18D6F",
       "source": "dk-combined-barrel2.json strip17:10",
-      "timestamp": "2026-07-29T18:07:44.2805900\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.5426650\u002B00:00",
       "fillByte": "0x00"
     },
     {
@@ -2024,7 +2024,7 @@
       "length": "0x4AE",
       "previousPointer": "0xE190AB",
       "source": "dk-combined-barrel2.json strip17:11",
-      "timestamp": "2026-07-29T18:07:44.2830740\u002B00:00",
+      "timestamp": "2026-07-29T18:11:22.5453280\u002B00:00",
       "fillByte": "0x00"
     }
   ],
