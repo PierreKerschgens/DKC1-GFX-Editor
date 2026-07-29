@@ -58,9 +58,22 @@ namespace DkcTool.Core
         public const int CaptionGlyphGap = 12;
 
         /// <summary>A black mark at least this tall and no wider than <see cref="RuleMaxWidth"/> is
-        /// one of the sheet's drawn segment rules (A.29), not a headline glyph.</summary>
-        public const int RuleMinHeight = 15;
+        /// one of the sheet's drawn segment rules (A.29), not a headline glyph. Measured: every rule
+        /// on the DK sheet is exactly 1 px wide and 46..58 px tall, while the tallest bracket glyph
+        /// is 4x17 — so the two populations are far apart and this threshold has room.</summary>
+        public const int RuleMinHeight = 30;
         public const int RuleMaxWidth = 3;
+
+        /// <summary>
+        /// A glyph at least this many times taller than it is wide, and no wider than
+        /// <see cref="BracketMaxWidth"/>, is a parenthesis.
+        ///
+        /// <para>Measured brackets are 2x9, 3x11 and 4x17 (ratios 4.5, 3.7, 4.3); the letters that
+        /// open headlines are 7x9, 12x13, 18x11 and one 60x17 blob (ratios 1.3 and below). Nothing
+        /// on either sheet sits between.</para>
+        /// </summary>
+        public const double BracketAspect = 3.0;
+        public const int BracketMaxWidth = 4;
 
         /// <summary>
         /// Vertical gap that separates two <i>rows</i> of the same run, measured between successive
@@ -137,6 +150,18 @@ namespace DkcTool.Core
             public int MinX, MinY, MaxX, MaxY;
             public int Width => MaxX - MinX + 1;
             public int Height => MaxY - MinY + 1;
+
+            /// <summary>
+            /// The line is wrapped in brackets, which on these sheets means it qualifies the
+            /// headline above it rather than naming a run of its own — "(Reverse to return to
+            /// idle)" tells you Bang Chest is played backwards to get back to the idle, so the row
+            /// under it is still Bang Chest.
+            ///
+            /// <para>An annotation must never start a strip. Treated as a headline it does the
+            /// opposite of the band fix: it cuts a wrapped run in half at exactly the row the
+            /// artist was annotating.</para>
+            /// </summary>
+            public bool IsAnnotation;
         }
 
         public sealed class SlicedSheet
@@ -292,23 +317,14 @@ namespace DkcTool.Core
                 .OrderBy(a => a.MinY).ThenBy(a => a.MinX)
                 .ToList();
 
-            var lines = new List<Caption>();
+
+            var lines = new List<List<Island>>();
             foreach (var g in glyphs)
             {
                 // Same text line = vertical ranges overlap; same title = within one glyph gap.
-                var host = lines.FirstOrDefault(c =>
-                    g.MinY <= c.MaxY && c.MinY <= g.MaxY &&
-                    g.MinX - CaptionGlyphGap <= c.MaxX && c.MinX - CaptionGlyphGap <= g.MaxX);
-
-                if (host == null)
-                {
-                    lines.Add(new Caption { MinX = g.MinX, MinY = g.MinY, MaxX = g.MaxX, MaxY = g.MaxY });
-                    continue;
-                }
-                host.MinX = Math.Min(host.MinX, g.MinX);
-                host.MinY = Math.Min(host.MinY, g.MinY);
-                host.MaxX = Math.Max(host.MaxX, g.MaxX);
-                host.MaxY = Math.Max(host.MaxY, g.MaxY);
+                var host = lines.FirstOrDefault(l => Adjacent(Box(l), g));
+                if (host == null) lines.Add(new List<Island> { g });
+                else host.Add(g);
             }
 
             // One pass is not enough: a glyph can bridge two boxes that were opened separately
@@ -320,21 +336,50 @@ namespace DkcTool.Core
                 for (int i = 0; i < lines.Count && !merged; i++)
                     for (int j = i + 1; j < lines.Count; j++)
                     {
-                        var a = lines[i];
-                        var b = lines[j];
-                        if (!(a.MinY <= b.MaxY && b.MinY <= a.MaxY &&
-                              a.MinX - CaptionGlyphGap <= b.MaxX && b.MinX - CaptionGlyphGap <= a.MaxX)) continue;
-                        a.MinX = Math.Min(a.MinX, b.MinX);
-                        a.MinY = Math.Min(a.MinY, b.MinY);
-                        a.MaxX = Math.Max(a.MaxX, b.MaxX);
-                        a.MaxY = Math.Max(a.MaxY, b.MaxY);
+                        if (!Adjacent(Box(lines[i]), Box(lines[j]))) continue;
+                        lines[i].AddRange(lines[j]);
                         lines.RemoveAt(j);
                         merged = true;
                         break;
                     }
             }
 
-            return lines.OrderBy(c => c.MinY).ThenBy(c => c.MinX).ToList();
+            return lines
+                .Select(l =>
+                {
+                    var b = Box(l);
+                    return new Caption
+                    {
+                        MinX = b.MinX,
+                        MinY = b.MinY,
+                        MaxX = b.MaxX,
+                        MaxY = b.MaxY,
+                        IsAnnotation = IsBracket(l.Aggregate((a, x) => x.MinX < a.MinX ? x : a))
+                                    && IsBracket(l.Aggregate((a, x) => x.MaxX > a.MaxX ? x : a)),
+                    };
+                })
+                .OrderBy(c => c.MinY).ThenBy(c => c.MinX)
+                .ToList();
+
+            static Island Box(List<Island> l) => new Island
+            {
+                MinX = l.Min(g => g.MinX),
+                MinY = l.Min(g => g.MinY),
+                MaxX = l.Max(g => g.MaxX),
+                MaxY = l.Max(g => g.MaxY),
+            };
+
+            static bool Adjacent(Island a, Island b) =>
+                a.MinY <= b.MaxY && b.MinY <= a.MaxY &&
+                a.MinX - CaptionGlyphGap <= b.MaxX && b.MinX - CaptionGlyphGap <= a.MaxX;
+        }
+
+        /// <summary>A parenthesis: markedly taller than it is wide, and only a few pixels across.
+        /// </summary>
+        private static bool IsBracket(Island g)
+        {
+            int w = g.MaxX - g.MinX + 1, h = g.MaxY - g.MinY + 1;
+            return w <= BracketMaxWidth && h >= w * BracketAspect;
         }
 
         private static bool Near(Island a, Island b) =>
@@ -479,6 +524,8 @@ namespace DkcTool.Core
             Caption? best = null;
             foreach (var c in captions)
             {
+                if (c.IsAnnotation) continue;
+
                 int top = int.MaxValue;
                 foreach (var p in segment)
                     if (p.MinX <= c.MaxX && c.MinX <= p.MaxX && p.MinY < top) top = p.MinY;
@@ -753,7 +800,16 @@ namespace DkcTool.Core
             Console.WriteLine();
 
             int wrapped = sheet.Strips.Count(s => s.Rows > 1);
-            Console.WriteLine($"  headlines found       : {sheet.Captions.Count}");
+            int annotations = sheet.Captions.Count(c => c.IsAnnotation);
+            int used = sheet.Strips.Count(s => s.Caption != null);
+            int idle = sheet.Captions.Count - annotations - used;
+
+            Console.WriteLine($"  headlines naming a run: {used}");
+            Console.WriteLine($"  bracketed annotations : {annotations}   (qualify the headline above; never start a run)");
+            // Black text with no poses under it: the sheet's credit line, and anything else the
+            // artist wrote in the margin. It anchors nothing, so it needs no special case -- but
+            // count it separately rather than reporting it as a headline that found no run.
+            Console.WriteLine($"  other black text      : {idle}   (nothing beneath it; ignored)");
             Console.WriteLine($"  runs wrapping rows    : {wrapped}");
             Console.WriteLine();
 

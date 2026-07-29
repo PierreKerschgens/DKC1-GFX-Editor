@@ -53,32 +53,36 @@ Wrapped rows are joined in reading order, and the sheet's black **headlines** de
 starts: a segment with a headline begins a run, one without continues the row above it. Decomposition
 is band → rows-of-one-sector (same height *and* horizontally adjacent) → segments → strips.
 
+**Bracketed captions are annotations, not headlines** — the operator's rule: `(Reverse to return to
+idle)` qualifies "Bang Chest", it does not name a run. Detected geometrically, no text reading: a
+line whose **first and last glyphs are both parentheses** (`w<=4 && h>=3w`; measured brackets 2x9/
+3x11/4x17 against opening letters at aspect 1.3 and below). Both ends must match, which keeps "Swap
+(Leader)" and the sheet's credit line headlines. DK: **43 headlines, 8 annotations**; Jr: 35 and 5.
+
 | | strips before | after | poses |
 |---|---|---|---|
-| DK | 50 | **38** | 678, unchanged |
+| DK | 50 | **36** | 678, unchanged |
 | DK Jr | 42 | **32** | 553, unchanged |
 
-Map Stuff is one strip of 37 poses over 5 rows; Swing 31 over 2; DK Jr's Credits 110 over 7. **The
-confirmed build is bit-identical** (`sha256 1dca65a2…` = `dk-KEG15.sfc`), V4 7/7, goldens rebuilt.
+Map Stuff is one strip of 37 poses over 5 rows; Swing 31 over 2; Bang Chest 34 over 2; DK Jr's
+Credits 110 over 7. **The confirmed build is bit-identical** (`sha256 1dca65a2…` = `dk-KEG15.sfc`),
+V4 7/7, goldens rebuilt.
 
-⚠️ **Strips renumbered from 20 up, not 25** — Ground Slap wraps too (17+13 poses), which A.29's read
-missed, and folding its second row shifted the rope runs 22/23/24 → **21/22/23**. The manifest is
-updated. A.25's "nothing imported is above 24, so the manifest is safe" was wrong on both halves.
+⚠️ **Almost every strip renumbered.** Walk 6→5, Run 7→6, Roll 8→7, Jump 10→9, barrels 15/16/17→
+14/15/16, rope 22/23/24→20/21/22, and Bang Chest's two sectors are now one strip 3 at poses `10..14`
+and `15..33`. The manifest is updated; the remap was done by matching **pose coordinates**, which is
+also the proof it is a pure regrouping. A.25's "renumbers ≥25, nothing imported is above 24, so the
+manifest is safe" was wrong on both halves.
 
 ⚠️ **Rope turn refused; rope idle would have silently imported climb art.** One of three caught by
 luck of length. So a manifest entry now takes **`"stripPoses": N`**, asserting the strip's pose count
 before anything is planned — every entry in `dk-combined-barrel2.json` carries it. Add it to any new
 entry; it turns the next renumbering into a refusal instead of a silent retarget.
 
-⚠️ **The slicer cannot tell a headline from a secondary annotation** — both are black text and
-nothing reads text. `(Loop and Reverse)` sits above Bang Chest's second row and keeps it a separate
-strip, so the chest-beat is still strips 3 **and** 5 as the manifest already handles. Height does not
-separate the classes. **"Every run is one strip" is false.**
-
 ### The one open thread
 
 1. **M5 / animation-script editing** — smaller than the 9-of-51 figure suggests (A.27, A.29). ⚠️ That
-   figure was computed against 51 DK strips and the slicer now reports **38**; the membership needs
+   figure was computed against 51 DK strips and the slicer now reports **36**; the membership needs
    recomputing before it is used as a work list.
 
 **The barrel throw's floating prop is the one known-live defect**, and FOOT X says it is not a
@@ -344,7 +348,7 @@ candidate against every prior paint result before spending a boot on it.**
 
 **The barrel sequence is contiguous** (A.36): pick up `0x28C..0x2A4` (7), **carry walk
 `0x2A8..0x2E0` (15)**, throw `0x2E4..0x32C` (19) — matching sheet strip 15's sectors 7 / 15 and strip
-16's 19 exactly. Found by *rendering the range* after paint localised the carry; three structural
+16's 19 exactly (strips **14 / 15** after A.39). Found by *rendering the range* after paint localised the carry; three structural
 guesses missed it first (anims 71/75, anims 15/96, the mount set `0x538..0x5A4`). The mount set is
 the **keg ride**, confirmed brown by the same paint round.
 
@@ -356,7 +360,7 @@ was made from the included list. Their draw orders interleave DK and prop frames
 shared across every carryable object**. Use explicit `indices` for these — `animation` would derive
 the prop's slots too.
 
-⚠️ **A slicer strip can hold several captioned sectors** (A.34) — strip 15 is Barrel Pick Up (0..6) |
+⚠️ **A slicer strip can hold several captioned sectors** (A.34) — strip 15 (**now 14**, A.39) is Barrel Pick Up (0..6) |
 Barrel Idle (7..9) | Barrel Walk (10..24), split by drawn rules. `--captions` shows only the *first*
 caption per strip, so the A.33 strip→caption table is incomplete; strips 14 and 18 are known to be
 multi-sector too. **Check for rules before mapping a strip as one run**, and use `"poses": "lo..hi"`
@@ -407,7 +411,7 @@ sections reconstructed by boot what the artist had written down.
 ⚠️ **Long runs wrap onto the next row** — Swing, Victory, Intro Cutscene, End Credits, Map Stuff, and
 Bang Chest's loop. That answers the band question A.25 left open: the two-row strips are **one run
 wrapping**, not two animations stacked, so the slicer fix is to *join* them in reading order, not
-split them. It also means the chest-beat is strips 3 **and** 5.
+split them. It also means the chest-beat is strips 3 **and** 5 — **now joined into one strip 3** of 34 poses (A.39).
 
 ---
 
@@ -809,8 +813,8 @@ Two candidates, both surfaced by M4 rather than planned:
    tumble. `0x4BC`/`0x4E4`/`0x4E8` are drawn by no animation at all — dead slots, no longer written.
    The build is 74 → 71 poses. **Not yet booted.**
 
-3. ~~**Band membership in the slicer**~~ — **done** (A.39). It renumbered from strip 20, not 25, and
-   the rope runs it moved *were* used by a manifest.
+3. ~~**Band membership in the slicer**~~ — **done** (A.39). It renumbered from strip 5 up, not 25,
+   and the runs it moved *were* used by a manifest.
 2. ~~**Strip-level pose placement.**~~ Done — implemented, confirmed in play, and as of A.19 the
    default, with the two coordinate systems reconciled. M5 is (1).
 
@@ -821,9 +825,10 @@ Two candidates, both surfaced by M4 rather than planned:
 - DK owns `0x8C..0x950`, 562 indices; Diddy begins `0x954` (A.8).
 - `0x858..0x8A8` inside that range is **not DK** — most likely Manky Kong. **Exclude from any DK
   manifest** (A.13). Reference at `port/DkcTool/testdata/manky-reference.png`.
-- DK sheet: **678 poses, 38 strips**. DK Jr: 553 poses, **32 strips**. These are the post-A.39 band-fix
+- DK sheet: **678 poses, 36 strips**. DK Jr: 553 poses, **32 strips**. These are the post-A.39 band-fix
   counts. Anything citing **533 / 46 strips** predates the A.25 merge fix; anything citing **50 / 42
-  strips** predates A.39. Strips **0–19 kept their numbers** across A.39, strips ≥20 did not.
+  strips** predates A.39. A.39 renumbered nearly everything from strip 5 up — **re-derive a strip
+  number from the sheet rather than trusting one written before it.**
 - ~~Strips ≥25 group two rows into one strip~~ — **fixed** (A.39). Wrapped runs are joined in reading
   order; 7 runs join on DK, 4 on DK Jr.
 - Capacity: DK alone is 487 KB against a 92 KB stock pool → `--expand` is mandatory for a full

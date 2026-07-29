@@ -2289,35 +2289,59 @@ it.
 
 | | strips before | strips after | poses |
 |---|---|---|---|
-| DK | 50 | **38** | 678, unchanged |
+| DK | 50 | **36** | 678, unchanged |
 | DK Jr | 42 | **32** | 553, unchanged |
 
-**7 runs join on DK, 4 on DK Jr.** Map Stuff is now one strip of 37 poses over 5 rows, numbered
-0..36 in reading order; Swing is 31 over 2; DK Jr's Credits is 110 over 7. No pose is created or
-lost on either sheet, and V4b still round-trips 1231/1231.
+**9 runs join on DK, 4 on DK Jr.** Map Stuff is now one strip of 37 poses over 5 rows, numbered
+0..36 in reading order; Swing is 31 over 2; Bang Chest 34 over 2; DK Jr's Credits 110 over 7. No pose
+is created or lost on either sheet, and V4b still round-trips 1231/1231.
 
-The set includes **every wrap A.29 named except Bang Chest** (see the limitation below), and adds one
-A.29's manual read missed: **Ground Slap wraps too** — 17 + 13 poses under a single headline, which
-is why the handoff's "strip 20, 17 poses" was short.
+The set includes **every wrap A.29 named**, and adds ones its manual read missed — notably **Ground
+Slap**, 17 + 13 poses under a single headline, which is why the handoff's "strip 20, 17 poses" was
+short.
 
-#### ⚠️ The slicer cannot tell a headline from a secondary annotation
+#### Brackets mark an annotation, and the shape is detectable without reading text
 
-Both are black text, and nothing here reads text (A.29). So a wrapped row whose continuation carries
-an annotation is **not** joined: `(Loop and Reverse)` sits at `(40,163)` directly above Bang Chest's
-second row, is indistinguishable from a title, and keeps that row as its own strip. A.29 says the
-chest-beat is strips 3 **and** 5; the slicer still reports two.
+The first pass treated every black line as a headline, which cut wrapped runs in half at exactly the
+row the artist was annotating. The operator supplied the grammar:
 
-Left that way deliberately — the manifest already encodes the wrap by hand, mapping strip 3's poses
-10..14 and strip 5's poses 0..18 to different index ranges, and joining them would invalidate that
-without making anything more correct. Height does not separate the two classes either (headlines
-measure 9 and 11 px, annotations 9 and 17). **Treat "every run has exactly one strip" as false.**
+> everything in brackets is a follow up to the previous headline but for a specific case. For
+> instance "Bang Chest" is the idle bang chest animation and "(Reverse to return to idle)" is meant
+> like run the animation right to left to transition to the regular idle animation again
+
+So a bracketed line **qualifies the headline above it** and must never start a run. And "is it in
+brackets" is geometry, not text: a caption is an annotation when its **leftmost and rightmost glyphs
+are both parentheses**.
+
+| | width x height | aspect |
+|---|---|---|
+| brackets | 2x9, 3x11, 4x17 | 4.5, 3.7, 4.3 |
+| letters opening a headline | 7x9, 12x13, 18x11, 60x17 | 1.3 and below |
+
+Nothing on either sheet sits between, so `width <= 4 && height >= 3 * width` separates them cleanly.
+**Both** ends must match, which is what keeps "Swap (Leader)" a headline — it *ends* in a `3x11`
+paren but opens with a 7x9 "S" — and keeps the sheet's credit line ("Sprites by Michael Ropple
+(spacepig22)") from being read as one either.
+
+Checked against the rule filter while there: every drawn rule on the DK sheet is **1 px wide and
+46..58 px tall**, against a tallest bracket of 4x17. The two populations are far apart, and
+`RuleMinHeight` moved 15 → 30 to sit in the gap rather than 2 px from a bracket.
+
+**DK: 43 headlines, 8 bracketed annotations. DK Jr: 35 and 5.** With annotations excluded, Bang Chest
+joins as A.29 said it should — strips 3 **and** 5 become one strip of 34 poses over 2 rows.
 
 #### The renumbering, and the guard it forced
 
-Merging Ground Slap's second row removed a strip at 21, so **everything above 20 shifted down by
-one** — the three rope runs went 22/23/24 → 21/22/23. A.25 predicted renumbering would start at ≥25
-and said "nothing imported is above 24, so the manifest is safe". **Both halves were wrong**: the
-manifest *does* import strips 22/23/24, and the shift started at 21.
+Every merge removes a strip and shifts everything above it. Bang Chest's join removes one at 5, so
+**almost every strip moved**: Walk 6→5, Run 7→6, Roll 8→7, Jump 10→9, the barrel runs 15/16/17→
+14/15/16, the rope runs 22/23/24→20/21/22. A.25 predicted renumbering would start at ≥25 and said
+"nothing imported is above 24, so the manifest is safe". **Both halves were wrong**, and by a wide
+margin — the manifest imports strips 22/23/24, and in the end the shift reached strip 5.
+
+The remap was done by **matching pose coordinates**, not by hand: every old strip resolves to exactly
+one new strip with a single consistent pose offset, which is also the check that it is a pure
+regrouping. Bang Chest's two entries now both name strip 3, at poses `10..14` and `15..33` — the
+second shifted by the +15 the merge introduced.
 
 How it surfaced is the lesson. Rope *turn* refused loudly (`BadPoseRange` — its `poses` list named
 pose 2 of a 2-pose strip). Rope *idle* would have imported **climb art, silently**, because its new
@@ -2330,11 +2354,10 @@ without reading caption text, and it turns the next renumbering from a silent re
 
 #### Verification
 
-- **DK strips 0..19 are byte-identical** before and after; only ≥20 moved.
-- **The confirmed build is bit-identical.** Rebuilding `dk-combined-barrel2.json` after the fix and
-  the remap gives `sha256 1dca65a2…`, the same ROM as `port/dk-KEG15.sfc` — the build the operator
-  confirmed in play. A.25's check 6, and the strongest signal available: the import plan is the same
-  228 instructions, only the strip labels renumbered.
+- **The confirmed build is bit-identical**, through both rounds of renumbering. Rebuilding
+  `dk-combined-barrel2.json` after the fix and the remap gives `sha256 1dca65a2…`, the same ROM as
+  `port/dk-KEG15.sfc` — the build the operator confirmed in play. A.25's check 6, and the strongest
+  signal available: with strip numbering changed almost everywhere, the emitted bytes did not move.
 - **V4 7/7**, goldens deliberately rebuilt (delete + re-bootstrap), 1231/1231 poses.
 - **Looked at it** (C.4's overlay), which is the only way to tell a correct numbering from a
   plausible one.

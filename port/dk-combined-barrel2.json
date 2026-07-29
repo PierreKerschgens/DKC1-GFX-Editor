@@ -4,8 +4,8 @@
   "palette": "Donkey Kong 1P",
   "strips": [
     {
-      "strip": 6,
-      "name": "Walk -> anim 3. flatX OFF: stock's walk centre-X spans 4px smoothly and the per-pose import reproduces it exactly. Confirmed in play (A.19).",
+      "strip": 5,
+      "name": "(A.39 bracket rule: was strip 6) Walk -> anim 3. flatX OFF: stock's walk centre-X spans 4px smoothly and the per-pose import reproduces it exactly. Confirmed in play (A.19).",
       "indices": [
         "0xE0",
         "0xE4",
@@ -32,8 +32,8 @@
       "stripPoses": 20
     },
     {
-      "strip": 7,
-      "name": "Run -> anims 2/14/20. flatX ON: stock's run lunges 9px with a 6px single-frame step, which the upright sheet art cannot carry. Confirmed in play (A.20).",
+      "strip": 6,
+      "name": "(A.39 bracket rule: was strip 7) Run -> anims 2/14/20. flatX ON: stock's run lunges 9px with a 6px single-frame step, which the upright sheet art cannot carry. Confirmed in play (A.20).",
       "indices": [
         "0x330",
         "0x334",
@@ -61,16 +61,16 @@
       "stripPoses": 20
     },
     {
-      "strip": 8,
-      "name": "Roll -> anim 24 (0x18), which draws 11 of the range 0x4B8..0x4EC and skips 0x4BC/0x4E4/0x4E8 -- nothing in the 438-script table draws those three. Sheet poses 0..10 are the tumble; 11..13 are DK standing up, which is anim 25 landing on 0xB4 and needs the idle imported (A.26).",
+      "strip": 7,
+      "name": "(A.39 bracket rule: was strip 8) Roll -> anim 24 (0x18), which draws 11 of the range 0x4B8..0x4EC and skips 0x4BC/0x4E4/0x4E8 -- nothing in the 438-script table draws those three. Sheet poses 0..10 are the tumble; 11..13 are DK standing up, which is anim 25 landing on 0xB4 and needs the idle imported (A.26).",
       "flatX": true,
       "animation": "0x18",
       "poses": "0..10",
       "stripPoses": 14
     },
     {
-      "strip": 10,
-      "name": "Jump -> the 0x130..0x17C arc (anims 5/7/21/81/8/102/82). 20 poses <-> 20 indices after the A.25 slicer fix.",
+      "strip": 9,
+      "name": "(A.39 bracket rule: was strip 10) Jump -> the 0x130..0x17C arc (anims 5/7/21/81/8/102/82). 20 poses <-> 20 indices after the A.25 slicer fix.",
       "indices": [
         "0x130",
         "0x134",
@@ -116,11 +116,11 @@
       ],
       "poses": "10..14",
       "flatX": true,
-      "stripPoses": 15
+      "stripPoses": 34
     },
     {
-      "strip": 5,
-      "name": "Bang Chest loop+recovery -> 0x214..0x25C. Strip 5 is the row BELOW the Bang Chest caption -- the run wraps (A.29) -- and carries \"(Loop and Reverse)\": poses 1..10 are the pounding loop anim 9 plays forward-then-back x3 over 0x218..0x23C, 11..18 the recovery over 0x240..0x25C.",
+      "strip": 3,
+      "name": "(A.39 bracket rule: was strip 5 pose+15) Bang Chest loop+recovery -> 0x214..0x25C. Strip 5 is the row BELOW the Bang Chest caption -- the run wraps (A.29) -- and carries \"(Loop and Reverse)\": poses 1..10 are the pounding loop anim 9 plays forward-then-back x3 over 0x218..0x23C, 11..18 the recovery over 0x240..0x25C.",
       "indices": [
         "0x214",
         "0x218",
@@ -142,9 +142,9 @@
         "0x258",
         "0x25c"
       ],
-      "poses": "0..18",
+      "poses": "15..33",
       "flatX": true,
-      "stripPoses": 19
+      "stripPoses": 34
     },
     {
       "strip": 1,
@@ -155,10 +155,10 @@
       "stripPoses": 2
     },
     {
-      "strip": 9,
+      "strip": 8,
       "animation": "0x17",
       "flatX": true,
-      "name": "CANDIDATE. Sheet strip 9 \"Flip\", 16 poses -> anim 23 (0x478..0x4B4, 16 distinct, contiguous). That range is the enemy bounce, CONFIRMED IN PLAY (A.22), and the operator reports it still shows stock art -- so this one is directly falsifiable: bounce off an enemy and see.",
+      "name": "(A.39 bracket rule: was strip 9) CANDIDATE. Sheet strip 9 \"Flip\", 16 poses -> anim 23 (0x478..0x4B4, 16 distinct, contiguous). That range is the enemy bounce, CONFIRMED IN PLAY (A.22), and the operator reports it still shows stock art -- so this one is directly falsifiable: bounce off an enemy and see.",
       "stripPoses": 16
     },
     {
@@ -177,34 +177,34 @@
       "stripPoses": 5
     },
     {
-      "strip": 21,
+      "strip": 20,
       "animation": "0x5E",
       "flatX": true,
       "groundRef": "self",
-      "name": "(was sheet strip 22; A.39 band fix shifted rope runs down one) Rope Idle, 4 poses -> anim 94 (0x714..0x720, 4). groundRef self: on a rope, not the floor. Draw order is loop-and-reverse, exactly the sheet's own annotation (A.29); poses mirror it.",
+      "name": "(A.39 bracket rule: was strip 21) (was sheet strip 22; A.39 band fix shifted rope runs down one) Rope Idle, 4 poses -> anim 94 (0x714..0x720, 4). groundRef self: on a rope, not the floor. Draw order is loop-and-reverse, exactly the sheet's own annotation (A.29); poses mirror it.",
       "poses": "0,1,2,3,2,1",
       "stripPoses": 4
     },
     {
-      "strip": 23,
+      "strip": 22,
       "animation": "0x5F",
       "flatX": true,
       "groundRef": "self",
-      "name": "(was sheet strip 24; A.39 band fix shifted rope runs down one) Rope Turn, 2 poses -> anim 95 (0x724..0x728, 2 distinct). Draw order is loop-and-reverse, exactly the sheet's own annotation (A.29); poses mirror it.",
+      "name": "(A.39 bracket rule: was strip 23) (was sheet strip 24; A.39 band fix shifted rope runs down one) Rope Turn, 2 poses -> anim 95 (0x724..0x728, 2 distinct). Draw order is loop-and-reverse, exactly the sheet's own annotation (A.29); poses mirror it.",
       "poses": "0,1,1,0",
       "stripPoses": 2
     },
     {
-      "strip": 22,
+      "strip": 21,
       "animation": "0x5C",
       "flatX": true,
       "groundRef": "self",
-      "name": "(was sheet strip 23; A.39 band fix shifted rope runs down one) Rope Climb, 6 poses -> anim 92 (0x72C..0x740, 6). The three rope runs sit contiguously at 0x714..0x740 and the sheet has exactly 4/2/6 poses. Draw order is loop-and-reverse, exactly the sheet's own annotation (A.29); poses mirror it.",
+      "name": "(A.39 bracket rule: was strip 22) (was sheet strip 23; A.39 band fix shifted rope runs down one) Rope Climb, 6 poses -> anim 92 (0x72C..0x740, 6). The three rope runs sit contiguously at 0x714..0x740 and the sheet has exactly 4/2/6 poses. Draw order is loop-and-reverse, exactly the sheet's own annotation (A.29); poses mirror it.",
       "poses": "0,1,2,3,4,5,4,3,2,1",
       "stripPoses": 6
     },
     {
-      "strip": 15,
+      "strip": 14,
       "poses": "0..6",
       "flatX": false,
       "indices": [
@@ -216,11 +216,11 @@
         "0x2a0",
         "0x2a4"
       ],
-      "name": "Barrel Pick Up (sector 1 of strip 15) -> 0x28C..0x2A4, 7 indices, DK bending to lift. Rendered, not inferred.",
+      "name": "(A.39 bracket rule: was strip 15) Barrel Pick Up (sector 1 of strip 15) -> 0x28C..0x2A4, 7 indices, DK bending to lift. Rendered, not inferred.",
       "stripPoses": 25
     },
     {
-      "strip": 15,
+      "strip": 14,
       "poses": "10..24",
       "flatX": true,
       "indices": [
@@ -240,21 +240,21 @@
         "0x2dc",
         "0x2e0"
       ],
-      "name": "Barrel Carry Walk (sector 3) -> 0x2A8..0x2E0, 15 indices of DK walking with both arms overhead, exactly the sector's 15 poses. Found by rendering the range after paint put the carry inside 0x8C..0x32C; three structural guesses (anims 71/75, 15/96, the mount set) all missed it. The whole barrel sequence is contiguous: pick up 0x28C, carry 0x2A8, throw 0x2E4. flatX ON: stock body is static here (centroid spread 1-3px) and only the BOX moves, because the prop changes the extent. Per-pose centring inherited that box variation as real body wobble. Decide flatX on stock CENTROID spread, not centre-X (A.37).",
+      "name": "(A.39 bracket rule: was strip 15) Barrel Carry Walk (sector 3) -> 0x2A8..0x2E0, 15 indices of DK walking with both arms overhead, exactly the sector's 15 poses. Found by rendering the range after paint put the carry inside 0x8C..0x32C; three structural guesses (anims 71/75, 15/96, the mount set) all missed it. The whole barrel sequence is contiguous: pick up 0x28C, carry 0x2A8, throw 0x2E4. flatX ON: stock body is static here (centroid spread 1-3px) and only the BOX moves, because the prop changes the extent. Per-pose centring inherited that box variation as real body wobble. Decide flatX on stock CENTROID spread, not centre-X (A.37).",
       "stripPoses": 25
     },
     {
-      "strip": 16,
+      "strip": 15,
       "animation": "0x4A",
       "flatX": false,
-      "name": "Barrel Throw, 19 poses -> anim 74 (0x2E4..0x32C, 19). A.22 puts \"walk+throw barrel\" in 0x180..0x32C. NOTE this competes with the handoff's provisional \"Ground Slap -> 0x2E4..0x32C\"; Ground Slap is strip 20 with 17 poses, which does not fit 19, so the count favours Barrel Throw. flatX OFF: stock throw lunges 29px of centre-X -- the largest in the game -- and the barrel is composited against DK, so flattening it strands the prop. Per-pose centring reproduces stock horizontal travel exactly, which is what the prop offset assumes.",
+      "name": "(A.39 bracket rule: was strip 16) Barrel Throw, 19 poses -> anim 74 (0x2E4..0x32C, 19). A.22 puts \"walk+throw barrel\" in 0x180..0x32C. NOTE this competes with the handoff's provisional \"Ground Slap -> 0x2E4..0x32C\"; Ground Slap is strip 20 with 17 poses, which does not fit 19, so the count favours Barrel Throw. flatX OFF: stock throw lunges 29px of centre-X -- the largest in the game -- and the barrel is composited against DK, so flattening it strands the prop. Per-pose centring reproduces stock horizontal travel exactly, which is what the prop offset assumes.",
       "stripPoses": 19
     },
     {
-      "strip": 17,
+      "strip": 16,
       "animation": "0x4E",
       "flatX": true,
-      "name": "Steel Keg Ride, 12 poses -> anim 78 (0x55C..0x588, 12), inside the 0x538..0x594 mounted set. NOTE A.15 claimed the ride animations cannot be matched through the table at all; an exact 12/12 in the right block is worth testing against that. groundRef self + flatX off: a keg rider is not standing on the walk floor, and the game composites the keg at a fixed offset from DK, so he must sit exactly where stock ride poses sat. Inheriting the manifest ground line put him 9px low and 11px right of the keg (A.34). flatX ON: stock body is static here (centroid spread 1-3px) and only the BOX moves, because the prop changes the extent. Per-pose centring inherited that box variation as real body wobble. Decide flatX on stock CENTROID spread, not centre-X (A.37). offsetX +15: CONFIRMED IN PLAY (A.38), and empirical -- no measurement produces it. The placement-box hypothesis that would have computed it is falsified: --coords gives max|dMinX|=0 over this range in both stock and the build. FOOT X explains why the centroid lied (it averages the balance pose's outflung arms while the feet sat 7.3px left) but mispredicts this value at +7.3, so it is a diagnostic, not a rule. Do not re-derive; do not nudge without a boot.",
+      "name": "(A.39 bracket rule: was strip 17) Steel Keg Ride, 12 poses -> anim 78 (0x55C..0x588, 12), inside the 0x538..0x594 mounted set. NOTE A.15 claimed the ride animations cannot be matched through the table at all; an exact 12/12 in the right block is worth testing against that. groundRef self + flatX off: a keg rider is not standing on the walk floor, and the game composites the keg at a fixed offset from DK, so he must sit exactly where stock ride poses sat. Inheriting the manifest ground line put him 9px low and 11px right of the keg (A.34). flatX ON: stock body is static here (centroid spread 1-3px) and only the BOX moves, because the prop changes the extent. Per-pose centring inherited that box variation as real body wobble. Decide flatX on stock CENTROID spread, not centre-X (A.37). offsetX +15: CONFIRMED IN PLAY (A.38), and empirical -- no measurement produces it. The placement-box hypothesis that would have computed it is falsified: --coords gives max|dMinX|=0 over this range in both stock and the build. FOOT X explains why the centroid lied (it averages the balance pose's outflung arms while the feet sat 7.3px left) but mispredicts this value at +7.3, so it is a diagnostic, not a rule. Do not re-derive; do not nudge without a boot.",
       "groundRef": "self",
       "offsetX": 15,
       "stripPoses": 12
