@@ -2422,6 +2422,56 @@ never printed. A summary line ("51 captions") hid them; printing them cost nothi
 this and the A.34 correction. Cf. A.35, where `--anims-in`'s excluded-count header held the answer
 for six sections.
 
+### A.40 `0x28C..0x2A4` is not the Barrel Pick Up — A.36 contradicted A.35 and A.35 was right
+
+Booted `dk-SECTORS.sfc`. Operator, unprompted and in the form that is worth most — a positive
+contrast between two things on screen in the same action:
+
+> Pick up the barrel is stock DK but walking looks perfect now with new DK
+
+and then:
+
+> Idling with barrel is also stock DK
+
+**Not a regression.** All seven pick-up sprites are in the ledger and byte-identical to
+`dk-KEG15.sfc`, so the pick-up was drawing stock art in the build this spec called *confirmed in
+play* too. The handoff's "barrel pick-up — confirmed in play" was never true; it was inherited from
+the carry and throw, which are confirmed, and never separately observed.
+
+**The contradiction was already in this file.** A.35: *"A.34's two sector mappings both failed in
+play: Barrel Pick Up → anims 71/75"*. A.36 then placed the pick-up at `0x28C..0x2A4` by rendering the
+range and seeing a bend-reach-lift motion — and `--anims-in 0x28C..0x2A4` is **exactly anims 71/75**.
+A.36 re-proposed the pairing A.35 had already killed, because it arrived through a *range* rather
+than through animation ids, and nothing joined the two up.
+
+Worse, the operator's own paint data had refuted it before it was built: `0x8C..0x32C` tested **white**
+for Barrel Idle, and `0x28C..0x2A4` is inside it. This is the second time that exact trap has been
+walked into — the handoff's own warning, *"check a candidate against every prior paint result before
+spending a boot on it"*, was written about the first time.
+
+⚠️ **Rendering a range shows what the art depicts, never what the game draws it for** (gotcha 1,
+again). Stock `0x28C..0x2A4` renders as an unmistakable bend → reach → lift-overhead. It is still not
+the pick-up. **When a render and an in-play result disagree, the render loses**; and when a new
+mapping lands on animation ids an earlier section already falsified, that is the check to run first.
+
+#### What is actually true about the barrel now
+
+| | indices | state |
+|---|---|---|
+| carry walk (transition + loop) | `0x2A8..0x2E0` | **confirmed in play**, twice |
+| throw | `0x2E4..0x32C` | confirmed in play |
+| pick up | **unknown** | `0x28C..0x2A4` falsified |
+| idle holding | **unknown** | never located |
+
+No prop/mount animation draws anywhere in `0x28C..0x32C`, so the barrel in the carry-walk is
+composited by game code, as with the keg (A.15/A.38).
+
+Pick-up and idle are almost certainly the same unlocated block: eliminated so far are `0x8C..0x32C`,
+`0x538..0x5A4` and `0x680..0x7FC`, leaving **`0x330..0x534`, `0x5A8..0x67C`, `0x800..0x950`**.
+`port/dk-PAINT-BARREL.sfc` paints all three white on top of the working build — one boot decides
+whether the remaining space really holds them, and the Run (`0x330..0x37C`) falls inside the paint,
+which makes it a built-in positive control.
+
 ### A.13 `0x858..0x8A8` is **not** DK — it is a foreign island (corrected)
 
 > **This section previously concluded "DK at reduced scale". That was wrong**, and it was wrong in
