@@ -16,10 +16,10 @@ dotnet run --project port/DkcTool -- port/dk-EXP4.sfc --batch port/dk-combined-b
 ./port/boot.sh port/dk-NEXT.sfc      # operator only ever opens port/dk-BOOT.sfc
 ```
 
-**Confirmed in play (17):** idle, turn, walk, run, roll, jump, bang chest, enemy bounce,
-swap partner, swap leader, rope idle/turn/climb, steel keg ride, barrel carry-walk, barrel throw.
-⚠️ **barrel pick-up was never confirmed** — it was inherited from the carry/throw and is now
-**falsified**: the operator reports stock DK picking up and idling with a barrel (A.40).
+**Confirmed in play (19):** idle, turn, walk, run, roll, jump, bang chest, enemy bounce,
+swap partner, swap leader, rope idle/turn/climb, steel keg ride, barrel pick-up, **barrel idle**,
+barrel carry-walk, barrel throw. **The barrel sequence is complete and every part is confirmed**
+(A.41).
 
 Everything else is stock, which is coverage rather than defect — check a report against this list
 before investigating it.
@@ -93,13 +93,13 @@ placement error — its feet are within 1.1 px of stock. That points at the art 
 throw against the game's overhead composite), which A.33 already suspected and which is an art
 question to put to the author, not something to fix in the importer.
 
-**Barrel Idle *and* Barrel Pick Up are both unlocated** (A.40 falsified the pick-up). Eliminated:
-`0x8C..0x32C`, `0x538..0x5A4`, `0x680..0x7FC`. Remaining: `0x330..0x534`, `0x5A8..0x67C`,
-`0x800..0x950`.
+~~**Barrel Idle** is unlocated~~ — **found: `0x6B8..0x6C0`, anim 72**, confirmed in play by poison
+(A.41). Six paint rounds missed it and had between them eliminated *all* of DK's block, which cannot
+be true and was itself the signal. The animation table found it in four commands and no boot: anim 72
+is the only animation in `0x680..0x710`, draws 3 distinct poses out-and-back, and renders as DK with
+both arms overhead.
 
-**`port/dk-PAINT-BARREL.sfc` is built and staged** — paints all three remaining ranges white on top
-of the working build. One boot: pick up a barrel and hold it, and ask *is any part of DK white?*
-The Run (`0x330..0x37C`) is inside the paint, so a white DK while running is the positive control.
+⚠️ **When every region has been eliminated, stop eliminating and go back to the table.**
 
 ---
 
@@ -353,9 +353,9 @@ by the operator. Remaining: `0x330..0x534`, `0x5A8..0x67C`, `0x800..0x950`. A ca
 already reported white, so the operator's own data refuted it before it was built. **Check a
 candidate against every prior paint result before spending a boot on it.**
 
-⚠️ **A.36's pick-up is FALSIFIED (A.40)** — `0x28C..0x2A4` is anims 71/75, the pair A.35 had already
-killed in play, and it sits inside `0x8C..0x32C` which the operator painted white. Pick-up and
-barrel-idle are both unlocated. What survives of A.36: **carry walk
+⚠️ **A.40's falsification of the pick-up is WITHDRAWN (A.41)** — `0x28C..0x2A4` *is* the pick-up,
+confirmed in play. The report it rested on described the standing hold that follows the pick-up, not
+the pick-up itself. **carry walk
 `0x2A8..0x2E0` (15)**, throw `0x2E4..0x32C` (19) — matching sheet strip 15's sectors 7 / 15 and strip
 16's 19 exactly (strips **14 / 15** after A.39). Found by *rendering the range* after paint localised the carry; three structural
 guesses missed it first (anims 71/75, anims 15/96, the mount set `0x538..0x5A4`). The mount set is

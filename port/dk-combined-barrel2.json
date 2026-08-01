@@ -253,6 +253,14 @@
       "stripPoses": 10
     },
     {
+      "strip": 16,
+      "stripPoses": 8,
+      "poses": "0,1,2,1",
+      "animation": "0x48",
+      "flatX": true,
+      "name": "Barrel Idle -> anim 72 (0x48), draw order 0x6B8 0x6BC 0x6C0 0x6BC -- 3 distinct poses played out and back, so \"poses\": \"0,1,2,1\" mirrors the palindrome and keeps the length check. CONFIRMED IN PLAY by poison: DK turned to static while standing holding a barrel (A.41). Found at the desk after six paint rounds missed it -- 0x680..0x7FC had been marked eliminated, which was a false negative, exactly the weak direction the spec warns about for white on DK. Sheet strip 16 is the 'Barrel Idle' headline sector: poses 0..2 are the idle loop, 3..7 the transition into walking (operator). flatX ON: stock is motionless here, centroid spread 0px."
+    },
+    {
       "strip": 18,
       "animation": "0x4A",
       "flatX": false,

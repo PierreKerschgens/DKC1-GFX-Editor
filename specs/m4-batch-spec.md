@@ -2422,7 +2422,20 @@ never printed. A summary line ("51 captions") hid them; printing them cost nothi
 this and the A.34 correction. Cf. A.35, where `--anims-in`'s excluded-count header held the answer
 for six sections.
 
-### A.40 `0x28C..0x2A4` is not the Barrel Pick Up — A.36 contradicted A.35 and A.35 was right
+### A.40 ~~`0x28C..0x2A4` is not the Barrel Pick Up~~ — **WITHDRAWN, see A.41**
+
+> **This section's conclusion is false.** `0x28C..0x2A4` **is** the Barrel Pick Up, confirmed in play
+> in the very next boot. The report it was built on — *"pick up the barrel is stock DK"* — was
+> describing the standing hold that follows the pick-up, not the pick-up itself. Isolating the hold
+> with poison separated them and the same operator then reported the pick-up as new DK.
+>
+> Kept in full because the reasoning was sound and the *inputs* were not, which is the lesson
+> (A.41). Everything below about anims 71/75 and the A.35/A.36 contradiction still reads correctly;
+> only the verdict on the pick-up is wrong.
+
+#### Original section follows
+
+### A.40a `0x28C..0x2A4` is not the Barrel Pick Up — A.36 contradicted A.35 and A.35 was right
 
 Booted `dk-SECTORS.sfc`. Operator, unprompted and in the form that is worth most — a positive
 contrast between two things on screen in the same action:
@@ -2471,6 +2484,67 @@ Pick-up and idle are almost certainly the same unlocated block: eliminated so fa
 `port/dk-PAINT-BARREL.sfc` paints all three white on top of the working build — one boot decides
 whether the remaining space really holds them, and the Run (`0x330..0x37C`) falls inside the paint,
 which makes it a built-in positive control.
+
+### A.41 Barrel Idle is `0x6B8..0x6C0` — and A.40 was an adjacency error, not a mapping error
+
+**Confirmed in play by poison.** `port/dk-POISON-HOLD.sfc` replaced three sprites with noise;
+operator, standing holding a barrel: *"Barrel idle is garbage"*. In the same boot:
+*"Barrel pick up, barrel throw and barrel walking is new DK."*
+
+So the barrel is now **complete and every part confirmed**:
+
+| | indices | animation | poses |
+|---|---|---|---|
+| pick up | `0x28C..0x2A4` | 71 (75 is the reverse) | 7 |
+| idle, holding | **`0x6B8..0x6C0`** | **72**, `0x6B8 0x6BC 0x6C0 0x6BC` | **3** |
+| carry walk | `0x2BC..0x2E0` (+`0x2A8` hold) | 73 | 10 |
+| throw | `0x2E4..0x32C` | 74 | 19 |
+
+#### Found at the desk, after six paint rounds had eliminated the whole character
+
+`0x680..0x7FC` had been marked eliminated for Barrel Idle. It was a **false negative**, and by the
+end of A.40's paint round every one of DK's six sub-ranges had tested negative — which cannot all be
+true, and *that* was the signal. The spec already warned that a white-paint negative on DK is the
+weak direction, because white collides with his own pale muzzle, hands and chest; the warning was
+written and then not applied to the accumulating negatives.
+
+What actually found it was the animation table, in four commands and no boot: anim 72 is the only
+animation in `0x680..0x710`, it draws **3 distinct poses out-and-back**, the sheet's Barrel Idle is
+**3 poses annotated as a loop**, and rendering the range shows DK standing with **both arms raised
+overhead**. Four independent agreements, none of them a boot.
+
+⚠️ **When every candidate region has been eliminated, stop eliminating and go back to the table.**
+Structural search (draw order + distinct count + a render) is cheap, and it beat six paint rounds on
+the animation they were all hunting.
+
+#### The adjacency error, which is the sharper lesson
+
+A.40 read *"pick up the barrel is stock DK"* as a statement about the pick-up. It was a statement
+about **the moment after it** — DK comes to rest holding the barrel overhead, and that standing hold
+was the stock art. The two run together in play: the pick-up is seven frames and the hold is where
+the eye settles.
+
+Poisoning the hold separated them, and the same operator immediately reported the pick-up as new.
+**One instrument isolated one animation and corrected two conclusions at once** — it confirmed the
+idle *and* un-falsified the pick-up.
+
+⚠️ **An operator's report names a moment, not an animation.** Before acting on "X is stock", check
+what else is on screen during X — especially the pose it settles into, which is what a viewer looks
+at. This is gotcha 11 one level deeper: the question was positive and unmistakable ("stock or new?"),
+and the answer was still attached to the wrong animation.
+
+⚠️ **A negative that falsifies a mapping deserves the same scepticism as a positive that confirms
+one.** A.40 spent a whole section, a retraction of A.36, and an edit to the handoff's confirmed list
+on a single ambiguous observation — and it was wrong. Nothing was lost because it was written down
+plainly enough to overturn, but the asymmetry is worth naming: confirmations here get a positive
+control and falsifications get taken at face value.
+
+#### Also true, and unrelated to the barrel
+
+`0x2AC`, `0x2B0`, `0x2B4`, `0x2B8` are drawn by **no animation in the table** — the manifest writes 4
+poses into dead slots, the same shape as the roll's `0x4BC`/`0x4E4`/`0x4E8` (A.26). The carry-walk is
+really one hold pose (`0x2A8`, anim 76) plus a 10-frame loop (anim 73), not a 15-frame run. Harmless,
+but it means the sheet's "transition" poses 3..7 are mostly unused and could be reclaimed.
 
 ### A.13 `0x858..0x8A8` is **not** DK — it is a foreign island (corrected)
 
