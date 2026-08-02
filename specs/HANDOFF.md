@@ -1,13 +1,13 @@
 # Handoff — sprite-importer-port
 
-State of play for whoever picks this up next. Written 2026-07-25, updated 2026-07-26.
+State of play for whoever picks this up next. Written 2026-07-25, updated 2026-08-02.
 The durable record is in the numbered specs; this file is the map and the open edges.
 
 ---
 
-## Pick up here (written 2026-07-29, end of a long session)
+## Pick up here (written 2026-08-02)
 
-**The good build is `port/dk-combined-barrel2.json`** — 225 poses, 18 runs, built onto
+**The good build is `port/dk-combined-barrel2.json`** — 229 poses, 19 runs, built onto
 `port/dk-EXP4.sfc` (expanded, mirrored). The other `dk-combined-*.json` are its history; ignore them
 unless you need to see how a mapping was reached.
 
@@ -15,6 +15,54 @@ unless you need to see how a mapping was reached.
 dotnet run --project port/DkcTool -- port/dk-EXP4.sfc --batch port/dk-combined-barrel2.json --out port/dk-NEXT.sfc
 ./port/boot.sh port/dk-NEXT.sfc      # operator only ever opens port/dk-BOOT.sfc
 ```
+
+### What to do next, in order
+
+**1. Coverage, via structural search — this is the main axis and it now has a method that works.**
+19 runs are in. **23 DK-block animations still draw no imported art**, and 22 sheet strips are
+unimported. A.41 found Barrel Idle in **four commands and no boot**, after six paint rounds had
+failed and had between them eliminated DK's entire block:
+
+```
+--anims-in <range>                 which animations live here, and their distinct-pose counts
+--anims-in <range> --frames N      the actual draw order for the N-frame ones
+--contact-range <lo>..<hi>         what those poses look like
+```
+
+Match on **distinct-pose count + draw-order shape + a render**, then confirm with one boot per batch.
+⚠️ Count alone is a **filter, not an identification** (gotcha 3): the 30-pose Ground Slap strip and
+the 30-distinct anims 103/207 match perfectly, and `0x188..0x1FC` renders as an unmistakable
+**somersault**, not a ground slap.
+
+The 23 unclaimed animations, for the next session to work through:
+
+| anim | frames | distinct | range |
+|---|---|---|---|
+| 103, 207 | 30 | 30 | `0x188..0x1FC` — a somersault/flip, big and unclaimed |
+| 86 | 24 | 24 | `0x380..0x3DC` |
+| 84 | 44 | 22 | `0x5B4..0x608` |
+| 16 | 51 | 18 | `0x27C..0x46C` — the provisional *Death* (never verified) |
+| 15, 96 | 15 | 15 | `0x4F0..0x528` — the pair A.28 could not place |
+| 90 | 15 | 15 | `0x3A4..0x3DC` — the provisional *Swim* |
+| 10 | 11 | 11 | `0x3E0..0x408` — cliff-teeter start |
+| 11 | 70 | 11 | `0x40C..0x434` |
+| 100 | 58 | 13 | `0x7A4..0x7D4` |
+| 99 | 145 | 32 | `0x7D8..0x854` |
+| 85 | 9 | 9 | `0x5B4..0x5D4` |
+| 27 | 14 | 8 | `0x538..0x554` — the crouched mount set |
+| 393 | 14 | 8 | `0x784..0x7A0` |
+| 89 | 4 | 4 | `0x380..0x38C` |
+| 28, 91 | 4 | 3 | `0x5A8..0x5B0`, `0x58C..0x594` |
+| 12, 13, 29, 87, 88 | 1–4 | 1 | single-pose holds |
+
+**2. The barrel throw's prop position — an art question, not an importer one.** FOOT X puts DK
+within **1.1 px** of stock, the smallest delta of the three barrel runs, so he is not misplaced. The
+sheet draws a **hip throw** where the game composites the barrel against an **overhead** release.
+Both prop-offset rules are spent (A.38), so there is nothing left to compute. **Put it to the sprite
+author**, or accept it.
+
+**3. M5 / animation-script editing** — ⚠️ the "9 of 51 strips" figure predates two slicer fixes and
+the slicer now reports **40** strips. Recompute the membership before using it as a work list.
 
 **Confirmed in play (19):** idle, turn, walk, run, roll, jump, bang chest, enemy bounce,
 swap partner, swap leader, rope idle/turn/climb, steel keg ride, barrel pick-up, **barrel idle**,
@@ -82,16 +130,6 @@ luck of length. So a manifest entry now takes **`"stripPoses": N`**, asserting t
 before anything is planned — every entry in `dk-combined-barrel2.json` carries it. Add it to any new
 entry; it turns the next renumbering into a refusal instead of a silent retarget.
 
-### The one open thread
-
-1. **M5 / animation-script editing** — smaller than the 9-of-51 figure suggests (A.27, A.29). ⚠️ That
-   figure was computed against 51 DK strips and the slicer now reports **36**; the membership needs
-   recomputing before it is used as a work list.
-
-**The barrel throw's floating prop is the one known-live defect**, and FOOT X says it is not a
-placement error — its feet are within 1.1 px of stock. That points at the art (the sheet draws a hip
-throw against the game's overhead composite), which A.33 already suspected and which is an art
-question to put to the author, not something to fix in the importer.
 
 ~~**Barrel Idle** is unlocated~~ — **found: `0x6B8..0x6C0`, anim 72**, confirmed in play by poison
 (A.41). Six paint rounds missed it and had between them eliminated *all* of DK's block, which cannot
