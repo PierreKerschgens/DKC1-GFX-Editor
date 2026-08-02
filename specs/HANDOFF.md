@@ -112,8 +112,13 @@ line whose **first and last glyphs are both parentheses** (`w<=4 && h>=3w`; meas
 
 | | strips before | after | poses |
 |---|---|---|---|
-| DK | 50 | **36** | 678, unchanged |
+| DK | 50 | **40** | 678, unchanged |
 | DK Jr | 42 | **32** | 553, unchanged |
+
+**Headlines also split a row into sectors** — five on the DK sheet (Death, Barrel Idle, Barrel Walk,
+Ride Attack, Ride Idle) named a run no strip started, because they share a row with the run to their
+left divided only by a drawn rule. ⚠️ **Rules mark sub-motions, not runs** (operator: for Duck, left
+of the rule is standing→duck, right is the duck idle), so only headlines delimit runs.
 
 Map Stuff is one strip of 37 poses over 5 rows; Swing 31 over 2; Bang Chest 34 over 2; DK Jr's
 Credits 110 over 7. **The confirmed build is bit-identical** (`sha256 1dca65a2…` = `dk-KEG15.sfc`),
@@ -872,7 +877,7 @@ Two candidates, both surfaced by M4 rather than planned:
 - DK owns `0x8C..0x950`, 562 indices; Diddy begins `0x954` (A.8).
 - `0x858..0x8A8` inside that range is **not DK** — most likely Manky Kong. **Exclude from any DK
   manifest** (A.13). Reference at `port/DkcTool/testdata/manky-reference.png`.
-- DK sheet: **678 poses, 36 strips**. DK Jr: 553 poses, **32 strips**. These are the post-A.39 band-fix
+- DK sheet: **678 poses, 40 strips**. DK Jr: 553 poses, **32 strips**. These are the post-A.39 band-fix
   counts. Anything citing **533 / 46 strips** predates the A.25 merge fix; anything citing **50 / 42
   strips** predates A.39. A.39 renumbered nearly everything from strip 5 up — **re-derive a strip
   number from the sheet rather than trusting one written before it.**
